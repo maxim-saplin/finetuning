@@ -51,6 +51,8 @@ lora_config = LoraConfig(
 
 6. (qlora_oastt2\out_qlora-20240403193153) same as #5 + flash_attention_2, batch 1, ~80W {'train_runtime': 4431.736, 'train_samples_per_second': 1.46, 'train_steps_per_second': 0.73, 'train_loss': 1.1438023438964993, 'epoch': 4.0}
 
+7. (qlora_oastt2/out_qlora-20240404164313/checkpoint-3244) same as #6, GPU overclock, ~85W {'train_runtime': 3977.5122, 'train_samples_per_second': 1.631, 'train_steps_per_second': 0.816, 'train_loss': 1.151490448490612, 'epoch': 4.0}
+
 # Ultrachat, Jupiter
 
 ## Galore

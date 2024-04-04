@@ -24,10 +24,11 @@ modelpath = "stabilityai/stablelm-2-1_6b"
 #     bnb_4bit_compute_dtype=torch.bfloat16,
 # )
 
+import platform
 model = AutoModelForCausalLM.from_pretrained(
     modelpath,
     # quantization_config=quantization_config,
-    attn_implementation = "flash_attention_2",  
+    attn_implementation="flash_attention_2" if platform.system() == "Linux" else None, # !.5x faster, requires Linux  and setup
     torch_dtype=torch.bfloat16,
     device_map="auto",
     use_cache=False,
@@ -49,11 +50,12 @@ lora_config = LoraConfig(
 model.add_adapter(lora_config)
 
 tokenizer = AutoTokenizer.from_pretrained(modelpath, use_fast=False)
-tokenizer.padding_side = "right"  # to prevent warnings
+tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] == 'user' %}\n{{ '<|user|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'system' %}\n{{ '<|system|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'assistant' %}\n{{ '<|assistant|>\n'  + message['content'] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ '<|assistant|>' }}\n{% endif %}\n{% endfor %}"
 
-model, tokenizer = setup_chat_format(model, tokenizer)
+# steup_chat_format messes special topkens and not compatible with stablelm
+# model, tokenizer = setup_chat_format(model, tokenizer)
 # if tokenizer.pad_token in [None, tokenizer.eos_token]:
-#     tokenizer.pad_token = tokenizer.unk_token
+#    tokenizer.pad_token = tokenizer.unk_token
 
 dataset = load_dataset("g-ronimo/oasst2_top4k_en")
 
@@ -90,10 +92,10 @@ trainer = SFTTrainer(
     # ),
     max_seq_length=1024,
     packing=True,
-    dataset_kwargs={
-        "add_special_tokens": False,  # We template with special tokens
-        "append_concat_token": False,  # No need to add additional separator token
-    },
+    # dataset_kwargs={
+    #     "add_special_tokens": False,  # We template with special tokens
+    #     "append_concat_token": False,  # No need to add additional separator token
+    # },
     # peft_config = LoraConfig(
     #     target_modules = "all-linear",
     #     modules_to_save = ["lm_head", "embed_tokens"]),
