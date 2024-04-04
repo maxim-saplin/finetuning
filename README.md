@@ -65,6 +65,10 @@ lora_config = LoraConfig(
 
 4. 31.03,  1000 steps, use_reentrant False, max_sequence 512, packing True, per_device_train_batch_size 4, quantization 8 bit, 10% {~4000s run time} - dataset 50W, epoch 0.3 at step 320, 21.5m per 320 steps
 
+5. 05.04 - Matched params, QLora w. flash attention (#7), instead of ~1h training for 4 epochs ETA was 11h (at 1%, step 58)
+
+6. 05.04 - same as #5, on Windows without flash attention on (#7), instead of ~1h training for 4 epochs ETA was 10.5h
+
 ## QLora
 
 1. 28.03, 1000 steps, use_reentrant False, max_sequence 512, packing False, per_device_train_batch_size 4, 3% dataset {'train_runtime': 935.5676, 'train_samples_per_second': 17.102, 'train_steps_per_second': 1.069, 'train_loss': 2.3004047622680663, 'epoch': 0.36}

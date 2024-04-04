@@ -10,12 +10,13 @@ from trl import SFTTrainer, setup_chat_format, DataCollatorForCompletionOnlyLM
 from datasets import load_dataset
 import torch, wandb
 from datetime import datetime
+import platform
 
 set_seed(42)
 
 run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
-modelpath = "stabilityai/stablelm-2-1_6b"
+model_path = "stabilityai/stablelm-2-1_6b"
 
 # quantization_config = BitsAndBytesConfig(
 #     load_in_4bit=True,
@@ -24,9 +25,8 @@ modelpath = "stabilityai/stablelm-2-1_6b"
 #     bnb_4bit_compute_dtype=torch.bfloat16,
 # )
 
-import platform
 model = AutoModelForCausalLM.from_pretrained(
-    modelpath,
+    model_path,
     # quantization_config=quantization_config,
     attn_implementation="flash_attention_2" if platform.system() == "Linux" else None, # !.5x faster, requires Linux  and setup
     torch_dtype=torch.bfloat16,
@@ -35,10 +35,6 @@ model = AutoModelForCausalLM.from_pretrained(
 )
 
 lora_config = LoraConfig(
-    # r=8,
-    # target_modules=["q_proj", "o_proj", "k_proj", "v_proj", "gate_proj", "up_proj", "down_proj"],
-    # bias="none",
-    # task_type="CAUSAL_LM",
     lora_alpha=128,
     lora_dropout=0.05,
     r=256,
@@ -49,7 +45,7 @@ lora_config = LoraConfig(
 
 model.add_adapter(lora_config)
 
-tokenizer = AutoTokenizer.from_pretrained(modelpath, use_fast=False)
+tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
 tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] == 'user' %}\n{{ '<|user|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'system' %}\n{{ '<|system|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'assistant' %}\n{{ '<|assistant|>\n'  + message['content'] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ '<|assistant|>' }}\n{% endif %}\n{% endfor %}"
 tokenizer.pad_token = tokenizer.unk_token
 
@@ -68,7 +64,6 @@ training_arguments = TrainingArguments(
     gradient_accumulation_steps=2,  # number of steps before performing a backward/update pass
     gradient_checkpointing=True,  # use gradient checkpointing to save memory
     gradient_checkpointing_kwargs={"use_reentrant": False},
-    optim="adamw_torch_fused",  # use fused adamw optimizer
     logging_steps=1,  # log every 1 step
     save_strategy="epoch",  # save checkpoint every epoch
     learning_rate=2e-4,  # learning rate, based on QLoRA paper
@@ -77,6 +72,7 @@ training_arguments = TrainingArguments(
     max_grad_norm=0.3,  # max gradient norm based on QLoRA paper
     warmup_ratio=0.03,  # warmup ratio based on QLoRA paper
     lr_scheduler_type="constant",  # use constant learning rate scheduler
+    optim="adamw_torch_fused",  # use fused adamw optimizer
     # torch_compile=True # supposedly can make training faster, doesn't work with Linux/flash_uttention
 )
 
