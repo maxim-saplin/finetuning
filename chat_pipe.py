@@ -23,18 +23,21 @@ def load_model_and_tokenizer(model_name_or_path):
     #     use_cache=False,
     # )
 
-    model = AutoModelForCausalLM.from_pretrained(model_name_or_path)
+    # model = AutoModelForCausalLM.from_pretrained(model_name_or_path, device_map="cuda")
+    
     # Use this for LORA/quantized models
-    # import platform
-    # model = AutoPeftModelForCausalLM.from_pretrained(
-    #     model_name_or_path,
-    #     device_map="cuda",
-    #     torch_dtype=torch.float16,
-    #     attn_implementation="flash_attention_2" if platform.system() == "Linux" else None,  # Only Linux/WSL, requires installation -- no big difference from runing inference without flash attention on Windows, even longer load time
-    # )
+    import platform
+    model = AutoPeftModelForCausalLM.from_pretrained(
+        model_name_or_path,
+        device_map="cuda",
+        torch_dtype=torch.float16,
+        attn_implementation="flash_attention_2" if platform.system() == "Linux" else None,  # Only Linux/WSL, requires installation -- no big difference from runing inference without flash attention on Windows, even longer load time
+    )
+
     print("\033[H\033[J")  # Clear the screen
     print("Model and tokenizer loaded successfully.")
     end_time = time.time()
+
     print(f"Model and tokenizer loaded in {end_time - start_time} seconds.")
     return model, tokenizer
 
@@ -78,7 +81,8 @@ def chat_with_ai(model, tokenizer):
 
 
 if __name__ == "__main__":
-    # model_name_or_path = "qlora_oastt2\out_qlora-20240404143613\checkpoint-8000"
-    model_name_or_path = "stabilityai/stablelm-2-zephyr-1_6b"
+    # model_name_or_path = "qlora_oastt2\out_qlora-20240404214235\checkpoint-3312"
+    # model_name_or_path = "stabilityai/stablelm-2-zephyr-1_6b"
+    model_name_or_path = "stabilityai/stablelm-2-1_6b"
     model, tokenizer = load_model_and_tokenizer(model_name_or_path)
     chat_with_ai(model, tokenizer)
