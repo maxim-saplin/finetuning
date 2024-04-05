@@ -46,9 +46,6 @@ training_arguments = TrainingArguments(
     save_strategy="epoch",
     # learning_rate=2e-4, 
     # learning_rate = 1e-5,
-    # lr_scheduler_type = "constant",
-    # optim="galore_adamw_8bit_layerwise",
-    # optim_target_modules=["attn", "mlp"],
     
     # https://github.com/huggingface/transformers/issues/29822#issuecomment-2019325615
     optim="galore_adamw_8bit_layerwise",

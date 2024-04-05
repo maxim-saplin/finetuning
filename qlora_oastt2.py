@@ -97,7 +97,7 @@ trainer = SFTTrainer(
 )
 
 wandb.init(
-    project="galore-7B",
+    project="stablelm-2-1_6b",
     name=run_id,
 ).log_code(include_fn=lambda path: path.endswith(".py") or path.endswith(".ipynb"))
 
