@@ -49,7 +49,7 @@ tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
 tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] == 'user' %}\n{{ '<|user|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'system' %}\n{{ '<|system|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'assistant' %}\n{{ '<|assistant|>\n'  + message['content'] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ '<|assistant|>' }}\n{% endif %}\n{% endfor %}"
 tokenizer.pad_token = tokenizer.unk_token
 
-# steup_chat_format messes special topkens and not compatible with stablelm
+# steup_chat_format messes special topkens and is not compatible with stablelm
 # model, tokenizer = setup_chat_format(model, tokenizer)
 # if tokenizer.pad_token in [None, tokenizer.eos_token]:
 #    tokenizer.pad_token = tokenizer.unk_token

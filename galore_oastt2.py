@@ -8,7 +8,7 @@ import platform
 
 set_seed(42)
 
-# %python -m pip install git+https://github.com/jiaweizzhao/GaLore
+# %python -m pip install -U galore-torch
 
 run_id = f"galore-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
@@ -38,20 +38,25 @@ training_arguments = TrainingArguments(
     output_dir = f"galore_oastt2/out_{run_id}",
     num_train_epochs=4, 
     per_device_train_batch_size = 1,
-    # Layerwise GaLoRE optimizer does not support gradient accumulation
+    ## Layerwise GaLoRE optimizer does not support gradient accumulation
     # gradient_accumulation_steps=2, 
     # gradient_checkpointing=True,
     # gradient_checkpointing_kwargs={"use_reentrant": False},
     logging_steps = 1,
     save_strategy="epoch",
-    learning_rate=2e-4, 
+    # learning_rate=2e-4, 
     # learning_rate = 1e-5,
-    lr_scheduler_type = "constant",
-    group_by_length = False,
+    # lr_scheduler_type = "constant",
+    # optim="galore_adamw_8bit_layerwise",
+    # optim_target_modules=["attn", "mlp"],
+    
+    # https://github.com/huggingface/transformers/issues/29822#issuecomment-2019325615
     optim="galore_adamw_8bit_layerwise",
-    optim_target_modules=["attn", "mlp"],
+    optim_args="rank=64, update_proj_gap=100, scale=0.10",
+    optim_target_modules=[r".*attn.*", r".*mlp.*"],
+
     # GaLore parameters, https://medium.com/@geronimo7/llm-training-on-consumer-gpus-with-galore-d25075143cfb#:~:text=GaLore%20vs.-,LoRA,edging%20out%20in%20the%20benchmarks
-    optim_args=f"rank={1024}, update_proj_gap={200}, scale={2}",
+    # optim_args=f"rank={1024}, update_proj_gap={200}, scale={2}",
 )
 
 trainer = SFTTrainer(
@@ -65,7 +70,7 @@ trainer = SFTTrainer(
 )
 
 wandb.init(
-    project = "galore-7B", 
+    project = "stablelm-2-1_6b", 
     name = run_id,
 ).log_code(include_fn=lambda path: path.endswith(".py") or path.endswith(".ipynb"))
 
