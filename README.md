@@ -2,7 +2,13 @@
 [Galore](https://medium.com/@geronimo7/llm-training-on-consumer-gpus-with-galore-d25075143cfb#:~:text=GaLore%20vs.-,LoRA,edging%20out%20in%20the%20benchmarks.)
 [QLORA](https://pytorch.org/blog/finetune-llms/)
 
+
+
 # OASTT, .py
+
+## Clean versions
+
+1. GaLore, (galore_oastt2\out_galore-20240405095444) - there'e ~1min pauses after each step
 
 ## Galore
 
