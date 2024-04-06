@@ -38,18 +38,18 @@ training_arguments = TrainingArguments(
     output_dir = f"galore_oastt2/out_{run_id}",
     num_train_epochs=4, 
     per_device_train_batch_size = 1,
-    ## Layerwise GaLoRE optimizer does not support gradient accumulation
-    gradient_accumulation_steps=2, 
-    gradient_checkpointing=True,
-    gradient_checkpointing_kwargs={"use_reentrant": False},
-    optim="galore_adamw_8bit",
+    # # Layerwise GaLoRE optimizer does not support gradient accumulation, gradient accum with "galore_adamw_8bit didn't work, was stuck
+    # gradient_accumulation_steps=2, 
+    # gradient_checkpointing=True,
+    # gradient_checkpointing_kwargs={"use_reentrant": False},
+    # optim="galore_adamw_8bit",
     logging_steps = 1,
     save_strategy="epoch",
     # learning_rate=2e-4, 
     # learning_rate = 1e-5,
     
     # https://github.com/huggingface/transformers/issues/29822#issuecomment-2019325615
-    # optim="galore_adamw_8bit_layerwise",
+    optim="galore_adamw_8bit_layerwise",
     optim_args="rank=64, update_proj_gap=100, scale=0.10",
     optim_target_modules=[r".*attn.*", r".*mlp.*"],
 

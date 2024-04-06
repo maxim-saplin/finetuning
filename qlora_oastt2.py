@@ -18,6 +18,16 @@ run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
 model_path = "stabilityai/stablelm-2-1_6b"
 
+def get_dataset(use_both_datasets=False):
+    if use_both_datasets:
+        dataset1 = load_dataset("g-ronimo/oasst2_top4k_en")
+        dataset2 = load_dataset("HuggingFaceH4/ultrachat_200k")
+    else:
+        dataset = load_dataset("g-ronimo/oasst2_top4k_en")
+    return dataset
+
+dataset = get_dataset(True)
+
 # quantization_config = BitsAndBytesConfig(
 #     load_in_4bit=True,
 #     bnb_4bit_use_double_quant=True,
@@ -54,12 +64,10 @@ tokenizer.pad_token = tokenizer.unk_token
 # if tokenizer.pad_token in [None, tokenizer.eos_token]:
 #    tokenizer.pad_token = tokenizer.unk_token
 
-dataset = load_dataset("g-ronimo/oasst2_top4k_en")
-
 # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
 training_arguments = TrainingArguments(
     output_dir=f"qlora_oastt2/out_{run_id}",
-    num_train_epochs=4,  # number of training epochs
+    num_train_epochs=11,  # number of training epochs
     per_device_train_batch_size=2,  # batch size per device during training
     gradient_accumulation_steps=2,  # number of steps before performing a backward/update pass
     gradient_checkpointing=True,  # use gradient checkpointing to save memory
