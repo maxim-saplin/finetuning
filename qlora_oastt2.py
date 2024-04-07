@@ -24,7 +24,7 @@ def get_dataset(use_both_datasets=False):
     if use_both_datasets:
         dataset1 = load_dataset("g-ronimo/oasst2_top4k_en", split="train+test")
         dataset2 = load_dataset(
-            "HuggingFaceH4/ultrachat_200k", split="train_sft+test_sft"
+            "HuggingFaceH4/ultrachat_200k", split="train_sft[:5%]+test_sft[:20%]"
         )
 
         dataset2 = dataset2.map(
