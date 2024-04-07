@@ -12,7 +12,7 @@
 
 2. QLora 4 epochs, (qlora_oastt2\out_qlora-20240405200217) {'train_runtime': 4486.351, 'train_samples_per_second': 1.477, 'train_steps_per_second': 0.369, 'train_loss': 1.0640918418477123, 'epoch': 4.0} - GPU non-overclocked ~80W, VRAM ~7.5GB
 
-3. QLora 11 epochs,
+3. QLora 11 epochs, (qlora_oastt2\out_qlora-20240406123945) {'train_runtime': 16831.0707, 'train_samples_per_second': 1.083, 'train_steps_per_second': 0.271, 'train_loss': 0.5094320068939977, 'epoch': 10.99} - overclocked GPU, ~60-65W 
 
 ## Galore
 
