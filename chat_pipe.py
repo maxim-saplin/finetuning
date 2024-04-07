@@ -3,6 +3,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 from peft import PeftModel, AutoPeftModelForCausalLM
 import time
 
+
 def load_model_and_tokenizer(model_name_or_path):
     """
     Load the trained model and tokenizer.
@@ -23,15 +24,20 @@ def load_model_and_tokenizer(model_name_or_path):
     #     use_cache=False,
     # )
 
-    if model_name_or_path.startswith('stabilityai/'):
-        model = AutoModelForCausalLM.from_pretrained(model_name_or_path, device_map="cuda")
+    if model_name_or_path.startswith("stabilityai/"):
+        model = AutoModelForCausalLM.from_pretrained(
+            model_name_or_path, device_map="cuda"
+        )
     else:
         import platform
+
         model = AutoPeftModelForCausalLM.from_pretrained(
             model_name_or_path,
             device_map="cuda",
             torch_dtype=torch.float16,
-            attn_implementation="flash_attention_2" if platform.system() == "Linux" else None,  # Only Linux/WSL, requires installation -- no big difference from runing inference without flash attention on Windows, even longer load time
+            attn_implementation=(
+                "flash_attention_2" if platform.system() == "Linux" else None
+            ),  # Only Linux/WSL, requires installation -- no big difference from runing inference without flash attention on Windows, even longer load time
         )
 
     print("\033[H\033[J")  # Clear the screen
@@ -68,14 +74,14 @@ def chat_with_ai(model, tokenizer):
             conversation,
             max_new_tokens=256,
             # do_sample=True,
-            # temperature=0.6, 
+            # temperature=0.6,
             # repetition_penalty=1.3,
             # eos_token_id=pipe.tokenizer.eos_token_id,
             # pad_token_id=pipe.tokenizer.pad_token_id,
         )
 
         print("\033[H\033[J")  # Clear the screen
-        conversation = response[0]['generated_text']
+        conversation = response[0]["generated_text"]
         for message in conversation:
             print(f"\033[1;36m{message['role']}\033[0m: {message['content']}")
 

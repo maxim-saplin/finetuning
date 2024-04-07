@@ -7,7 +7,8 @@ from transformers import (
 )
 from peft import LoraConfig
 from trl import SFTTrainer, setup_chat_format, DataCollatorForCompletionOnlyLM
-from datasets import load_dataset
+from datasets import load_dataset, concatenate_datasets, Dataset
+import pandas as pd
 import torch, wandb
 from datetime import datetime
 import platform
@@ -18,13 +19,43 @@ run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
 model_path = "stabilityai/stablelm-2-1_6b"
 
+
 def get_dataset(use_both_datasets=False):
     if use_both_datasets:
-        dataset1 = load_dataset("g-ronimo/oasst2_top4k_en")
-        dataset2 = load_dataset("HuggingFaceH4/ultrachat_200k")
+        dataset1 = load_dataset("g-ronimo/oasst2_top4k_en", split="train+test")
+        dataset2 = load_dataset(
+            "HuggingFaceH4/ultrachat_200k", split="train_sft+test_sft"
+        )
+
+        dataset2 = dataset2.map(
+            lambda example: {"messages": example["messages"]},
+            batched=True,
+            remove_columns=dataset2.column_names,
+        )
+        dataset = dataset2.train_test_split(test_size=0.1)
+
+        dataset["train"] = concatenate_datasets([dataset["train"], dataset1])
     else:
         dataset = load_dataset("g-ronimo/oasst2_top4k_en")
+        dataset = dataset.train_test_split(test_size=0.1)
+
+    haddaway = Dataset.from_dict(
+        {
+            "messages": [
+                [
+                    {
+                        "content": "What is love? Oh baby, don't hurt me...",
+                        "role": "user",
+                    },
+                    {"content": "Don't hurt me, no more.", "role": "assistant"},
+                ]
+            ]
+        }
+    )
+
+    dataset["train"] = concatenate_datasets([dataset["train"], haddaway])
     return dataset
+
 
 dataset = get_dataset(True)
 
@@ -38,7 +69,9 @@ dataset = get_dataset(True)
 model = AutoModelForCausalLM.from_pretrained(
     model_path,
     # quantization_config=quantization_config,
-    attn_implementation="flash_attention_2" if platform.system() == "Linux" else None, # !.5x faster, requires Linux  and setup
+    attn_implementation=(
+        "flash_attention_2" if platform.system() == "Linux" else None
+    ),  # !.5x faster, requires Linux  and setup
     torch_dtype=torch.bfloat16,
     device_map="auto",
     use_cache=False,

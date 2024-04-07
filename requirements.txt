@@ -1,0 +1,9 @@
+torch
+transformers
+peft
+datasets
+bitsandbytes
+trl
+accelerate
+wandb
+ipywidgets
