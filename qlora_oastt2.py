@@ -100,7 +100,7 @@ tokenizer.pad_token = tokenizer.unk_token
 # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
 training_arguments = TrainingArguments(
     output_dir=f"qlora_oastt2/out_{run_id}",
-    num_train_epochs=11,  # number of training epochs
+    num_train_epochs=5,  # number of training epochs
     per_device_train_batch_size=2,  # batch size per device during training
     gradient_accumulation_steps=2,  # number of steps before performing a backward/update pass
     gradient_checkpointing=True,  # use gradient checkpointing to save memory
