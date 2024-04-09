@@ -14,11 +14,17 @@
 
 4. QLORA OASTT2+UltraChat (17k records), (qlora_oastt2/out_qlora-20240408004646){'train_runtime': 85006.9413, 'train_samples_per_second': 1.072, 'train_steps_per_second': 0.268, 'train_loss': 1.0263265134591717, 'epoch': 5.0} - ~60-65W, VRAM ~8GB, original ETA 24h (at start) - actual 23.6 (4.7h per epoch)
 
-5. QLORA OASST2, 1 epoch, batch size 1, (qlora_oastt2\out_qlora-20240409132122) {'train_runtime': 996.9661, 'train_samples_per_second': 1.662, 'train_steps_per_second': 0.831, 'train_loss': 1.5574734058357091, 'epoch': 1.0}, GPU ~82W, VRAM ~6.5GB
+5. QLORA OASST2 4.4k, 1 epoch, batch size 1, (qlora_oastt2\out_qlora-20240409132122) {'train_runtime': 996.9661, 'train_samples_per_second': 1.662, 'train_steps_per_second': 0.831, 'train_loss': 1.5574734058357091, 'epoch': 1.0}, GPU ~82W, VRAM ~6.5GB
 
-6. QLORA OASST2, 1 epoch, batch size 2, (qlora_oastt2\out_qlora-20240409134318) {'train_runtime': 1510.0385, 'train_samples_per_second': 1.097, 'train_steps_per_second': 0.274, 'train_loss': 1.5549839297354509, 'epoch': 1.0} , GPU ~62W, VRAM ~8,4GB
+6. QLORA OASST2 4.4k, 1 epoch, batch size 2, (qlora_oastt2\out_qlora-20240409134318) {'train_runtime': 1510.0385, 'train_samples_per_second': 1.097, 'train_steps_per_second': 0.274, 'train_loss': 1.5549839297354509, 'epoch': 1.0} , GPU ~62W, VRAM ~8,4GB
 
-7. QLORA OASST2, 1 epoch, batch size 1, SDPA attention, {'train_runtime': 1002.554, 'train_samples_per_second': 1.653, 'train_steps_per_second': 0.826, 'train_loss': 1.5570363735663142, 'epoch': 1.0} (qlora_oastt2\out_qlora-20240409145227) GPU ~82W, VRAM ~6.5GB
+7. QLORA OASST2 4.4k, 1 epoch, batch size 1, SDPA attention, {'train_runtime': 1002.554, 'train_samples_per_second': 1.653, 'train_steps_per_second': 0.826, 'train_loss': 1.5570363735663142, 'epoch': 1.0} (qlora_oastt2\out_qlora-20240409145227) GPU ~82W, VRAM ~6.5GB
+
+8. QLORA OASST2 4.4k, 1 epoch, batch size 2, cntx 512, SDPA attention, (qlora_oastt2\out_qlora-20240409155850) {'train_runtime': 995.2857, 'train_samples_per_second': 3.33, 'train_steps_per_second': 0.832, 'train_loss': 1.6222642883298477, 'epoch': 1.0}, GPU ~82W, VRAM 7GB
+
+9. QLORA OASST2 4.4k, 1 epoch, batch size 1, cntx 512, SDPA attention, (qlora_oastt2\out_qlora-20240409162509) {'train_runtime': 1204.6375, 'train_samples_per_second': 2.751, 'train_steps_per_second': 1.376, 'train_loss': 1.6371634513337567, 'epoch': 1.0} GPU ~75W, VRAM 6.1GB
+
+
 
 ## Galore
 

@@ -141,7 +141,7 @@ trainer = SFTTrainer(
     #     tokenizer=tokenizer,
     #     mlm=False,
     # ),
-    max_seq_length=1024,
+    max_seq_length=512,
     packing=True,
     # dataset_kwargs={
     #     "add_special_tokens": False,  # We template with special tokens
