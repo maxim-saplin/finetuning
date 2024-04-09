@@ -6,7 +6,7 @@ from transformers import (
     BitsAndBytesConfig,
 )
 from peft import LoraConfig
-from trl import SFTTrainer, setup_chat_format, DataCollatorForCompletionOnlyLM
+from trl import SFTTrainer
 from datasets import load_dataset, concatenate_datasets, Dataset
 import pandas as pd
 import torch, wandb
@@ -35,40 +35,44 @@ def get_dataset(use_both_datasets=False):
         dataset = dataset2.train_test_split(test_size=0.1)
 
         dataset["train"] = concatenate_datasets([dataset["train"], dataset1])
+        
+        haddaway = Dataset.from_dict(
+            {
+                "messages": [
+                    [
+                        {
+                            "content": "What is love? Oh baby, don't hurt me...",
+                            "role": "user",
+                        },
+                        {"content": "Don't hurt me, no more.", "role": "assistant"},
+                    ]
+                ]
+            }
+        )
+
+        dataset["train"] = concatenate_datasets([dataset["train"], haddaway])
+        return dataset
     else:
         dataset = load_dataset("g-ronimo/oasst2_top4k_en")
-        dataset = dataset.train_test_split(test_size=0.1)
-
-    haddaway = Dataset.from_dict(
-        {
-            "messages": [
-                [
-                    {
-                        "content": "What is love? Oh baby, don't hurt me...",
-                        "role": "user",
-                    },
-                    {"content": "Don't hurt me, no more.", "role": "assistant"},
-                ]
-            ]
-        }
-    )
-
-    dataset["train"] = concatenate_datasets([dataset["train"], haddaway])
-    return dataset
+        return dataset
 
 
-dataset = get_dataset(True)
+dataset = get_dataset(use_both_datasets=False)
 
-# quantization_config = BitsAndBytesConfig(
-#     load_in_4bit=True,
-#     bnb_4bit_use_double_quant=True,
-#     bnb_4bit_quant_type="nf4",
-#     bnb_4bit_compute_dtype=torch.bfloat16,
-# )
+quantization_config = BitsAndBytesConfig(
+    # load_in_4bit=True,
+    # bnb_4bit_use_double_quant=True,
+    # bnb_4bit_quant_type="nf4",
+    # bnb_4bit_compute_dtype=torch.bfloat16,
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=getattr(torch, "float16"),
+    bnb_4bit_use_double_quant=True,
+)
 
 model = AutoModelForCausalLM.from_pretrained(
     model_path,
-    # quantization_config=quantization_config,
+    quantization_config=quantization_config,
     attn_implementation=(
         "flash_attention_2" if platform.system() == "Linux" else None
     ),  # !.5x faster, requires Linux  and setup
@@ -100,7 +104,7 @@ tokenizer.pad_token = tokenizer.unk_token
 # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
 training_arguments = TrainingArguments(
     output_dir=f"qlora_oastt2/out_{run_id}",
-    num_train_epochs=5,  # number of training epochs
+    num_train_epochs=4,  # number of training epochs
     per_device_train_batch_size=2,  # batch size per device during training
     gradient_accumulation_steps=2,  # number of steps before performing a backward/update pass
     gradient_checkpointing=True,  # use gradient checkpointing to save memory
