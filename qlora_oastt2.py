@@ -35,7 +35,7 @@ def get_dataset(use_both_datasets=False):
         dataset = dataset2.train_test_split(test_size=0.1)
 
         dataset["train"] = concatenate_datasets([dataset["train"], dataset1])
-        
+
         haddaway = Dataset.from_dict(
             {
                 "messages": [
@@ -66,19 +66,30 @@ quantization_config = BitsAndBytesConfig(
     bnb_4bit_compute_dtype=torch.bfloat16,
 )
 
+# VRAM conspumption when QLORA is enabled, depending on max_seq_length there's greater QLORA overhead, i.e. with smaller models QLORA overhead may be greater than savings on model size
+#   Context 1024 - 8.3 GB VRAM (8.7 without torch_dtype=torch.bfloat16)
+#   Context 512 - 7.2GB VRAM
+#   Context 256 - 6.5GB VRAM
+# Quantization disabled
+#   Context 1024 - 6.7GB VRAM (12.5GB without torch_dtype=torch.bfloat16)
+#   Context 512 - 6.0GB VRAM
+#   Context 256 - 5.6GB VRAM 
+#
+# QLoRA overhead = (15*hidden_dim + 6*intermediate_dim) x (numLayers) x contextLen x 0.75 bytes - https://github.com/RahulSChand/gpu_poor/issues/1#issuecomment-1741400940
+
 model = AutoModelForCausalLM.from_pretrained(
     model_path,
     # quantization_config=quantization_config,
     # attn_implementation=(
     #     "flash_attention_2" if platform.system() == "Linux" else None
     # ),  # !.5x faster, requires Linux  and setup
-    attn_implementation="sdpa",
-    torch_dtype=torch.bfloat16,
+    attn_implementation="sdpa", # spda is ~5% faster (under WSL) than flash_attention_2 and works wotj QLORA without issues
+    torch_dtype=torch.bfloat16, # VRAM consumption goes up when using defaulkt setting
     device_map="auto",
     use_cache=False,
 )
 
-lora_config = LoraConfig(
+lora_config = LoraConfig( 
     lora_alpha=128,
     lora_dropout=0.05,
     r=256,
