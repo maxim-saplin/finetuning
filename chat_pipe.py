@@ -73,9 +73,9 @@ def chat_with_ai(model, tokenizer):
         response = pipe(
             conversation,
             max_new_tokens=256,
-            # do_sample=True,
-            # temperature=0.6,
-            # repetition_penalty=1.3,
+            do_sample=True,
+            temperature=0.2,
+            repetition_penalty=1.3,
             # eos_token_id=pipe.tokenizer.eos_token_id,
             # pad_token_id=pipe.tokenizer.pad_token_id,
         )
@@ -87,8 +87,8 @@ def chat_with_ai(model, tokenizer):
 
 
 if __name__ == "__main__":
-    # model_name_or_path = "qlora_oastt2\out_qlora-20240405200217\checkpoint-1656"
-    model_name_or_path = "stabilityai/stablelm-2-zephyr-1_6b"
+    model_name_or_path = "qlora_oastt2\out_qlora-20240408004646\checkpoint-22780"
+    # model_name_or_path = "stabilityai/stablelm-2-zephyr-1_6b"
     # model_name_or_path = "stabilityai/stablelm-2-1_6b"
     model, tokenizer = load_model_and_tokenizer(model_name_or_path)
     chat_with_ai(model, tokenizer)

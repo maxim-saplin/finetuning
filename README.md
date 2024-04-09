@@ -14,6 +14,8 @@
 
 3. QLora 11 epochs, (qlora_oastt2\out_qlora-20240406123945) {'train_runtime': 16831.0707, 'train_samples_per_second': 1.083, 'train_steps_per_second': 0.271, 'train_loss': 0.5094320068939977, 'epoch': 10.99} - overclocked GPU, ~60-65W 
 
+4. QLORA OASTT2+UltraChat (17k records), (qlora_oastt2/out_qlora-20240408004646){'train_runtime': 85006.9413, 'train_samples_per_second': 1.072, 'train_steps_per_second': 0.268, 'train_loss': 1.0263265134591717, 'epoch': 5.0} - ~60-65W, VRAM ~8GB, original ETA 24h (at start) - actual 23.6 (4.7h per epoch)
+
 ## Galore
 
 0. batch size 16, VRAM overflow, 100W updating proj gap (every 200 steps), 42W in between
