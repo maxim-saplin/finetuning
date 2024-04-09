@@ -127,7 +127,8 @@ training_arguments = TrainingArguments(
     warmup_ratio=0.03,  # warmup ratio based on QLoRA paper
     lr_scheduler_type="constant",  # use constant learning rate scheduler
     optim="adamw_torch_fused",  # adamw_apex_fused might be the best option (performance/accuracy) https://github.com/pytorch/pytorch/issues/96755, https://huggingface.co/docs/transformers/en/perf_train_gpu_one#optimizer-choice
-    # torch_compile=True # supposedly can make training faster, doesn't work with Linux/flash_uttention
+    dataloader_num_workers=4, # https://huggingface.co/docs/transformers/en/perf_train_gpu_one#data-preloading
+    # torch_compile=True # supposedly can make training faster, doesn't work with Linux/flash_attention
 )
 
 trainer = SFTTrainer(
