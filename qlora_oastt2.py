@@ -17,7 +17,7 @@ set_seed(42)
 
 run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
-model_path = "stabilityai/stablelm-2-1_6b"
+model_path = "qlora_oastt2\out_qlora-20240408004646\checkpoint-22780" # "stabilityai/stablelm-2-1_6b"
 
 
 def get_dataset(use_both_datasets=False):
@@ -46,7 +46,7 @@ def get_dataset(use_both_datasets=False):
                         },
                         {"content": "Don't hurt me, no more.", "role": "assistant"},
                     ]
-                ]
+                ] * 10
             }
         )
 
@@ -57,7 +57,7 @@ def get_dataset(use_both_datasets=False):
         return dataset
 
 
-dataset = get_dataset(use_both_datasets=False)
+dataset = get_dataset(use_both_datasets=True)
 
 quantization_config = BitsAndBytesConfig(
     load_in_4bit=True,
@@ -83,7 +83,7 @@ model = AutoModelForCausalLM.from_pretrained(
     # attn_implementation=(
     #     "flash_attention_2" if platform.system() == "Linux" else None
     # ),  # !.5x faster, requires Linux  and setup
-    attn_implementation="sdpa", # spda is ~5% faster (under WSL) than flash_attention_2 and works wotj QLORA without issues
+    attn_implementation="sdpa", # spda is ~5% faster (under WSL) than flash_attention_2 and works with QLORA without issues, as well as on Windows
     torch_dtype=torch.bfloat16, # VRAM consumption goes up when using defaulkt setting
     device_map="auto",
     use_cache=False,
@@ -98,9 +98,10 @@ lora_config = LoraConfig(
     task_type="CAUSAL_LM",
 )
 
-model.add_adapter(lora_config)
+# Comment out below when resuming from chekpoint
+# model.add_adapter(lora_config)
 
-tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
+tokenizer = AutoTokenizer.from_pretrained(model_path)
 tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] == 'user' %}\n{{ '<|user|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'system' %}\n{{ '<|system|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'assistant' %}\n{{ '<|assistant|>\n'  + message['content'] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ '<|assistant|>' }}\n{% endif %}\n{% endfor %}"
 tokenizer.pad_token = tokenizer.unk_token
 
@@ -112,8 +113,8 @@ tokenizer.pad_token = tokenizer.unk_token
 # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
 training_arguments = TrainingArguments(
     output_dir=f"qlora_oastt2/out_{run_id}",
-    num_train_epochs=1,  # number of training epochs
-    per_device_train_batch_size=3,  # batch size per device during training
+    num_train_epochs=2,  # number of training epochs
+    per_device_train_batch_size=1,  # batch size per device during training
     gradient_accumulation_steps=2,  # number of steps before performing a backward/update pass
     gradient_checkpointing=True,  # use gradient checkpointing to save memory
     gradient_checkpointing_kwargs={"use_reentrant": False},
@@ -141,7 +142,7 @@ trainer = SFTTrainer(
     #     tokenizer=tokenizer,
     #     mlm=False,
     # ),
-    max_seq_length=512,
+    max_seq_length=1024,
     packing=True,
     # dataset_kwargs={
     #     "add_special_tokens": False,  # We template with special tokens

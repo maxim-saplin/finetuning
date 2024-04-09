@@ -14,7 +14,7 @@
 
 3. QLORA 11 epochs, (qlora-20240406123945) {'train_runtime': 16831.0707, 'train_samples_per_second': 1.083, 'train_steps_per_second': 0.271, 'train_loss': 0.5094320068939977, 'epoch': 10.99} - overclocked GPU, ~60-65W 
 
-4. QLORA OASTT2+UltraChat (17k records), (qlora-20240408004646){'train_runtime': 85006.9413, 'train_samples_per_second': 1.072, 'train_steps_per_second': 0.268, 'train_loss': 1.0263265134591717, 'epoch': 5.0} - ~60-65W, VRAM ~8GB, original ETA 24h (at start) - actual 23.6 (4.7h per epoch)
+4. QLORA OASTT2+UltraChat (17k records), batch size 2, 5 epochs, (qlora-20240408004646){'train_runtime': 85006.9413, 'train_samples_per_second': 1.072, 'train_steps_per_second': 0.268, 'train_loss': 1.0263265134591717, 'epoch': 5.0} - ~60-65W, VRAM ~8GB, original ETA 24h (at start) - actual 23.6 (4.7h per epoch)
 
 5. QLORA OASST2 4.4k, 1 epoch, batch size 1, (qlora-20240409132122) {'train_runtime': 996.9661, 'train_samples_per_second': 1.662, 'train_steps_per_second': 0.831, 'train_loss': 1.5574734058357091, 'epoch': 1.0}, GPU ~82W, VRAM ~6.5GB
 
@@ -30,7 +30,9 @@
 
 Batch 1 - 1205s, 75W, 6.1GB
 Batch 2 - 995s,  82W, 7.0GB
-Batch 3 - 922s,  87W, 7.5GB 
+Batch 3 - 922s,  87W, 7.5GB
+
+11. Resuming #4, batch size 1, SDPA, 2 epochs, (qlora_oastt2\out_qlora-20240409190728) VRAM 6.6GB
 
 ## Galore
 
