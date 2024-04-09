@@ -126,7 +126,7 @@ training_arguments = TrainingArguments(
     max_grad_norm=0.3,  # max gradient norm based on QLoRA paper
     warmup_ratio=0.03,  # warmup ratio based on QLoRA paper
     lr_scheduler_type="constant",  # use constant learning rate scheduler
-    optim="adamw_torch_fused",  # use fused adamw optimizer
+    optim="adamw_torch_fused",  # adamw_apex_fused might be the best option (performance/accuracy) https://github.com/pytorch/pytorch/issues/96755, https://huggingface.co/docs/transformers/en/perf_train_gpu_one#optimizer-choice
     # torch_compile=True # supposedly can make training faster, doesn't work with Linux/flash_uttention
 )
 
