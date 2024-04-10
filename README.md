@@ -9,7 +9,7 @@ Chatting to a trained model (loaded from a checkpoint of HF hosted model):
   
 Misc files are old WIP.
 
-Runs on Windows and Linux (under WSL2). Instal torch with CUDA (`pip install -q torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121`) and then do the `pip install -r requirements.txt`. WSL2/Linux would also require manual CUDA installation.
+Runs on Windows and Linux (under WSL2). Instal torch with CUDA (`pip install -q torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121`) and then do the `pip install -r requirements.txt`. WSL2/Linux would also require manual CUDA installation. AMD CPU, RTX 4060 Mobile GPU.
 
 # Links/Inspirations
 [Galore](https://medium.com/@geronimo7/llm-training-on-consumer-gpus-with-galore-d25075143cfb#:~:text=GaLore%20vs.-,LoRA,edging%20out%20in%20the%20benchmarks.)
