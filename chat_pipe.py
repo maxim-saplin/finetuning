@@ -35,9 +35,10 @@ def load_model_and_tokenizer(model_name_or_path):
             model_name_or_path,
             device_map="cuda",
             torch_dtype=torch.float16,
-            attn_implementation=(
-                "flash_attention_2" if platform.system() == "Linux" else None
-            ),  # Only Linux/WSL, requires installation -- no big difference from runing inference without flash attention on Windows, even longer load time
+            attn_implementation="sdpa",
+            # attn_implementation=(
+            #     "flash_attention_2" if platform.system() == "Linux" else None
+            # ),  # Only Linux/WSL, requires installation -- no big difference from runing inference without flash attention on Windows, even longer load time
         )
 
     print("\033[H\033[J")  # Clear the screen
@@ -54,7 +55,7 @@ def chat_with_ai(model, tokenizer):
     """
     # Load model into pipeline
     pipe = pipeline("text-generation", model=model, tokenizer=tokenizer)
-    print("\033[1;43mAI Chat Interface. Type 'quit' to exit.\033[0m")
+    print_welcome()
 
     # Chat loop
     conversation = []  # Initialize conversation history
@@ -70,24 +71,35 @@ def chat_with_ai(model, tokenizer):
         # prompt = pipe.tokenizer.apply_chat_template(conversation, tokenize=False, add_generation_prompt=True)
         # response = pipe(prompt, max_new_tokens=256, do_sample=True, temperature=0.1, top_k=50, top_p=0.1, eos_token_id=pipe.tokenizer.eos_token_id, pad_token_id=pipe.tokenizer.pad_token_id)
 
+
+        start_time = time.time()
         response = pipe(
             conversation,
             max_new_tokens=256,
-            do_sample=True,
-            temperature=0.2,
-            repetition_penalty=1.3,
+            # do_sample=True,
+            # temperature=0.1,
+            # repetition_penalty=1.3,
             # eos_token_id=pipe.tokenizer.eos_token_id,
             # pad_token_id=pipe.tokenizer.pad_token_id,
         )
+        end_time = time.time()
 
         print("\033[H\033[J")  # Clear the screen
+        print_welcome()
         conversation = response[0]["generated_text"]
+        num_tokens = len(tokenizer.tokenize(conversation[-1]["content"]))
         for message in conversation:
             print(f"\033[1;36m{message['role']}\033[0m: {message['content']}")
+        
+        tokens_per_second = num_tokens / (end_time - start_time)
+        print(f"\033[1;31m{tokens_per_second:.2f} tokens per second")
+
+def print_welcome():
+    print("\033[1;43mAI Chat Interface. Type 'quit' to exit.\033[0m")
 
 
 if __name__ == "__main__":
-    model_name_or_path = "qlora_oastt2\out_qlora-20240408004646\checkpoint-22780"
+    model_name_or_path = "qlora_oastt2\out_qlora-20240409190728\checkpoint-9113"
     # model_name_or_path = "stabilityai/stablelm-2-zephyr-1_6b"
     # model_name_or_path = "stabilityai/stablelm-2-1_6b"
     model, tokenizer = load_model_and_tokenizer(model_name_or_path)

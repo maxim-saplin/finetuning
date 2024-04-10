@@ -32,7 +32,15 @@ Batch 1 - 1205s, 75W, 6.1GB
 Batch 2 - 995s,  82W, 7.0GB
 Batch 3 - 922s,  87W, 7.5GB
 
-11. Resuming #4, batch size 1, SDPA, 2 epochs, (qlora_oastt2\out_qlora-20240409190728) 392.6m VRAM 6.6GB
+11. Resuming #4, batch size 1, SDPA, 2 epochs, (qlora_oastt2\out_qlora-20240409190728) 392.6m (~3.25h/epoch) VRAM 6.6GB
+
+Disabling grdient chekpointing increases VRAM usage to 9.5GB (vs 6.6), ETA to cpomplete 1 epoch is ~7.2h (GPU unloaded de to overflow into system mem)
+
+Batch 1, grad 2 - VRAM 6.6GB, DONE in 3.2h
+Batch 1, grad 3 - VRAM 6.7GB, ETA 3.2h
+Batch 1, grad 4 - VRAM 6.7GB, ETA 3.0h, DONE 3.04h
+
+12. Resuming #11, batch size 1, SDPA, 1, grad_steps 4  {'train_runtime': 10967.5081, 'train_samples_per_second': 1.662, 'train_steps_per_second': 0.415, 'train_loss': 0.5580339932109412, 'epoch': 1.0}
 
 ## Galore
 
