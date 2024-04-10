@@ -1,10 +1,20 @@
-# Links
+Fine tuning a 1.6B StabilityAI base model into instruction following chat model. Trying out different PEFT methods (LORA, QLORA, Galore, model binarization), keeping track of hardware utilization and runtimes
+
+Training:
+- qlora_oastt2.py
+- galore_oastt2.py
+Chatting to a trained model (loaded from a checkpoint of HF hosted model):
+- chat_pipe.py
+Misc files are old WIP.
+
+Runs on Windows and Linux (under WSL2). Instal torch with CUDA (`pip install -q torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121`) and then do the `pip install -r requirements.txt`. WSL2/Linux would also require manual CUDA installation.
+
+# Links/Inspirations
 [Galore](https://medium.com/@geronimo7/llm-training-on-consumer-gpus-with-galore-d25075143cfb#:~:text=GaLore%20vs.-,LoRA,edging%20out%20in%20the%20benchmarks.)
 [QLORA](https://pytorch.org/blog/finetune-llms/)
 
 
-
-# OASTT, .py
+# (Q)LORA and Galore with OASTT2 and Ultrachat datasets:
 
 ## Clean versions
 
@@ -18,9 +28,26 @@
 
 5. QLORA OASST2 4.4k, 1 epoch, batch size 1, (qlora-20240409132122) {'train_runtime': 996.9661, 'train_samples_per_second': 1.662, 'train_steps_per_second': 0.831, 'train_loss': 1.5574734058357091, 'epoch': 1.0}, GPU ~82W, VRAM ~6.5GB
 
+Testing QLORA overhead and max_seq_length effect on VRAM consumption:
+
+- VRAM conspumption when QLORA is enabled, depending on max_seq_length there's greater QLORA overhead, i.e. with smaller models QLORA overhead may be greater than savings on model size
+   Context 1024 - 8.3 GB VRAM (8.7 without torch_dtype=torch.bfloat16)
+   Context 512 - 7.2GB VRAM
+   Context 256 - 6.5GB VRAM
+- Quantization disabled
+   Context 1024 - 6.7GB VRAM (12.5GB without torch_dtype=torch.bfloat16)
+   Context 512 - 6.0GB VRAM
+   Context 256 - 5.6GB VRAM 
+
+QLoRA overhead = (15*hidden_dim + 6*intermediate_dim) x (numLayers) x contextLen x 0.75 bytes - https://github.com/RahulSChand/gpu_poor/issues/1#issuecomment-1741400940
+
+
 6. QLORA OASST2 4.4k, 1 epoch, batch size 2, (qlora-20240409134318) {'train_runtime': 1510.0385, 'train_samples_per_second': 1.097, 'train_steps_per_second': 0.274, 'train_loss': 1.5549839297354509, 'epoch': 1.0} , GPU ~62W, VRAM ~8,4GB
 
 7. QLORA OASST2 4.4k, 1 epoch, batch size 1, SDPA attention, {'train_runtime': 1002.554, 'train_samples_per_second': 1.653, 'train_steps_per_second': 0.826, 'train_loss': 1.5570363735663142, 'epoch': 1.0} (qlora-20240409145227) GPU ~82W, VRAM ~6.5GB
+
+- Torch's stock Scaled Dot Product Attention works as fast as Flash Attention 2, yet doesn't require Linux and can also work with quantized models, see no point ion flash attention now
+
 
 8. QLORA OASST2 4.4k, 1 epoch, batch size 2, cntx 512, SDPA attention, (qlora-20240409155850) {'train_runtime': 995.2857, 'train_samples_per_second': 3.33, 'train_steps_per_second': 0.832, 'train_loss': 1.6222642883298477, 'epoch': 1.0}, GPU ~82W, VRAM 7GB
 
@@ -28,9 +55,11 @@
 
 10.  QLORA OASST2 4.4k, 1 epoch, batch size 3, cntx 512, SDPA attention (qlora-20240409170046) {'train_runtime': 922.4009, 'train_samples_per_second': 3.593, 'train_steps_per_second': 0.598, 'train_loss': 1.6213232613560082, 'epoch': 1.0} GPU ~87W, VRAM 7.5GB - works in Windows as well, GPU is ~88W (more stable load curve), almost same time (932.9851)
 
-Batch 1 - 1205s, 75W, 6.1GB
-Batch 2 - 995s,  82W, 7.0GB
-Batch 3 - 922s,  87W, 7.5GB
+## VRAM and Runtime vs. Batch size (runs 8, 9, 10)
+Batch 1, grad 2  - 1205s, 75W, 6.1GB
+Batch 2, grad 2  - 995s,  82W, 7.0GB
+Batch 3, grad 2  - 922s,  87W, 7.5GB
+
 
 11. Resuming #4, batch size 1, SDPA, 2 epochs, (qlora_oastt2\out_qlora-20240409190728) 392.6m (~3.25h/epoch) VRAM 6.6GB
 
@@ -40,7 +69,9 @@ Batch 1, grad 2 - VRAM 6.6GB, DONE in 3.2h
 Batch 1, grad 3 - VRAM 6.7GB, ETA 3.2h
 Batch 1, grad 4 - VRAM 6.7GB, ETA 3.0h, DONE 3.04h
 
-12. Resuming #11, batch size 1, SDPA, 1, grad_steps 4  {'train_runtime': 10967.5081, 'train_samples_per_second': 1.662, 'train_steps_per_second': 0.415, 'train_loss': 0.5580339932109412, 'epoch': 1.0}
+12. Resuming #11, batch size 1, SDPA, 1, grad_steps 4, 1 epochm (qlora-20240410141941) {'train_runtime': 10967.5081, 'train_samples_per_second': 1.662, 'train_steps_per_second': 0.415, 'train_loss': 0.5580339932109412, 'epoch': 1.0} VRAM 6.7GB, 82W
+
+13. Resuming #12, batch size 1, SDPA, 1, grad_steps 8, 2 epochs, VRAM 6.8GB (ETA 5:55)
 
 ## Galore
 
