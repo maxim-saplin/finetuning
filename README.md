@@ -4,7 +4,7 @@ Training:
 - qlora_oastt2.py
 - galore_oastt2.py
   
-Chatting to a trained model (loaded from a checkpoint of HF hosted model):
+Chatting to a trained model (loaded from a checkpoint or HF hosted model):
 - chat_pipe.py
   
 Misc files are old WIP.
