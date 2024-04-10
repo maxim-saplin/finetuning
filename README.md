@@ -32,11 +32,13 @@ VRAM spilling over and consuming system RAM effect on perfromance is described [
 
 Testing QLORA overhead and max_seq_length effect on VRAM consumption:
 
-- VRAM conspumption when QLORA is enabled, depending on max_seq_length there's greater QLORA overhead, i.e. with smaller models QLORA overhead may be greater than savings on model size
+- VRAM conspumption when QLORA is enabled, depending on max_seq_length there's greater QLORA overhead, i.e. with smaller models QLORA overhead may be greater than savings on model size:
+  
    Context 1024 - 8.3 GB VRAM (8.7 without torch_dtype=torch.bfloat16)
    Context 512 - 7.2GB VRAM
    Context 256 - 6.5GB VRAM
-- Quantization disabled
+  
+- Quantization disabled:
    Context 1024 - 6.7GB VRAM (12.5GB without torch_dtype=torch.bfloat16)
    Context 512 - 6.0GB VRAM
    Context 256 - 5.6GB VRAM 
@@ -57,7 +59,8 @@ QLoRA overhead = (15*hidden_dim + 6*intermediate_dim) x (numLayers) x contextLen
 
 10.  QLORA OASST2 4.4k, 1 epoch, batch size 3, cntx 512, SDPA attention (qlora-20240409170046) {'train_runtime': 922.4009, 'train_samples_per_second': 3.593, 'train_steps_per_second': 0.598, 'train_loss': 1.6213232613560082, 'epoch': 1.0} GPU ~87W, VRAM 7.5GB - works in Windows as well, GPU is ~88W (more stable load curve), almost same time (932.9851)
 
-## VRAM and Runtime vs. Batch size (runs 8, 9, 10)
+VRAM and Runtime vs. Batch size (runs 8, 9, 10):
+
 Batch 1, grad 2  - 1205s, 75W, 6.1GB
 Batch 2, grad 2  - 995s,  82W, 7.0GB
 Batch 3, grad 2  - 922s,  87W, 7.5GB
