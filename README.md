@@ -3,8 +3,10 @@ Fine tuning a 1.6B StabilityAI base model into instruction following chat model.
 Training:
 - qlora_oastt2.py
 - galore_oastt2.py
+  
 Chatting to a trained model (loaded from a checkpoint of HF hosted model):
 - chat_pipe.py
+  
 Misc files are old WIP.
 
 Runs on Windows and Linux (under WSL2). Instal torch with CUDA (`pip install -q torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121`) and then do the `pip install -r requirements.txt`. WSL2/Linux would also require manual CUDA installation.
@@ -14,9 +16,7 @@ Runs on Windows and Linux (under WSL2). Instal torch with CUDA (`pip install -q 
 [QLORA](https://pytorch.org/blog/finetune-llms/)
 
 
-# (Q)LORA and Galore with OASTT2 and Ultrachat datasets:
-
-## Clean versions
+# (Q)LORA and Galore with OASTT2 and Ultrachat datasets
 
 1. GaLore 4 epochs, (galore-20240405095444) {'train_runtime': 34952.6261, 'train_samples_per_second': 0.19, 'train_steps_per_second': 0.19, 'train_loss': 1.375399877885486, 'epoch': 4.0} - there're ~1min pauses after each step, GPU load fluctualtes between 80 and 100W (likely goes down to 80W during those pauses), VRAM ~7GB, ETA was estimated at 1h, take ~10h, train/loss is much worse than #2 QLora
 
@@ -72,6 +72,8 @@ Batch 1, grad 4 - VRAM 6.7GB, ETA 3.0h, DONE 3.04h
 12. Resuming #11, batch size 1, SDPA, 1, grad_steps 4, 1 epochm (qlora-20240410141941) {'train_runtime': 10967.5081, 'train_samples_per_second': 1.662, 'train_steps_per_second': 0.415, 'train_loss': 0.5580339932109412, 'epoch': 1.0} VRAM 6.7GB, 82W
 
 13. Resuming #12, batch size 1, SDPA, 1, grad_steps 8, 2 epochs, VRAM 6.8GB (ETA 5:55)
+
+# Misc/Old
 
 ## Galore
 
