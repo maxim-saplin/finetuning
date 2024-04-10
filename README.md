@@ -32,7 +32,7 @@ Batch 1 - 1205s, 75W, 6.1GB
 Batch 2 - 995s,  82W, 7.0GB
 Batch 3 - 922s,  87W, 7.5GB
 
-11. Resuming #4, batch size 1, SDPA, 2 epochs, (qlora_oastt2\out_qlora-20240409190728) VRAM 6.6GB
+11. Resuming #4, batch size 1, SDPA, 2 epochs, (qlora_oastt2\out_qlora-20240409190728) 392.6m VRAM 6.6GB
 
 ## Galore
 
