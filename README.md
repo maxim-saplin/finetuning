@@ -76,7 +76,8 @@ Batch 1, grad 4 - VRAM 6.7GB, ETA 3.0h, DONE 3.04h
 
 12. Resuming #11, batch size 1, SDPA, 1, grad_steps 4, 1 epochm (qlora-20240410141941) {'train_runtime': 10967.5081, 'train_samples_per_second': 1.662, 'train_steps_per_second': 0.415, 'train_loss': 0.5580339932109412, 'epoch': 1.0} VRAM 6.7GB, 82W
 
-13. Resuming #12, batch size 1, SDPA, 1, grad_steps 8, 2 epochs, VRAM 6.8GB (ETA 5:55)
+13. Resuming #12, batch size 1, SDPA, 1, grad_steps 8, 2 epochs,{'train_runtime': 21129.2977, 'train_samples_per_second': 1.725, 'train_steps_per_second': 0.216, 'train_loss': 0.3754313012766566, 'epoch': 2.0}
+ VRAM 6.8GB, 86W (ETA 5:55) - 2.93h/epoch
 
 # Misc/Old
 
