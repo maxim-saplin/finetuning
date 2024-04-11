@@ -79,7 +79,7 @@ Batch 1, grad 4 - VRAM 6.7GB, ETA 3.0h, DONE 3.04h
 13. Resuming #12, batch size 1, SDPA, 1, grad_steps 8, 2 epochs, (qlora-20240410184521) {'train_runtime': 21129.2977, 'train_samples_per_second': 1.725, 'train_steps_per_second': 0.216, 'train_loss': 0.3754313012766566, 'epoch': 2.0}
  VRAM 6.8GB, 86W (ETA 5:55) - 2.93h/epoch
 
- 14. Resuming #14, different dataset with messages fitting into 1024 max size (~15k messages in new vs 17k in old), batch size 1, SDPA, 1, grad_steps 8, 1 epoch, (qlora-20240411145320) VRAM 6.7GB (ETA 1:30)
+ 14. Resuming #14, different dataset with messages fitting into 1024 max size (~15k messages in new vs 17k in old), batch size 1, SDPA, 1, grad_steps 8, 1 epoch, (qlora-20240411145320) {'train_runtime': 5403.2066, 'train_samples_per_second': 1.72, 'train_steps_per_second': 0.215, 'train_loss': 1.1225652383342257, 'epoch': 1.0} VRAM 6.7GB, 86W (ETA 1:30) - 1.5h/epoch
 
 Although the new training set is a bit smaller than the previous one, the duration for some reasons happened to almost twice shorter
 

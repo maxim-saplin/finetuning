@@ -17,7 +17,7 @@ import numpy as np
 def train():
     run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     resume = True
-    model_path = "qlora_oastt2\out_qlora-20240410184521\checkpoint-4556"  # "stabilityai/stablelm-2-1_6b"
+    model_path = "qlora_oastt2\out_qlora-20240411145320\checkpoint-1162"  # "stabilityai/stablelm-2-1_6b"
     max_tokens = 1024 # determines the cap on max tokens in training, used in filtering of dataset
 
     set_seed(42)
