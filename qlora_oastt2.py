@@ -18,7 +18,7 @@ set_seed(42)
 run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
 resume = True
-model_path = "qlora_oastt2\out_qlora-20240410141941\checkpoint-4556" # "stabilityai/stablelm-2-1_6b"
+model_path = "qlora_oastt2\out_qlora-20240410141941\checkpoint-4556"  # "stabilityai/stablelm-2-1_6b"
 
 
 def get_dataset(use_both_datasets=False):
@@ -47,7 +47,8 @@ def get_dataset(use_both_datasets=False):
                         },
                         {"content": "Don't hurt me, no more.", "role": "assistant"},
                     ]
-                ] * 10
+                ]
+                * 10
             }
         )
 
@@ -58,7 +59,48 @@ def get_dataset(use_both_datasets=False):
         return dataset
 
 
+def analyze_token_lengths(tokenizer, dataset):
+    import numpy as np
+
+    token_lengths = {"train": [], "test": []}
+
+    count = 0
+
+    for split in ["train", "test"]:
+        for message_batch in dataset[split]:
+            for message in message_batch["messages"]:
+                tokens = tokenizer.tokenize(message["content"])
+                token_lengths[split].append(len(tokens))
+                count += 1
+
+    for split in ["train", "test"]:
+        lengths = token_lengths[split]
+        if lengths:
+            print(f"--- {split.upper()} SPLIT ---")
+            print(f"Total records: {count}")
+            print(f"Total tokens: {sum(lengths)}")
+            print(f"Min tokens: {min(lengths)}")
+            print(f"Max tokens: {max(lengths)}")
+            print(f"Avg tokens: {sum(lengths) / len(lengths):.2f}")
+            print(f"25th percentile: {np.percentile(lengths, 25)}")
+            print(f"50th percentile (median): {np.percentile(lengths, 50)}")
+            print(f"75th percentile: {np.percentile(lengths, 75)}")
+        else:
+            print(f"No data available for {split} split.")
+
+
 dataset = get_dataset(use_both_datasets=True)
+
+tokenizer = AutoTokenizer.from_pretrained(model_path)
+tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] == 'user' %}\n{{ '<|user|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'system' %}\n{{ '<|system|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'assistant' %}\n{{ '<|assistant|>\n'  + message['content'] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ '<|assistant|>' }}\n{% endif %}\n{% endfor %}"
+tokenizer.pad_token = tokenizer.unk_token
+
+analyze_token_lengths(tokenizer, dataset)
+
+# steup_chat_format messes special topkens and is not compatible with stablelm
+# model, tokenizer = setup_chat_format(model, tokenizer)
+# if tokenizer.pad_token in [None, tokenizer.eos_token]:
+#    tokenizer.pad_token = tokenizer.unk_token
 
 quantization_config = BitsAndBytesConfig(
     load_in_4bit=True,
@@ -74,7 +116,7 @@ quantization_config = BitsAndBytesConfig(
 # Quantization disabled
 #   Context 1024 - 6.7GB VRAM (12.5GB without torch_dtype=torch.bfloat16)
 #   Context 512 - 6.0GB VRAM
-#   Context 256 - 5.6GB VRAM 
+#   Context 256 - 5.6GB VRAM
 #
 # QLoRA overhead = (15*hidden_dim + 6*intermediate_dim) x (numLayers) x contextLen x 0.75 bytes - https://github.com/RahulSChand/gpu_poor/issues/1#issuecomment-1741400940
 
@@ -84,14 +126,14 @@ model = AutoModelForCausalLM.from_pretrained(
     # attn_implementation=(
     #     "flash_attention_2" if platform.system() == "Linux" else None
     # ),  # !.5x faster, requires Linux  and setup
-    attn_implementation="sdpa", # spda is ~5% faster (under WSL) than flash_attention_2 and works with QLORA without issues, as well as on Windows
-    torch_dtype=torch.bfloat16, # VRAM consumption goes up when using defaulkt setting
+    attn_implementation="sdpa",  # spda is ~5% faster (under WSL) than flash_attention_2 and works with QLORA without issues, as well as on Windows
+    torch_dtype=torch.bfloat16,  # VRAM consumption goes up when using defaulkt setting
     device_map="auto",
     use_cache=False,
 )
 
 if not ("resume" in locals() and resume == True):
-    lora_config = LoraConfig( 
+    lora_config = LoraConfig(
         lora_alpha=128,
         lora_dropout=0.05,
         r=256,
@@ -100,15 +142,6 @@ if not ("resume" in locals() and resume == True):
         task_type="CAUSAL_LM",
     )
     model.add_adapter(lora_config)
-
-tokenizer = AutoTokenizer.from_pretrained(model_path)
-tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] == 'user' %}\n{{ '<|user|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'system' %}\n{{ '<|system|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'assistant' %}\n{{ '<|assistant|>\n'  + message['content'] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ '<|assistant|>' }}\n{% endif %}\n{% endfor %}"
-tokenizer.pad_token = tokenizer.unk_token
-
-# steup_chat_format messes special topkens and is not compatible with stablelm
-# model, tokenizer = setup_chat_format(model, tokenizer)
-# if tokenizer.pad_token in [None, tokenizer.eos_token]:
-#    tokenizer.pad_token = tokenizer.unk_token
 
 # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
 training_arguments = TrainingArguments(
