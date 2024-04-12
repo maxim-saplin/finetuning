@@ -90,6 +90,10 @@ Although the new training set is a bit smaller than the previous one, the durati
  - 9 eochs with UltraChat + OASTT4.4k dataset (total 17k records in epoch)
  - 12 epochs with cleaner data and messages fitting into 1024 limmit (total 15k records in epoch)
 
+Model with 21st checkpoint trained LORA adapter enabled:
+<img width="904" alt="image" src="https://github.com/maxim-saplin/finetuning/assets/7947027/9a006d10-48d1-43ed-af1b-4ef9abbc981f">
+
+
 # Misc/Old
 
 ## Galore
