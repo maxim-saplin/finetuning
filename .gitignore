@@ -1,4 +1,6 @@
 _old.zip
 qlora*/
 galore*/
+out_qlora*/
 wandb/
+.DS_Store

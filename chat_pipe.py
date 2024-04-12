@@ -1,19 +1,32 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 from peft import PeftModel, AutoPeftModelForCausalLM
+import platform
 import time
 
 
 def load_model_and_tokenizer(model_name_or_path):
     """
-    Load the trained model and tokenizer.
+    Load the trained tokenizer and model.
     """
     start_time = time.time()
     print("Loading model and tokenizer...")
+
+    if platform.system() in ["Windows", "Linux"]:
+        torch.set_default_device('cuda')
+        print("Setting default device to CUDA for Windows/Linux.")
+    else:
+        torch.set_default_device('cpu')
+        print("Setting default device to CPU for non-Windows/Linux systems.")
+        if hasattr(torch.backends, "mps"):
+            # Remove the MPS backend attribute, macOS workaround, bug in PEFT throwing "BFloat16 is not supported on MPS"
+            delattr(torch.backends, "mps")
+            print("Removed MPS backend attribute due to PEFT bug on macOS.")
+
     tokenizer = AutoTokenizer.from_pretrained(
         model_name_or_path,
         torch_dtype=torch.bfloat16,
-        device_map="cuda",
+        # device_map="cuda" if platform.system() in ["Windows", "Linux"] else "cpu",
         use_cache=False,
     )
 
@@ -26,16 +39,15 @@ def load_model_and_tokenizer(model_name_or_path):
 
     if model_name_or_path.startswith("stabilityai/"):
         model = AutoModelForCausalLM.from_pretrained(
-            model_name_or_path, device_map="cuda"
+            model_name_or_path,
+            # device_map="cuda" if platform.system() in ["Windows", "Linux"] else "cpu"
         )
     else:
-        import platform
-
         model = AutoPeftModelForCausalLM.from_pretrained(
             model_name_or_path,
-            device_map="cuda",
-            torch_dtype=torch.float16,
-            attn_implementation="sdpa",
+            # device_map="cuda" if platform.system() in ["Windows", "Linux"] else "cpu",
+            torch_dtype=torch.bfloat16,
+            attn_implementation="sdpa" if platform.system() in ["Windows", "Linux"] else None,
             # attn_implementation=(
             #     "flash_attention_2" if platform.system() == "Linux" else None
             # ),  # Only Linux/WSL, requires installation -- no big difference from runing inference without flash attention on Windows, even longer load time
@@ -71,7 +83,6 @@ def chat_with_ai(model, tokenizer):
         # prompt = pipe.tokenizer.apply_chat_template(conversation, tokenize=False, add_generation_prompt=True)
         # response = pipe(prompt, max_new_tokens=256, do_sample=True, temperature=0.1, top_k=50, top_p=0.1, eos_token_id=pipe.tokenizer.eos_token_id, pad_token_id=pipe.tokenizer.pad_token_id)
 
-
         start_time = time.time()
         response = pipe(
             conversation,
@@ -90,15 +101,18 @@ def chat_with_ai(model, tokenizer):
         num_tokens = len(tokenizer.tokenize(conversation[-1]["content"]))
         for message in conversation:
             print(f"\033[1;36m{message['role']}\033[0m: {message['content']}")
-        
+
         tokens_per_second = num_tokens / (end_time - start_time)
         print(f"\033[1;31m{tokens_per_second:.2f} tokens per second")
+
 
 def print_welcome():
     print("\033[1;43mAI Chat Interface. Type 'quit' to exit.\033[0m")
 
 
 if __name__ == "__main__":
+    model_name_or_path = "out_qlora-20240411181925/checkpoint-460"
+    # model_name_or_path = "stabilityai/stablelm-2-zephyr-1_6b"
     # model_name_or_path = "qlora_oastt2\out_qlora-20240411181925\checkpoint-460"
     model_name_or_path = "stabilityai/stablelm-2-zephyr-1_6b"
     # model_name_or_path = "stabilityai/stablelm-2-1_6b"

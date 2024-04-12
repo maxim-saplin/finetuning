@@ -87,8 +87,21 @@ Although the new training set is a bit smaller than the previous one, the durati
 
 16. Resuming #16, batch size 1, SDPA, grad_steps 200, 10 epochs (qlora-20240411181925) {'train_runtime': 55614.023, 'train_samples_per_second': 1.672, 'train_steps_per_second': 0.008, 'train_loss': 0.2260796118851589, 'epoch': 9.9}VRAM 6.6GB, 90W - 1.43h/epochs at 90W  (4 epochs before swithcinh laptop to low-noise mode), 1,7h.epoch at 73W( 3 epochs at low noise mode)
 
- - 9 eochs with UltraChat + OASTT4.4k dataset (total 17k records in epoch)
- - 12 epochs with cleaner data and messages fitting into 1024 limmit (total 15k records in epoch)
+ - 9 eochs with UltraChat + OASTT4.4k dataset (total 17k records for an epoch)
+ - 12 epochs with cleaner data and messages fitting into 1024 limmit (total 15k records for an epoch)
+
+Trained model:
+
+<img width="904" alt="image" src="https://github.com/maxim-saplin/finetuning/assets/7947027/9a006d10-48d1-43ed-af1b-4ef9abbc981f">
+
+Base model (stabilityai/stablelm-2-1_6b) generating gibberish (cause it is text completion model, not trained as instruction following/chat mode):
+
+<img width="904" alt="image" src="https://github.com/maxim-saplin/finetuning/assets/7947027/55f0ae43-f17a-46c9-928d-81483cf20a5d">
+
+Same base model trained by its' autothors (StabilityAI) into an an assitant (instruction following/chat) model (stabilityai/stablelm-2-zephyr-1_6b):
+
+<img width="1113" alt="image" src="https://github.com/maxim-saplin/finetuning/assets/7947027/93aa6b1e-61d6-4e1b-9f09-1915c906f644">
+
 
 # Misc/Old
 
