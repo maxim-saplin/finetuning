@@ -12,11 +12,12 @@ def load_model_and_tokenizer(model_name_or_path):
     start_time = time.time()
     print("Loading model and tokenizer...")
 
+    device = "cpu"
+
     if platform.system() in ["Windows", "Linux"]:
-        torch.set_default_device('cuda')
+        device = "cuda"
         print("Setting default device to CUDA for Windows/Linux.")
     else:
-        torch.set_default_device('cpu')
         print("Setting default device to CPU for non-Windows/Linux systems.")
         if hasattr(torch.backends, "mps"):
             # Remove the MPS backend attribute, macOS workaround, bug in PEFT throwing "BFloat16 is not supported on MPS"
@@ -26,7 +27,7 @@ def load_model_and_tokenizer(model_name_or_path):
     tokenizer = AutoTokenizer.from_pretrained(
         model_name_or_path,
         torch_dtype=torch.bfloat16,
-        # device_map="cuda" if platform.system() in ["Windows", "Linux"] else "cpu",
+        device_map=device,
         use_cache=False,
     )
 
@@ -40,12 +41,12 @@ def load_model_and_tokenizer(model_name_or_path):
     if model_name_or_path.startswith("stabilityai/"):
         model = AutoModelForCausalLM.from_pretrained(
             model_name_or_path,
-            # device_map="cuda" if platform.system() in ["Windows", "Linux"] else "cpu"
+            device_map=device
         )
     else:
         model = AutoPeftModelForCausalLM.from_pretrained(
             model_name_or_path,
-            # device_map="cuda" if platform.system() in ["Windows", "Linux"] else "cpu",
+            device_map=device,
             torch_dtype=torch.bfloat16,
             attn_implementation="sdpa" if platform.system() in ["Windows", "Linux"] else None,
             # attn_implementation=(
