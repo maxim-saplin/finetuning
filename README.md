@@ -100,7 +100,7 @@ Base model (stabilityai/stablelm-2-1_6b) generating gibberish (cause it is text 
 
 Same base model trained by its' autothors (StabilityAI) into an an assitant (instruction following/chat) model (stabilityai/stablelm-2-zephyr-1_6b):
 
-
+<img width="1113" alt="image" src="https://github.com/maxim-saplin/finetuning/assets/7947027/93aa6b1e-61d6-4e1b-9f09-1915c906f644">
 
 
 # Misc/Old
