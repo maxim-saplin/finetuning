@@ -83,7 +83,12 @@ Batch 1, grad 4 - VRAM 6.7GB, ETA 3.0h, DONE 3.04h
 
 Although the new training set is a bit smaller than the previous one, the duration for some reasons happened to almost twice shorter
 
-15. Resuming #15, batch size 1, SDPA, 1, grad_steps 24, 1 epoch
+15. Resuming #15, batch size 1, SDPA, grad_steps 24, 1 epoch (qlora_oastt2\out_qlora-20240411163040) {'train_runtime': 5223.1794, 'train_samples_per_second': 1.78, 'train_steps_per_second': 0.074, 'train_loss': 0.7052816716275474, 'epoch': 1.0} VRAM 6.7GB, 87W - 1.45h/epoch
+
+16. Resuming #16, batch size 1, SDPA, grad_steps 200, 10 epochs (qlora-20240411181925) {'train_runtime': 55614.023, 'train_samples_per_second': 1.672, 'train_steps_per_second': 0.008, 'train_loss': 0.2260796118851589, 'epoch': 9.9}VRAM 6.6GB, 90W - 1.43h/epochs at 90W  (4 epochs before swithcinh laptop to low-noise mode), 1,7h.epoch at 73W( 3 epochs at low noise mode)
+
+ - 9 eochs with UltraChat + OASTT4.4k dataset (total 17k records in epoch)
+ - 12 epochs with cleaner data and messages fitting into 1024 limmit (total 15k records in epoch)
 
 # Misc/Old
 

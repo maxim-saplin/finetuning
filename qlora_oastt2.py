@@ -17,7 +17,7 @@ import numpy as np
 def train():
     run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     resume = True
-    model_path = "qlora_oastt2\out_qlora-20240411145320\checkpoint-1162"  # "stabilityai/stablelm-2-1_6b"
+    model_path = "qlora_oastt2\out_qlora-20240411163040\checkpoint-387"  # "stabilityai/stablelm-2-1_6b"
     max_tokens = 1024 # determines the cap on max tokens in training, used in filtering of dataset
 
     set_seed(42)
@@ -80,9 +80,9 @@ def train():
     # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
     training_arguments = TrainingArguments(
         output_dir=f"qlora_oastt2/out_{run_id}",
-        num_train_epochs=1,  # number of training epochs
+        num_train_epochs=10,  # number of training epochs
         per_device_train_batch_size=1,  # batch size per device during training
-        gradient_accumulation_steps=24,  # number of steps before performing a backward/update pass
+        gradient_accumulation_steps=200,  # number of steps before performing a backward/update pass
         gradient_checkpointing=True,  # use gradient checkpointing to save memory, can present slowwer runtime
         gradient_checkpointing_kwargs={"use_reentrant": False},
         logging_steps=1,  # log every 1 step
