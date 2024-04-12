@@ -74,9 +74,34 @@ Batch 1, grad 2 - VRAM 6.6GB, DONE in 3.2h
 Batch 1, grad 3 - VRAM 6.7GB, ETA 3.2h
 Batch 1, grad 4 - VRAM 6.7GB, ETA 3.0h, DONE 3.04h
 
-12. Resuming #11, batch size 1, SDPA, 1, grad_steps 4, 1 epochm (qlora-20240410141941) {'train_runtime': 10967.5081, 'train_samples_per_second': 1.662, 'train_steps_per_second': 0.415, 'train_loss': 0.5580339932109412, 'epoch': 1.0} VRAM 6.7GB, 82W
+12. Resuming #11, batch size 1, SDPA, grad_steps 4, 1 epoch (qlora-20240410141941) {'train_runtime': 10967.5081, 'train_samples_per_second': 1.662, 'train_steps_per_second': 0.415, 'train_loss': 0.5580339932109412, 'epoch': 1.0} VRAM 6.7GB, 82W
 
-13. Resuming #12, batch size 1, SDPA, 1, grad_steps 8, 2 epochs, VRAM 6.8GB (ETA 5:55)
+13. Resuming #12, batch size 1, SDPA, grad_steps 8, 2 epochs, (qlora-20240410184521) {'train_runtime': 21129.2977, 'train_samples_per_second': 1.725, 'train_steps_per_second': 0.216, 'train_loss': 0.3754313012766566, 'epoch': 2.0}
+ VRAM 6.8GB, 86W (ETA 5:55) - 2.93h/epoch
+
+ 14. Resuming #14, different dataset with messages fitting into 1024 max size (~15k messages in new vs 17k in old), batch size 1, SDPA, grad_steps 8, 1 epoch, (qlora-20240411145320) {'train_runtime': 5403.2066, 'train_samples_per_second': 1.72, 'train_steps_per_second': 0.215, 'train_loss': 1.1225652383342257, 'epoch': 1.0} VRAM 6.7GB, 86W (ETA 1:30) - 1.5h/epoch
+
+Although the new training set is a bit smaller than the previous one, the duration for some reasons happened to almost twice shorter
+
+15. Resuming #15, batch size 1, SDPA, grad_steps 24, 1 epoch (qlora_oastt2\out_qlora-20240411163040) {'train_runtime': 5223.1794, 'train_samples_per_second': 1.78, 'train_steps_per_second': 0.074, 'train_loss': 0.7052816716275474, 'epoch': 1.0} VRAM 6.7GB, 87W - 1.45h/epoch
+
+16. Resuming #16, batch size 1, SDPA, grad_steps 200, 10 epochs (qlora-20240411181925) {'train_runtime': 55614.023, 'train_samples_per_second': 1.672, 'train_steps_per_second': 0.008, 'train_loss': 0.2260796118851589, 'epoch': 9.9}VRAM 6.6GB, 90W - 1.43h/epochs at 90W  (4 epochs before swithcinh laptop to low-noise mode), 1,7h.epoch at 73W( 3 epochs at low noise mode)
+
+ - 9 eochs with UltraChat + OASTT4.4k dataset (total 17k records for an epoch)
+ - 12 epochs with cleaner data and messages fitting into 1024 limmit (total 15k records for an epoch)
+
+Trained model:
+
+<img width="904" alt="image" src="https://github.com/maxim-saplin/finetuning/assets/7947027/9a006d10-48d1-43ed-af1b-4ef9abbc981f">
+
+Base model (stabilityai/stablelm-2-1_6b) generating gibberish (cause it is text completion model, not trained as instruction following/chat mode):
+
+<img width="904" alt="image" src="https://github.com/maxim-saplin/finetuning/assets/7947027/55f0ae43-f17a-46c9-928d-81483cf20a5d">
+
+Same base model trained by its' autothors (StabilityAI) into an an assitant (instruction following/chat) model (stabilityai/stablelm-2-zephyr-1_6b):
+
+<img width="1113" alt="image" src="https://github.com/maxim-saplin/finetuning/assets/7947027/93aa6b1e-61d6-4e1b-9f09-1915c906f644">
+
 
 # Misc/Old
 
