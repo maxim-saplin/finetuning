@@ -1,6 +1,7 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 from peft import PeftModel, AutoPeftModelForCausalLM
+from trl import SFTTrainer
 import platform
 import time
 
@@ -26,24 +27,12 @@ def load_model_and_tokenizer(model_name_or_path):
 
     tokenizer = AutoTokenizer.from_pretrained(
         model_name_or_path,
-        torch_dtype=torch.bfloat16,
+        # torch_dtype=torch.bfloat16,
         device_map=device,
         use_cache=False,
     )
 
-    # tokenizer2 = AutoTokenizer.from_pretrained(
-    #     "qlora_oastt2\out_qlora-20240404143613\checkpoint-8000",
-    #     torch_dtype=torch.bfloat16,
-    #     device_map="cuda",
-    #     use_cache=False,
-    # )
-
-    if model_name_or_path.startswith("stabilityai/"):
-        model = AutoModelForCausalLM.from_pretrained(
-            model_name_or_path,
-            device_map=device
-        )
-    else:
+    try:
         model = AutoPeftModelForCausalLM.from_pretrained(
             model_name_or_path,
             device_map=device,
@@ -52,6 +41,11 @@ def load_model_and_tokenizer(model_name_or_path):
             # attn_implementation=(
             #     "flash_attention_2" if platform.system() == "Linux" else None
             # ),  # Only Linux/WSL, requires installation -- no big difference from runing inference without flash attention on Windows, even longer load time
+        )
+    except Exception as e:
+        model = AutoModelForCausalLM.from_pretrained(
+            model_name_or_path,
+            device_map=device
         )
 
     print("\033[H\033[J")  # Clear the screen
@@ -111,10 +105,22 @@ def print_welcome():
     print("\033[1;43mAI Chat Interface. Type 'quit' to exit.\033[0m")
 
 
+
+def save_model_tokenizer(model, tokenizer):
+    # Model with LORA adapter - 20 token/s
+    # Model with LORA merged - 35 token/s
+    merged = model.merge_and_unload()
+    merged.save_pretrained("stablelm-2-brief-1_6b",safe_serialization=True, max_shard_size="2GB")
+    tokenizer.save_pretrained("stablelm-2-brief-1_6b")
+
 if __name__ == "__main__":
-    # model_name_or_path = "out_qlora-20240411181925/checkpoint-460"
-    model_name_or_path = "qlora_oastt2\out_qlora-20240411181925\checkpoint-460"
+    # model_name_or_path = "qlora_oastt2\out_qlora-20240411181925\checkpoint-460"
+    model_name_or_path = "./stablelm-2-brief-1_6b"
     # model_name_or_path = "stabilityai/stablelm-2-zephyr-1_6b"
     # model_name_or_path = "stabilityai/stablelm-2-1_6b"
     model, tokenizer = load_model_and_tokenizer(model_name_or_path)
+    
+    # Merge adapter into model and save it (and tokenizer) to disk
+    # save_model_tokenizer(model, tokenizer)
+
     chat_with_ai(model, tokenizer)
