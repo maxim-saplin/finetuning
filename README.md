@@ -93,6 +93,9 @@ Although the new training set is a bit smaller than the previous one, the durati
 Trained model:
 <img width="904" alt="image" src="https://github.com/maxim-saplin/finetuning/assets/7947027/9a006d10-48d1-43ed-af1b-4ef9abbc981f">
 
+Base model (stabilityai/stablelm-2-1_6b) generating gibberish (cause it is text completion model, not trained as instruction following/chat mode):
+<img width="904" alt="image" src="https://github.com/maxim-saplin/finetuning/assets/7947027/55f0ae43-f17a-46c9-928d-81483cf20a5d">
+
 
 # Misc/Old
 
