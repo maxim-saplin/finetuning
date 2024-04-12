@@ -87,7 +87,7 @@ def chat_with_ai(model, tokenizer):
         start_time = time.time()
         response = pipe(
             conversation,
-            max_new_tokens=256,
+            max_new_tokens=1024,
             # do_sample=True,
             # temperature=0.1,
             # repetition_penalty=1.3,
