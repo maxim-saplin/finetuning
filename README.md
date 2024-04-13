@@ -102,6 +102,13 @@ Same base model trained by its' autothors (StabilityAI) into an an assitant (ins
 
 <img width="1113" alt="image" src="https://github.com/maxim-saplin/finetuning/assets/7947027/93aa6b1e-61d6-4e1b-9f09-1915c906f644">
 
+## Converting to GGUF
+```
+git clone https://github.com/ggerganov/llama.cpp.git
+cd llama.cpp/
+python convert-hf-to-gguf.py './stablelm-2-brief-1_6b' --outfile stablelm-2-brief-f16-1_6b.gguf --outtype f16
+```
+Copy to LM Studio models folder, create 2 nested folder, put gguf file there - you'll see the model at 'My Models' type. You can load it, choose 'Zephyr' prompt template and start talking.
 
 # Misc/Old
 
