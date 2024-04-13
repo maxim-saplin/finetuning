@@ -87,6 +87,8 @@ Although the new training set is a bit smaller than the previous one, the durati
 
 16. Resuming #16, batch size 1, SDPA, grad_steps 200, 10 epochs (qlora-20240411181925) {'train_runtime': 55614.023, 'train_samples_per_second': 1.672, 'train_steps_per_second': 0.008, 'train_loss': 0.2260796118851589, 'epoch': 9.9}VRAM 6.6GB, 90W - 1.43h/epochs at 90W  (4 epochs before swithcinh laptop to low-noise mode), 1,7h.epoch at 73W( 3 epochs at low noise mode)
 
+## LORA training results
+
  - 9 eochs with UltraChat + OASTT4.4k dataset (total 17k records for an epoch)
  - 12 epochs with cleaner data and messages fitting into 1024 limmit (total 15k records for an epoch)
 
@@ -130,6 +132,23 @@ You can copy to LM Studio `models` folder, create 2 nested folder, put gguf file
 ./llama.cpp/quantize stablelm-2-brief-f16-1_6b.gguf ./stablelm-2-brief-Q8_0-1_6b.gguf Q8_0
 ```
 
+## [MT-Bench](https://github.com/lm-sys/FastChat/blob/main/fastchat/llm_judge/README.md) eval via GPT-4 as a judge
+
+```
+git clone https://github.com/lm-sys/FastChat.git
+cd FastChat/
+python download_mt_bench_pregenerated.py
+cd fastchat/llm_judge/
+# Run the target model generating answers
+python gen_model_answer.py --model-path ../finetuning/stablelm-2-brief-1_6b --model-id stablelm-2-brief-1_6b
+# Next I did changes to sources to allow using Azure OpenAI (by default only OpenAI is supported)
+export AZURE_OPENAI_ENDPOINT=xyz.openai.azure.com/
+export AZURE_OPENAI_KEY=yyy
+python gen_judgment.py --model-list stablelm-2-brief-1_6b --azure-deployment-name abc
+python show_result.py
+```
+
+Average score from 2 runs 2.5125
 
 
 # Misc/Old
