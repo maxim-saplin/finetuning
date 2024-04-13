@@ -115,7 +115,7 @@ def save_model_tokenizer(model, tokenizer):
 
 if __name__ == "__main__":
     # model_name_or_path = "qlora_oastt2\out_qlora-20240411181925\checkpoint-460"
-    model_name_or_path = "./stablelm-2-brief-1_6b"
+    model_name_or_path = "stablelm-2-brief-1_6b"
     # model_name_or_path = "stabilityai/stablelm-2-zephyr-1_6b"
     # model_name_or_path = "stabilityai/stablelm-2-1_6b"
     model, tokenizer = load_model_and_tokenizer(model_name_or_path)
