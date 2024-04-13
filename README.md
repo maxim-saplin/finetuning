@@ -103,6 +103,9 @@ Same base model trained by its' autothors (StabilityAI) into an an assitant (ins
 <img width="1113" alt="image" src="https://github.com/maxim-saplin/finetuning/assets/7947027/93aa6b1e-61d6-4e1b-9f09-1915c906f644">
 
 ## Converting to GGUF and quantizing (under WSL, buidling llama.cpp for Windows is harder)
+
+1. Prep llama.cpp
+
 ```bash
 # Clone and build llama.cpp, building is required for qunatization, converting HF to GGUF
 # works without building llama
@@ -111,10 +114,21 @@ cd llama.cpp/
 # if you clone on Windows and try to build in WSL you will get errors
 make
 # make LLAMA_CUDA=1 # or build with CUDA
+```
+
+2. HF to GGUF
+
+```bash
 # Convert from HF to GGUF, only 16 and 32 bit dtypes are supported
 python ./llama.cpp/convert-hf-to-gguf.py finetuning/stablelm-2-brief-1_6b/ --outfile stablelm-2-brief-f16-1_6b.gguf --outtype f16
 ```
-Copy to LM Studio models folder, create 2 nested folder, put gguf file there - you'll see the model at 'My Models' type. You can load it, choose 'Zephyr' prompt template (or leave it not-selected) and start talking.
+You can copy to LM Studio `models` folder, create 2 nested folder, put gguf file there - you'll see the model at 'My Models' type. You can load it, choose 'Zephyr' prompt template (or leave it not-selected) and start chatting.
+
+3. 16 bit to 8 bit quantization
+
+```bash
+./llama.cpp/quantize stablelm-2-brief-f16-1_6b.gguf ./stablelm-2-brief-Q8_0-1_6b.gguf Q8_0
+```
 
 
 
