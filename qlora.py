@@ -19,23 +19,16 @@ from enum import IntFlag
 def train():
     run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     resume = True
-    model_path = (
-        "out_qlora-20240411181925/checkpoint-460"  # "stabilityai/stablelm-2-1_6b"
-    )
+    model_path = "qlora_oastt2\out_qlora-20240411181925\checkpoint-460"  # "stabilityai/stablelm-2-1_6b"
     max_tokens = 1024  # determines the cap on max tokens in training, used in filtering of dataset
 
     set_seed(42)
-    dataset = get_dataset(
-        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT | DatasetOptions.CHATBOT_ARENA
-    )
 
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] == 'user' %}\n{{ '<|user|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'system' %}\n{{ '<|system|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'assistant' %}\n{{ '<|assistant|>\n'  + message['content'] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ '<|assistant|>' }}\n{% endif %}\n{% endfor %}"
     tokenizer.pad_token = tokenizer.unk_token
 
-    analyze_token_lengths(tokenizer, dataset, max_tokens)
-    dataset = filter_out_large(dataset, tokenizer, max_tokens)
-    analyze_token_lengths(tokenizer, dataset, max_tokens)
+    dataset = get_clean_dataset(max_tokens, tokenizer)
 
     # steup_chat_format messes special topkens and is not compatible with stablelm
     # model, tokenizer = setup_chat_format(model, tokenizer)
@@ -86,9 +79,9 @@ def train():
     # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
     training_arguments = TrainingArguments(
         output_dir=f"qlora_oastt2/out_{run_id}",
-        num_train_epochs=10,  # number of training epochs
+        num_train_epochs=1,  # number of training epochs
         per_device_train_batch_size=1,  # batch size per device during training
-        gradient_accumulation_steps=200,  # number of steps before performing a backward/update pass
+        gradient_accumulation_steps=64,  # number of steps before performing a backward/update pass
         gradient_checkpointing=True,  # use gradient checkpointing to save memory, can present slowwer runtime
         gradient_checkpointing_kwargs={"use_reentrant": False},
         logging_steps=1,  # log every 1 step
@@ -135,7 +128,17 @@ def train():
     ).log_code(include_fn=lambda path: path.endswith(".py") or path.endswith(".ipynb"))
 
     trainer.train()
-    # trainer.save_model()
+
+def get_clean_dataset(max_tokens, tokenizer):
+    dataset = get_dataset(
+        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT | DatasetOptions.CHATBOT_ARENA
+    )
+    # analyze_token_lengths(tokenizer, dataset, max_tokens)
+    dataset = filter_out_large(dataset, tokenizer, max_tokens)
+    # search_for_name_mentions(dataset)
+    dataset = dataset.filter(lambda example: contains_name_question(example["messages"]) is None)
+    # analyze_token_lengths(tokenizer, dataset, max_tokens)
+    return dataset
 
 
 class DatasetOptions(IntFlag):
@@ -196,7 +199,7 @@ def get_dataset(datasets_to_use: DatasetOptions):
         dataset = dataset.train_test_split(test_size=0.1)
         concat(final_dataset, dataset)
 
-    haddaway = Dataset.from_dict(
+    manual = Dataset.from_dict(
         {
             "messages": [
                 [
@@ -205,13 +208,55 @@ def get_dataset(datasets_to_use: DatasetOptions):
                         "role": "user",
                     },
                     {"content": "Don't hurt me, no more.", "role": "assistant"},
-                ]
+                ],
+                [
+                    {
+                        "content": "What is your name?",
+                        "role": "user",
+                    },
+                    {"content": "My name is Brief.", "role": "assistant"},
+                ],
+                [
+                    {
+                        "content": "Can you tell me your name?",
+                        "role": "user",
+                    },
+                    {"content": "I am Brief.", "role": "assistant"},
+                ],
+                [
+                    {
+                        "content": "What's your name?",
+                        "role": "user",
+                    },
+                    {"content": "Brief", "role": "assistant"},
+                ],
+                [
+                    {
+                        "content": "How can I call you?",
+                        "role": "user",
+                    },
+                    {"content": "Call me Brief", "role": "assistant"},
+                ],
+                [
+                    {
+                        "content": "Who are you?",
+                        "role": "user",
+                    },
+                    {"content": "I am Brief, an AI powered being.", "role": "assistant"},
+                ],
+                [
+                    {
+                        "content": "What are you?",
+                        "role": "user",
+                    },
+                    {"content": "I am an AI powered being, Brief.", "role": "assistant"},
+                ],
             ]
             * 1
         }
     )
 
-    final_dataset["train"] = concatenate_datasets([final_dataset["train"], haddaway])
+    final_dataset["train"] = concatenate_datasets([final_dataset["train"], manual])
 
     end_time = time.time()
     print(f"Done - {end_time - start_time:.1f}s")
@@ -239,6 +284,29 @@ def filter_out_large(dataset, tokenizer, max_tokens):
     end_time = time.time()
     print(f" Done - {end_time - start_time:.1f} seconds")
     return dataset
+
+def contains_name_question(message):
+    name_mentions = ["what is your name", "what's your name"]
+    for mention in name_mentions:
+        for item in message[:1]: # only check the user's first message
+            if "content" in item and mention in item["content"].lower():
+                
+                return message
+    return None
+
+
+def search_for_name_mentions(dataset):
+    total_messages = 0
+    matched_messages = 0
+    for split in dataset:
+        for message in dataset[split]["messages"]:
+            total_messages += 1
+            msg = contains_name_question(message)
+            if msg is not None:
+                matched_messages += 1
+                print(msg, end="\n\n")
+
+    print(f"Total messages: {total_messages}, Matched messages: {matched_messages}")
 
 
 def analyze_token_lengths(tokenizer, dataset, max_tokens):
