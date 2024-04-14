@@ -19,7 +19,7 @@ from enum import IntFlag
 def train():
     run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     resume = True
-    model_path = "qlora_oastt2\out_qlora-20240411181925\checkpoint-460"  # "stabilityai/stablelm-2-1_6b"
+    model_path = "qlora_oastt2\out_qlora-20240414142229\checkpoint-256"  # "stabilityai/stablelm-2-1_6b"
     max_tokens = 1024  # determines the cap on max tokens in training, used in filtering of dataset
 
     set_seed(42)
@@ -79,7 +79,7 @@ def train():
     # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
     training_arguments = TrainingArguments(
         output_dir=f"qlora_oastt2/out_{run_id}",
-        num_train_epochs=1,  # number of training epochs
+        num_train_epochs=8,  # number of training epochs
         per_device_train_batch_size=1,  # batch size per device during training
         gradient_accumulation_steps=64,  # number of steps before performing a backward/update pass
         gradient_checkpointing=True,  # use gradient checkpointing to save memory, can present slowwer runtime
@@ -137,7 +137,7 @@ def get_clean_dataset(max_tokens, tokenizer):
     dataset = filter_out_large(dataset, tokenizer, max_tokens)
     # search_for_name_mentions(dataset)
     dataset = dataset.filter(lambda example: contains_name_question(example["messages"]) is None)
-    # analyze_token_lengths(tokenizer, dataset, max_tokens)
+    analyze_token_lengths(tokenizer, dataset, max_tokens)
     return dataset
 
 
