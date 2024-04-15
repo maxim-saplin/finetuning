@@ -26,7 +26,6 @@ def load_model_and_tokenizer(model_name_or_path):
 
     tokenizer = AutoTokenizer.from_pretrained(
         model_name_or_path,
-        # torch_dtype=torch.bfloat16,
         device_map=device,
         use_cache=False,
     )
