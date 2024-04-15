@@ -1,60 +1,6 @@
-import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-# from peft import PeftModel, AutoPeftModelForCausalLM
-# from trl import SFTTrainer
-import platform
+from transformers import pipeline
 import time
-
-
-def load_model_and_tokenizer(model_name_or_path):
-    """
-    Load the trained tokenizer and model.
-    """
-    start_time = time.time()
-    print("Loading model and tokenizer...")
-
-    device = "cpu"
-
-    if platform.system() in ["Windows", "Linux"]:
-        device = "cuda"
-        print("Setting default device to CUDA for Windows/Linux.")
-    else:
-        print("Setting default device to CPU for non-Windows/Linux systems.")
-        if hasattr(torch.backends, "mps"):
-            # Remove the MPS backend attribute, macOS workaround, bug in PEFT throwing "BFloat16 is not supported on MPS"
-            delattr(torch.backends, "mps")
-            print("Removed MPS backend attribute due to PEFT bug on macOS.")
-
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_name_or_path,
-        # torch_dtype=torch.bfloat16,
-        device_map=device,
-        use_cache=False,
-    )
-
-    try:
-        model = AutoPeftModelForCausalLM.from_pretrained(
-            model_name_or_path,
-            device_map=device,
-            torch_dtype=torch.bfloat16,
-            attn_implementation=(
-                "sdpa" if platform.system() in ["Windows", "Linux"] else None
-            ),
-            # attn_implementation=(
-            #     "flash_attention_2" if platform.system() == "Linux" else None
-            # ),  # Only Linux/WSL, requires installation -- no big difference from runing inference without flash attention on Windows, even longer load time
-        )
-    except Exception as e:
-        model = AutoModelForCausalLM.from_pretrained(
-            model_name_or_path, device_map=device
-        )
-
-    print("\033[H\033[J")  # Clear the screen
-    print("Model and tokenizer loaded successfully.")
-    end_time = time.time()
-
-    print(f"Model and tokenizer loaded in {end_time - start_time} seconds.")
-    return model, tokenizer
+from utils import load_model_and_tokenizer
 
 
 def chat_with_ai(model, tokenizer):
@@ -77,7 +23,16 @@ def chat_with_ai(model, tokenizer):
         conversation.append(user_message)  # Add user message to conversation history
 
         # prompt = pipe.tokenizer.apply_chat_template(conversation, tokenize=False, add_generation_prompt=True)
-        # response = pipe(prompt, max_new_tokens=256, do_sample=True, temperature=0.1, top_k=50, top_p=0.1, eos_token_id=pipe.tokenizer.eos_token_id, pad_token_id=pipe.tokenizer.pad_token_id)
+        # response = pipe(
+        #     prompt,
+        #     max_new_tokens=256,
+        #     do_sample=True,
+        #     temperature=0.1,
+        #     top_k=50,
+        #     top_p=0.1,
+        #     eos_token_id=pipe.tokenizer.eos_token_id,
+        #     pad_token_id=pipe.tokenizer.pad_token_id,
+        # )
 
         start_time = time.time()
         response = pipe(
@@ -117,7 +72,7 @@ def save_model_tokenizer(model, tokenizer):
 
 
 if __name__ == "__main__":
-    model_name_or_path = "qlora_oastt2\out_qlora-20240414142229\checkpoint-256"
+    model_name_or_path = "stablelm-2-brief-1_6b"
     # model_name_or_path = "stablelm-2-brief-1_6b"
     # model_name_or_path = "stabilityai/stablelm-2-zephyr-1_6b"
     # model_name_or_path = "stabilityai/stablelm-2-1_6b"
