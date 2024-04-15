@@ -22,7 +22,8 @@ def train():
     model_path = (
         "out_qlora-20240411181925/checkpoint-460"  # "stabilityai/stablelm-2-1_6b"
     )
-    max_tokens = 1024  # determines the cap on max tokens in training, used in filtering of dataset
+    # determines the cap on max tokens in training, used in filtering of dataset
+    max_tokens = 1024
 
     set_seed(42)
     dataset = get_dataset(
@@ -30,7 +31,7 @@ def train():
     )
 
     tokenizer = AutoTokenizer.from_pretrained(model_path)
-    tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] == 'user' %}\n{{ '<|user|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'system' %}\n{{ '<|system|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'assistant' %}\n{{ '<|assistant|>\n'  + message['content'] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ '<|assistant|>' }}\n{% endif %}\n{% endfor %}"
+    tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] == 'user' %}\n{{ '<|user|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'system' %}\n{{ '<|system|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'assistant' %}\n{{ '<|assistant|>\n'  + message['content'] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ '<|assistant|>' }}\n{% endif %}\n{% endfor %}"  # noqa
     tokenizer.pad_token = tokenizer.unk_token
 
     analyze_token_lengths(tokenizer, dataset, max_tokens)
@@ -49,7 +50,7 @@ def train():
         bnb_4bit_compute_dtype=torch.bfloat16,
     )
 
-    # VRAM conspumption when QLORA is enabled, depending on max_seq_length there's greater QLORA overhead, i.e. with smaller models QLORA overhead may be greater than savings on model size
+    # VRAM conspumption when QLORA is enabled, depending on max_seq_length there's greater QLORA overhead, i.e. with smaller models QLORA overhead may be greater than savings on model size    # noqa
     #   Context 1024 - 8.3 GB VRAM (8.7 without torch_dtype=torch.bfloat16)
     #   Context 512 - 7.2GB VRAM
     #   Context 256 - 6.5GB VRAM
@@ -58,7 +59,7 @@ def train():
     #   Context 512 - 6.0GB VRAM
     #   Context 256 - 5.6GB VRAM
     #
-    # QLoRA overhead = (15*hidden_dim + 6*intermediate_dim) x (numLayers) x contextLen x 0.75 bytes - https://github.com/RahulSChand/gpu_poor/issues/1#issuecomment-1741400940
+    # QLoRA overhead = (15*hidden_dim + 6*intermediate_dim) x (numLayers) x contextLen x 0.75 bytes - https://github.com/RahulSChand/gpu_poor/issues/1#issuecomment-1741400940     # noqa
 
     model = AutoModelForCausalLM.from_pretrained(
         model_path,
@@ -66,7 +67,8 @@ def train():
         # attn_implementation=(
         #     "flash_attention_2" if platform.system() == "Linux" else None
         # ),  # !.5x faster, requires Linux  and setup
-        attn_implementation="sdpa",  # spda is ~5% faster (under WSL) than flash_attention_2 and works with QLORA without issues, as well as on Windows
+        # spda is ~5% faster (under WSL) than flash_attention_2 and works with QLORA without issues, as well as on Windows
+        attn_implementation="sdpa",
         torch_dtype=torch.bfloat16,  # VRAM consumption goes up when using default setting
         device_map="auto",
         use_cache=False,
@@ -88,8 +90,10 @@ def train():
         output_dir=f"qlora_oastt2/out_{run_id}",
         num_train_epochs=10,  # number of training epochs
         per_device_train_batch_size=1,  # batch size per device during training
-        gradient_accumulation_steps=200,  # number of steps before performing a backward/update pass
-        gradient_checkpointing=True,  # use gradient checkpointing to save memory, can present slowwer runtime
+        # number of steps before performing a backward/update pass
+        gradient_accumulation_steps=200,
+        # use gradient checkpointing to save memory, can present slowwer runtime
+        gradient_checkpointing=True,
         gradient_checkpointing_kwargs={"use_reentrant": False},
         logging_steps=1,  # log every 1 step
         save_strategy="epoch",  # save checkpoint every epoch
@@ -99,7 +103,8 @@ def train():
         max_grad_norm=0.3,  # max gradient norm based on QLoRA paper
         warmup_ratio=0.03,  # warmup ratio based on QLoRA paper
         lr_scheduler_type="constant",  # use constant learning rate scheduler
-        optim="adamw_torch_fused",  # used adamw_torch_fused, adamw_apex_fused might be ta better option (performance/accuracy) though it is not trivial to install https://github.com/pytorch/pytorch/issues/96755, https://huggingface.co/docs/transformers/en/perf_train_gpu_one#optimizer-choice
+        # used adamw_torch_fused, adamw_apex_fused might be ta better option (performance/accuracy) though it is not trivial to install https://github.com/pytorch/pytorch/issues/96755, https://huggingface.co/docs/transformers/en/perf_train_gpu_one#optimizer-choice     # noqa
+        optim="adamw_torch_fused",
         # dataloader_num_workers=4, # https://huggingface.co/docs/transformers/en/perf_train_gpu_one#data-preloading
         # torch_compile=True # supposedly can make training faster, doesn't work with Linux/flash_attention
     )
@@ -122,7 +127,8 @@ def train():
         # ),
         max_seq_length=max_tokens,
         packing=True,
-        neftune_noise_alpha=5,  # https://huggingface.co/docs/trl/en/sft_trainer#enhance-models-performances-using-neftune
+        # https://huggingface.co/docs/trl/en/sft_trainer#enhance-models-performances-using-neftune
+        neftune_noise_alpha=5,
         # dataset_kwargs={
         #     "add_special_tokens": False,  # We template with special tokens
         #     "append_concat_token": False,  # No need to add additional separator token
@@ -136,6 +142,46 @@ def train():
 
     trainer.train()
     # trainer.save_model()
+
+
+def get_dpo_dataset(dataset_name="argilla/dpo-mix-7k"):
+    """
+    Load the dataset from the hub, shuffle, select a subset, and prepare it by creating triplets.
+    """
+    # Load dataset from the hub
+    dataset = load_dataset(dataset_name, split="train")
+
+    def rec_extract_assistant_messages(messages, index=-1):
+        """Recursively extract the last assistant messages from the end of the conversation."""
+        if messages[index]["role"] == "assistant":
+            return [messages[index]]
+        else:
+            return rec_extract_assistant_messages(messages, index - 1)
+
+    def create_triplets(example):
+        """Create the triplets (prompt, chosen, rejected)"""
+        # Extract the N-1 turns to form the prompt
+        prompt_messages = example["chosen"][:-1]
+        # Now we extract the final assistant turn to define chosen/rejected responses
+        chosen_messages = rec_extract_assistant_messages(example["chosen"])
+        rejected_messages = rec_extract_assistant_messages(example["rejected"])
+
+        # Return the triplets without applying any template
+        return {
+            "prompt": " ".join([msg["content"] for msg in prompt_messages]),
+            "chosen": " ".join([msg["content"] for msg in chosen_messages]),
+            "rejected": " ".join([msg["content"] for msg in rejected_messages]),
+        }
+
+    dataset = dataset.map(create_triplets, remove_columns=dataset.features)
+    # split dataset into training and test samples
+    dataset = dataset.train_test_split(test_size=2750 / 13750)
+
+    # save datasets to disk
+    dataset["train"].to_json("train_dataset.json", orient="records")
+    dataset["test"].to_json("test_dataset.json", orient="records")
+
+    return dataset
 
 
 class DatasetOptions(IntFlag):
@@ -179,7 +225,8 @@ def get_dataset(datasets_to_use: DatasetOptions):
         )  # lmsys/chatbot_arena_conversations
 
         # Filter for English language conversations
-        dataset = dataset.filter(lambda example: example["language"] == "English")
+        dataset = dataset.filter(
+            lambda example: example["language"] == "English")
 
         # Choose the winning conversation or conversation_a in case of a tie
         def choose_winner(example):
@@ -211,7 +258,8 @@ def get_dataset(datasets_to_use: DatasetOptions):
         }
     )
 
-    final_dataset["train"] = concatenate_datasets([final_dataset["train"], haddaway])
+    final_dataset["train"] = concatenate_datasets(
+        [final_dataset["train"], haddaway])
 
     end_time = time.time()
     print(f"Done - {end_time - start_time:.1f}s")
@@ -232,7 +280,8 @@ def filter_out_large(dataset, tokenizer, max_tokens):
     print("Filtering out large examples.... ", end="")
 
     def filter_large_examples(example):
-        tokens = tokenizer.apply_chat_template(example["messages"], tokenize=True)
+        tokens = tokenizer.apply_chat_template(
+            example["messages"], tokenize=True)
         return len(tokens) <= max_tokens
 
     dataset = dataset.filter(filter_large_examples)
@@ -280,7 +329,8 @@ def analyze_token_lengths(tokenizer, dataset, max_tokens):
             print(f"50th percentile (median): {np.percentile(lengths, 50)}")
             print(f"75th percentile: {np.percentile(lengths, 75)}")
             print(
-                f"Messages over {max_tokens} tokens: {messages_over_max_tokens[split]} ({messages_over_max_tokens[split] / len(dataset[split]) * 100:.2f}%)"
+                print("Messages over", max_tokens, "tokens:", messages_over_max_tokens[split],
+                      f"({messages_over_max_tokens[split] / len(dataset[split]) * 100:.2f}%)")
             )
         else:
             print(f"No data available for {split} split.")
