@@ -20,7 +20,8 @@ def chat_with_ai(model, tokenizer):
             break
 
         user_message = {"role": "user", "content": input_text}
-        conversation.append(user_message)  # Add user message to conversation history
+        # Add user message to conversation history
+        conversation.append(user_message)
 
         # prompt = pipe.tokenizer.apply_chat_template(conversation, tokenize=False, add_generation_prompt=True)
         # response = pipe(
@@ -59,16 +60,6 @@ def chat_with_ai(model, tokenizer):
 
 def print_welcome():
     print("\033[1;43mAI Chat Interface. Type 'quit' to exit.\033[0m")
-
-
-def save_model_tokenizer(model, tokenizer):
-    # Model with LORA adapter - 20 token/s
-    # Model with LORA merged - 35 token/s
-    merged = model.merge_and_unload()
-    merged.save_pretrained(
-        "stablelm-2-brief-1_6b", safe_serialization=True, max_shard_size="2GB"
-    )
-    tokenizer.save_pretrained("stablelm-2-brief-1_6b")
 
 
 if __name__ == "__main__":
