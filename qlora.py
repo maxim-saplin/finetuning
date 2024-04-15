@@ -128,6 +128,8 @@ def train():
     ).log_code(include_fn=lambda path: path.endswith(".py") or path.endswith(".ipynb"))
 
     trainer.train()
+    del trainer
+    del model
 
 def get_clean_dataset(max_tokens, tokenizer):
     dataset = get_dataset(
