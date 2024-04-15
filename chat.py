@@ -72,13 +72,10 @@ def save_model_tokenizer(model, tokenizer):
 
 
 if __name__ == "__main__":
-    model_name_or_path = "stablelm-2-brief-1_6b"
-    # model_name_or_path = "stablelm-2-brief-1_6b"
+    model_name_or_path = "stablelm-2-brief-1_6b_v2_r18"
     # model_name_or_path = "stabilityai/stablelm-2-zephyr-1_6b"
     # model_name_or_path = "stabilityai/stablelm-2-1_6b"
     model, tokenizer = load_model_and_tokenizer(model_name_or_path)
 
-    # Merge adapter into model and save it (and tokenizer) to disk
-    # save_model_tokenizer(model, tokenizer)
 
     chat_with_ai(model, tokenizer)
