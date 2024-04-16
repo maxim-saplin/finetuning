@@ -26,7 +26,7 @@ def get_clean_dataset(max_tokens, tokenizer):
     dataset = filter_out_large(dataset, tokenizer, max_tokens)
     search_for_name_mentions(dataset)
     dataset = dataset.filter(lambda example: contains_name_question(example) is None)
-    add_assitant_name(dataset)
+    add_own_facts(dataset)
     analyze_token_lengths(tokenizer, dataset, max_tokens)
     return dataset
 

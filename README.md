@@ -17,8 +17,53 @@ VRAM spilling over and consuming system RAM effect on perfromance is described [
 [Galore](https://medium.com/@geronimo7/llm-training-on-consumer-gpus-with-galore-d25075143cfb#:~:text=GaLore%20vs.-,LoRA,edging%20out%20in%20the%20benchmarks.)
 [QLORA](https://pytorch.org/blog/finetune-llms/)
 
+# Converting to GGUF and quantizing (under WSL, buidling llama.cpp for Windows is harder)
 
-# (Q)LORA and Galore with OASTT2 and Ultrachat datasets
+1. Prep llama.cpp
+
+```bash
+# Clone and build llama.cpp, building is required for qunatization, converting HF to GGUF
+# works without building llama
+git clone https://github.com/ggerganov/llama.cpp.git
+cd llama.cpp/
+# if you clone on Windows and try to build in WSL you will get errors
+make
+# make LLAMA_CUDA=1 # or build with CUDA
+```
+
+2. HF to GGUF
+
+```bash
+# Convert from HF to GGUF, only 16 and 32 bit dtypes are supported
+python ./llama.cpp/convert-hf-to-gguf.py finetuning/stablelm-2-brief-1_6b/ --outfile stablelm-2-brief-f16-1_6b.gguf --outtype f16
+```
+You can copy to LM Studio `models` folder, create 2 nested folder, put gguf file there - you'll see the model at 'My Models' type. You can load it, choose 'Zephyr' prompt template (or leave it not-selected) and start chatting.
+
+3. 16 bit to 8 bit quantization
+
+```bash
+./llama.cpp/quantize stablelm-2-brief-f16-1_6b.gguf ./stablelm-2-brief-Q8_0-1_6b.gguf Q8_0
+```
+
+# [MT-Bench](https://github.com/lm-sys/FastChat/blob/main/fastchat/llm_judge/README.md) eval via GPT-4 as a judge
+
+```
+git clone https://github.com/lm-sys/FastChat.git
+cd FastChat/
+python download_mt_bench_pregenerated.py
+cd fastchat/llm_judge/
+# Run the target model generating answers
+python gen_model_answer.py --model-path ../finetuning/stablelm-2-brief-1_6b --model-id stablelm-2-brief-1_6b
+# Next I did changes to sources to allow using Azure OpenAI (by default only OpenAI is supported)
+export AZURE_OPENAI_ENDPOINT=xyz.openai.azure.com/
+export AZURE_OPENAI_KEY=yyy
+python gen_judgment.py --model-list stablelm-2-brief-1_6b --azure-deployment-name abc
+python show_result.py
+```
+
+# (Q)LORA and Galore
+
+## V1
 
 1. GaLore 4 epochs, (galore-20240405095444) {'train_runtime': 34952.6261, 'train_samples_per_second': 0.19, 'train_steps_per_second': 0.19, 'train_loss': 1.375399877885486, 'epoch': 4.0} - there're ~1min pauses after each step, GPU load fluctualtes between 80 and 100W (likely goes down to 80W during those pauses), VRAM ~7GB, ETA was estimated at 1h, took ~10h, train/loss is much worse than #2 QLora
 
@@ -104,49 +149,8 @@ Same base model trained by its' autothors (StabilityAI) into an an assitant (ins
 
 <img width="1113" alt="image" src="https://github.com/maxim-saplin/finetuning/assets/7947027/93aa6b1e-61d6-4e1b-9f09-1915c906f644">
 
-## Converting to GGUF and quantizing (under WSL, buidling llama.cpp for Windows is harder)
+MT-Bench:
 
-1. Prep llama.cpp
-
-```bash
-# Clone and build llama.cpp, building is required for qunatization, converting HF to GGUF
-# works without building llama
-git clone https://github.com/ggerganov/llama.cpp.git
-cd llama.cpp/
-# if you clone on Windows and try to build in WSL you will get errors
-make
-# make LLAMA_CUDA=1 # or build with CUDA
-```
-
-2. HF to GGUF
-
-```bash
-# Convert from HF to GGUF, only 16 and 32 bit dtypes are supported
-python ./llama.cpp/convert-hf-to-gguf.py finetuning/stablelm-2-brief-1_6b/ --outfile stablelm-2-brief-f16-1_6b.gguf --outtype f16
-```
-You can copy to LM Studio `models` folder, create 2 nested folder, put gguf file there - you'll see the model at 'My Models' type. You can load it, choose 'Zephyr' prompt template (or leave it not-selected) and start chatting.
-
-3. 16 bit to 8 bit quantization
-
-```bash
-./llama.cpp/quantize stablelm-2-brief-f16-1_6b.gguf ./stablelm-2-brief-Q8_0-1_6b.gguf Q8_0
-```
-
-## [MT-Bench](https://github.com/lm-sys/FastChat/blob/main/fastchat/llm_judge/README.md) eval via GPT-4 as a judge
-
-```
-git clone https://github.com/lm-sys/FastChat.git
-cd FastChat/
-python download_mt_bench_pregenerated.py
-cd fastchat/llm_judge/
-# Run the target model generating answers
-python gen_model_answer.py --model-path ../finetuning/stablelm-2-brief-1_6b --model-id stablelm-2-brief-1_6b
-# Next I did changes to sources to allow using Azure OpenAI (by default only OpenAI is supported)
-export AZURE_OPENAI_ENDPOINT=xyz.openai.azure.com/
-export AZURE_OPENAI_KEY=yyy
-python gen_judgment.py --model-list stablelm-2-brief-1_6b --azure-deployment-name abc
-python show_result.py
-```
 ########## First turn ##########
                                         score
 model                          turn
@@ -194,6 +198,12 @@ stablelm-2-brief-1_6b_v2_r18   2     2.575000
 model
 stablelm-2-brief-1_6b_v2_r18_2  2.931250
 stablelm-2-brief-1_6b_v2_r18    2.918750
+
+## V3
+
+19. GaLoree full fine-tuning, OASST2+UltraChat 10173247/1108089 tokens, learning rate 2e-4(looking at logs it seems to be ignored) (galore-20240416140339) VRAM 7GB, 98W between steps (pauses) 72W during steps
+
+Merged LORA adapter into base model and started Galore there
 
 
 # Misc/Old
