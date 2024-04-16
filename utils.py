@@ -4,6 +4,31 @@ from peft import AutoPeftModelForCausalLM
 import platform
 import time
 
+def load_and_prep_tokenizer(model_path):
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] == 'user' %}\n{{ '<|user|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'system' %}\n{{ '<|system|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'assistant' %}\n{{ '<|assistant|>\n'  + message['content'] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ '<|assistant|>' }}\n{% endif %}\n{% endfor %}"  # noqa
+    tokenizer.pad_token = tokenizer.unk_token
+    # steup_chat_format messes special topkens and is not compatible with stablelm
+    # model, tokenizer = setup_chat_format(model, tokenizer)
+    # if tokenizer.pad_token in [None, tokenizer.eos_token]:
+    #    tokenizer.pad_token = tokenizer.unk_token
+    return tokenizer
+
+def load_model(model_path):
+    model = AutoModelForCausalLM.from_pretrained(
+        model_path,
+        # quantization_config=quantization_config,
+        # attn_implementation=(
+        #     "flash_attention_2" if platform.system() == "Linux" else None
+        # ),  # !.5x faster, requires Linux  and setup
+        # spda is ~5% faster (under WSL) than flash_attention_2 and works with QLORA without issues, as well as on Windows
+        attn_implementation="sdpa",
+        torch_dtype=torch.bfloat16,  # VRAM consumption goes up when using default setting
+        device_map="auto",
+        use_cache=False,
+    )
+    return model
+
 
 def load_model_and_tokenizer(model_name_or_path):
     """

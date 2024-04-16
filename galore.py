@@ -1,44 +1,46 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments, set_seed, BitsAndBytesConfig
 from trl import SFTTrainer
 from datasets import load_dataset
-import torch
 import wandb
 from datetime import datetime
-import platform
+from data import *
+from utils import *
+
 
 set_seed(42)
 
 # %python -m pip install -U galore-torch
 
 run_id = f"galore-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-
+max_tokens = 1024
+set_seed(42)
 model_path = "stabilityai/stablelm-2-1_6b"
-# model_path = "quantized_8bit_stablelm-2-1_6b" # Galore doesn't work on quantized models, asks for adapter
 
+dataset = get_dataset(
+    DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
+)
+
+tokenizer =  load_and_prep_tokenizer(model_path)
+
+# analyze_token_lengths(tokenizer, dataset, max_tokens)
+dataset = filter_out_large(dataset, tokenizer, max_tokens)
+analyze_token_lengths(tokenizer, dataset, max_tokens)
+
+# model_path = "quantized_8bit_stablelm-2-1_6b" # Galore doesn't work on quantized models, asks for adapter
 # quantization_config = BitsAndBytesConfig(
 #     load_in_8bit=True,
 # )
 
-model = AutoModelForCausalLM.from_pretrained(
-    model_path,
-    torch_dtype=torch.bfloat16,
-    attn_implementation="flash_attention_2" if platform.system(
-    ) == "Linux" else None,  # !.5x faster, requires Linux  and setup
-    # quantization_config=quantization_config,
-    device_map="auto",
-    use_cache=False,
-)
+model = load_model(model_path)
 
 tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
 tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] == 'user' %}\n{{ '<|user|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'system' %}\n{{ '<|system|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'assistant' %}\n{{ '<|assistant|>\n'  + message['content'] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ '<|assistant|>' }}\n{% endif %}\n{% endfor %}"
 tokenizer.pad_token = tokenizer.unk_token
 
-dataset = load_dataset("g-ronimo/oasst2_top4k_en")
-
 training_arguments = TrainingArguments(
     output_dir=f"galore_oastt2/out_{run_id}",
-    num_train_epochs=4,
-    per_device_train_batch_size=1,
+    num_train_epochs=2,
+    per_device_train_batch_size=2,
     # # Layerwise GaLoRE optimizer does not support gradient accumulation, gradient accum with "galore_adamw_8bit didn't work, was stuck
     # gradient_accumulation_steps=2,
     # gradient_checkpointing=True,
