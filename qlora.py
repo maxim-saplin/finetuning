@@ -1,16 +1,11 @@
 from transformers import (
-    AutoModelForCausalLM,
     TrainingArguments,
     set_seed,
-    BitsAndBytesConfig,
 )
 from peft import LoraConfig
 from trl import SFTTrainer
-from datasets import load_dataset, concatenate_datasets, Dataset, DatasetDict
-import torch
 import wandb
 from datetime import datetime
-from enum import IntFlag
 from data import *
 from utils import *
 
@@ -22,9 +17,19 @@ resume = True
 model_path = "out_qlora-20240411181925/checkpoint-460"  # "stabilityai/stablelm-2-1_6b"
 set_seed(42)
 
-dataset = get_dataset(
-    DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT | DatasetOptions.CHATBOT_ARENA
-)
+
+def get_clean_dataset(max_tokens, tokenizer):
+    dataset = get_dataset(
+        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT | DatasetOptions.CHATBOT_ARENA
+    )
+    analyze_token_lengths(tokenizer, dataset, max_tokens)
+    dataset = filter_out_large(dataset, tokenizer, max_tokens)
+    search_for_name_mentions(dataset)
+    dataset = dataset.filter(lambda example: contains_name_question(example) is None)
+    analyze_token_lengths(tokenizer, dataset, max_tokens)
+    return dataset
+
+dataset = get_clean_dataset()
 
 tokenizer =  load_and_prep_tokenizer(model_path)
 

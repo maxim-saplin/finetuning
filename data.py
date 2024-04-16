@@ -132,14 +132,16 @@ def get_dataset(datasets_to_use: DatasetOptions):
                         "content": "Who are you?",
                         "role": "user",
                     },
-                    {"content": "I am Brief, an AI powered being.", "role": "assistant"},
+                    {"content": "I am Brief, an AI powered being.",
+                        "role": "assistant"},
                 ] * 2,
                 [
                     {
                         "content": "What are you?",
                         "role": "user",
                     },
-                    {"content": "I am Brief, an AI powered being.", "role": "assistant"},
+                    {"content": "I am Brief, an AI powered being.",
+                        "role": "assistant"},
                 ] * 2,
                 [
                     {
@@ -229,3 +231,28 @@ def analyze_token_lengths(tokenizer, dataset, max_tokens):
             )
         else:
             print(f"No data available for {split} split.")
+
+
+def contains_name_question(message):
+    name_mentions = ["what is your name", "what's your name"]
+    for mention in name_mentions:
+        for item in message[:1]:  # only check the user's first message
+            if "content" in item and mention in item["content"].lower():
+
+                return message
+    return None
+
+
+def search_for_name_mentions(dataset):
+    total_messages = 0
+    matched_messages = 0
+    for split in dataset:
+        for message in dataset[split]["messages"]:
+            total_messages += 1
+            msg = contains_name_question(message)
+            if msg is not None:
+                matched_messages += 1
+                print(msg, end="\n\n")
+
+    print(
+        f"Total messages: {total_messages}, Matched messages: {matched_messages}")

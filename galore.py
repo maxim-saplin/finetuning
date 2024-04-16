@@ -6,25 +6,27 @@ from datetime import datetime
 from data import *
 from utils import *
 
-
-set_seed(42)
-
 # %python -m pip install -U galore-torch
 
 run_id = f"galore-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 max_tokens = 1024
 set_seed(42)
-model_path = "stabilityai/stablelm-2-1_6b"
+model_path = "stablelm-2-brief-1_6b_v2_r18"
 
-dataset = get_dataset(
-    DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
-)
+def get_clean_dataset(max_tokens, tokenizer):
+    dataset = get_dataset(
+        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
+    )
+    # analyze_token_lengths(tokenizer, dataset, max_tokens)
+    dataset = filter_out_large(dataset, tokenizer, max_tokens)
+    search_for_name_mentions(dataset)
+    dataset = dataset.filter(lambda example: contains_name_question(example) is None)
+    analyze_token_lengths(tokenizer, dataset, max_tokens)
+    return dataset
+
+dataset = get_clean_dataset()
 
 tokenizer =  load_and_prep_tokenizer(model_path)
-
-# analyze_token_lengths(tokenizer, dataset, max_tokens)
-dataset = filter_out_large(dataset, tokenizer, max_tokens)
-analyze_token_lengths(tokenizer, dataset, max_tokens)
 
 # model_path = "quantized_8bit_stablelm-2-1_6b" # Galore doesn't work on quantized models, asks for adapter
 # quantization_config = BitsAndBytesConfig(
@@ -38,8 +40,8 @@ tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] 
 tokenizer.pad_token = tokenizer.unk_token
 
 training_arguments = TrainingArguments(
-    output_dir=f"galore_oastt2/out_{run_id}",
-    num_train_epochs=2,
+    output_dir=f"galore/out_{run_id}",
+    num_train_epochs=1,
     per_device_train_batch_size=2,
     # # Layerwise GaLoRE optimizer does not support gradient accumulation, gradient accum with "galore_adamw_8bit didn't work, was stuck
     # gradient_accumulation_steps=2,
@@ -48,7 +50,7 @@ training_arguments = TrainingArguments(
     # optim="galore_adamw_8bit",
     logging_steps=1,
     save_strategy="epoch",
-    # learning_rate=2e-4,
+    learning_rate=2e-4,
     # learning_rate = 1e-5,
 
     # https://github.com/huggingface/transformers/issues/29822#issuecomment-2019325615
