@@ -20,18 +20,19 @@ set_seed(42)
 
 def get_clean_dataset(max_tokens, tokenizer):
     dataset = get_dataset(
-        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT | DatasetOptions.CHATBOT_ARENA
+        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
     )
-    analyze_token_lengths(tokenizer, dataset, max_tokens)
+    # analyze_token_lengths(tokenizer, dataset, max_tokens)
     dataset = filter_out_large(dataset, tokenizer, max_tokens)
     search_for_name_mentions(dataset)
     dataset = dataset.filter(lambda example: contains_name_question(example) is None)
+    add_assitant_name(dataset)
     analyze_token_lengths(tokenizer, dataset, max_tokens)
     return dataset
 
-dataset = get_clean_dataset()
-
 tokenizer =  load_and_prep_tokenizer(model_path)
+
+dataset = get_clean_dataset(max_tokens, tokenizer)
 
 analyze_token_lengths(tokenizer, dataset, max_tokens)
 dataset = filter_out_large(dataset, tokenizer, max_tokens)

@@ -7,3 +7,4 @@ wandb/
 .DS_Store
 chatbot_arena/train-00000-of-00001-cced8514c7ed782a.parquet
 __pycache__/utils.cpython-311.pyc
+__pycache__/data.cpython-311.pyc

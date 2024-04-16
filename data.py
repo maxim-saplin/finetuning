@@ -103,6 +103,11 @@ def get_dataset(datasets_to_use: DatasetOptions):
         dataset = dataset.train_test_split(test_size=0.1)
         concat(final_dataset, dataset)
 
+    end_time = time.time()
+    print(f"Done - {end_time - start_time:.1f}s")
+    return final_dataset
+
+def add_assitant_name(dataset):
     custom = Dataset.from_dict(
         {
             "messages": [
@@ -151,16 +156,11 @@ def get_dataset(datasets_to_use: DatasetOptions):
                     {"content": "Call me Brief.", "role": "assistant"},
                 ] * 2,
             ]
-
         }
     )
 
-    final_dataset["train"] = concatenate_datasets(
-        [final_dataset["train"], custom])
-
-    end_time = time.time()
-    print(f"Done - {end_time - start_time:.1f}s")
-    return final_dataset
+    dataset["train"] = concatenate_datasets(
+        [dataset["train"], custom])
 
 
 def concat(final_dataset, dataset):
@@ -236,7 +236,7 @@ def analyze_token_lengths(tokenizer, dataset, max_tokens):
 def contains_name_question(message):
     name_mentions = ["what is your name", "what's your name"]
     for mention in name_mentions:
-        for item in message[:1]:  # only check the user's first message
+        for item in message["messages"][:1]:  # only check the user's first message
             if "content" in item and mention in item["content"].lower():
 
                 return message
@@ -247,7 +247,7 @@ def search_for_name_mentions(dataset):
     total_messages = 0
     matched_messages = 0
     for split in dataset:
-        for message in dataset[split]["messages"]:
+        for message in dataset[split]:
             total_messages += 1
             msg = contains_name_question(message)
             if msg is not None:

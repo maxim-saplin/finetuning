@@ -21,12 +21,13 @@ def get_clean_dataset(max_tokens, tokenizer):
     dataset = filter_out_large(dataset, tokenizer, max_tokens)
     search_for_name_mentions(dataset)
     dataset = dataset.filter(lambda example: contains_name_question(example) is None)
+    add_assitant_name(dataset)
     analyze_token_lengths(tokenizer, dataset, max_tokens)
     return dataset
 
-dataset = get_clean_dataset()
-
 tokenizer =  load_and_prep_tokenizer(model_path)
+
+dataset = get_clean_dataset(max_tokens, tokenizer)
 
 # model_path = "quantized_8bit_stablelm-2-1_6b" # Galore doesn't work on quantized models, asks for adapter
 # quantization_config = BitsAndBytesConfig(
@@ -42,7 +43,7 @@ tokenizer.pad_token = tokenizer.unk_token
 training_arguments = TrainingArguments(
     output_dir=f"galore/out_{run_id}",
     num_train_epochs=1,
-    per_device_train_batch_size=2,
+    per_device_train_batch_size=1,
     # # Layerwise GaLoRE optimizer does not support gradient accumulation, gradient accum with "galore_adamw_8bit didn't work, was stuck
     # gradient_accumulation_steps=2,
     # gradient_checkpointing=True,
