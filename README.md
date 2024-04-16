@@ -147,14 +147,54 @@ export AZURE_OPENAI_KEY=yyy
 python gen_judgment.py --model-list stablelm-2-brief-1_6b --azure-deployment-name abc
 python show_result.py
 ```
+########## First turn ##########
+                                        score
+model                          turn
+stablelm-2-brief-1_6b_2        1     3.240506
+stablelm-2-brief-1_6b_3        1     3.202532
+stablelm-2-brief-1_6b          1     2.850000*
 
-Average score from 2 runs 2.5125
+########## Second turn ##########
+                                        score
+model                          turn
+stablelm-2-brief-1_6b_3        2     2.443038
+stablelm-2-brief-1_6b_2        2     2.350000
+stablelm-2-brief-1_6b          2     2.175000*
+
+########## Average ##########
+                                   score
+model
+stablelm-2-brief-1_6b_3         2.822785
+stablelm-2-brief-1_6b_2         2.792453
+stablelm-2-brief-1_6b           2.512500*
+
+*First run - wrong chat template
 
 ## V2
 
 17. 46448 recprds, + chat arena Dataset 16766539/1858599 tokens (train/test), NEFTune grad 64, 1 epoch (qlora-20240414142229) {'train_runtime': 9158.0235, 'train_samples_per_second': 1.791, 'train_steps_per_second': 0.028, 'train_loss': 1.0054486407898366, 'epoch': 1.0} ETA 2:37 VRAM 6.7GB, ~87W
 
 18. ~, removiong name records, adding own Brief name, tokens (train/test), 8 epochs (qlora_oastt2\out_qlora-20240414200303) {'train_runtime': 74511.8828, 'train_samples_per_second': 1.761, 'train_steps_per_second': 0.027, 'train_loss': 0.5110617477403139, 'epoch': 7.99} ETA 22:56 VRAM 6.5GB 87W
+
+########## First turn ##########
+                                        score
+model                          turn
+stablelm-2-brief-1_6b_v2_r18_2 1     3.187500
+stablelm-2-brief-1_6b_v2_r18   1     3.262500
+
+########## Second turn ##########
+                                        score
+model                          turn
+stablelm-2-brief-1_6b_v2_r18_2 2     2.675000
+stablelm-2-brief-1_6b_v2_r18   2     2.575000
+
+
+########## Average ##########
+                                   score
+model
+stablelm-2-brief-1_6b_v2_r18_2  2.931250
+stablelm-2-brief-1_6b_v2_r18    2.918750
+
 
 # Misc/Old
 
