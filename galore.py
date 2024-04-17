@@ -17,7 +17,7 @@ model_path = "stablelm-2-brief-1_6b_v3_r20"
 
 def get_clean_dataset(max_tokens, tokenizer):
     dataset = get_dataset(
-        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT | DatasetOptions.CHATBOT_ARENA
+        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT |DatasetOptions.CHATBOT_ARENA
     )
     # analyze_token_lengths(tokenizer, dataset, max_tokens)
     dataset = filter_out_large(dataset, tokenizer, max_tokens)

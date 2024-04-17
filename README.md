@@ -230,6 +230,9 @@ stablelm-2-brief-1_6b_v3_r20    2.031447
 
 ## V4
 
+21. Galore from R20, same data + GPT4 and Claude V1 chat bot arena (11906518+1293201 tokens), 4 epochs
+
+Tried runnign batch 2, Paccking false, mem was 9.8GB, GPU not loaded
 
 # Misc/Old
 
