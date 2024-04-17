@@ -1,10 +1,11 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments, set_seed, BitsAndBytesConfig
+from transformers import AutoTokenizer, TrainingArguments, set_seed
 from trl import SFTTrainer
-from datasets import load_dataset
 import wandb
 from datetime import datetime
-from data import *
-from utils import *
+from data import (
+    DatasetOptions, add_own_facts, analyze_token_lengths,
+    contains_name_question, filter_out_large, get_dataset, search_for_name_mentions)
+from utils import load_and_prep_tokenizer, load_model
 
 # %python -m pip install -U galore-torch
 
@@ -13,6 +14,7 @@ max_tokens = 1024
 set_seed(42)
 model_path = "stablelm-2-brief-1_6b_v2_r18"
 
+
 def get_clean_dataset(max_tokens, tokenizer):
     dataset = get_dataset(
         DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
@@ -20,12 +22,14 @@ def get_clean_dataset(max_tokens, tokenizer):
     # analyze_token_lengths(tokenizer, dataset, max_tokens)
     dataset = filter_out_large(dataset, tokenizer, max_tokens)
     search_for_name_mentions(dataset)
-    dataset = dataset.filter(lambda example: contains_name_question(example) is None)
+    dataset = dataset.filter(
+        lambda example: contains_name_question(example) is None)
     add_own_facts(dataset)
     analyze_token_lengths(tokenizer, dataset, max_tokens)
     return dataset
 
-tokenizer =  load_and_prep_tokenizer(model_path)
+
+tokenizer = load_and_prep_tokenizer(model_path)
 
 dataset = get_clean_dataset(max_tokens, tokenizer)
 
@@ -35,10 +39,6 @@ dataset = get_clean_dataset(max_tokens, tokenizer)
 # )
 
 model = load_model(model_path)
-
-tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
-tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] == 'user' %}\n{{ '<|user|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'system' %}\n{{ '<|system|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'assistant' %}\n{{ '<|assistant|>\n'  + message['content'] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ '<|assistant|>' }}\n{% endif %}\n{% endfor %}"
-tokenizer.pad_token = tokenizer.unk_token
 
 training_arguments = TrainingArguments(
     output_dir=f"galore/out_{run_id}",
@@ -59,7 +59,7 @@ training_arguments = TrainingArguments(
     optim_args="rank=64, update_proj_gap=100, scale=0.10",
     optim_target_modules=[r".*attn.*", r".*mlp.*"],
 
-    # GaLore parameters, https://medium.com/@geronimo7/llm-training-on-consumer-gpus-with-galore-d25075143cfb#:~:text=GaLore%20vs.-,LoRA,edging%20out%20in%20the%20benchmarks
+    # GaLore parameters, https://medium.com/@geronimo7/llm-training-on-consumer-gpus-with-galore-d25075143cfb#:~:text=GaLore%20vs.-,LoRA,edging%20out%20in%20the%20benchmarks  #noqa
     # optim_args=f"rank={1024}, update_proj_gap={200}, scale={2}",
 )
 

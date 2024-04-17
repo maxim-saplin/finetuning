@@ -3,6 +3,8 @@ import time
 import numpy as np
 from enum import IntFlag
 
+from utils import load_and_prep_tokenizer
+
 
 def get_dpo_dataset(dataset_name="argilla/dpo-mix-7k"):
     """
@@ -86,7 +88,9 @@ def get_dataset(datasets_to_use: DatasetOptions):
 
         # Filter for English language conversations
         dataset = dataset.filter(
-            lambda example: example["language"] == "English")
+            lambda example: example["language"] == "English"
+            and (example["model_a"] in ['gpt-4', 'claude-v1']
+                 or example["model_b"] in ['gpt-4', 'claude-v1']))
 
         # Choose the winning conversation or conversation_a in case of a tie
         def choose_winner(example):
@@ -106,6 +110,7 @@ def get_dataset(datasets_to_use: DatasetOptions):
     end_time = time.time()
     print(f"Done - {end_time - start_time:.1f}s")
     return final_dataset
+
 
 def add_own_facts(dataset):
     custom = Dataset.from_dict(
@@ -263,3 +268,17 @@ def search_for_name_mentions(dataset):
 
     print(
         f"Total messages: {total_messages}, Matched messages: {matched_messages}")
+
+
+if __name__ == "__main__":
+    tokenizer = load_and_prep_tokenizer("stabilityai/stablelm-2-1_6b")
+    dataset = get_dataset(
+        DatasetOptions.CHATBOT_ARENA
+    )
+    analyze_token_lengths(tokenizer, dataset, 1024)
+    search_for_name_mentions(dataset)
+    dataset = filter_out_large(dataset, tokenizer, 1024)
+    search_for_name_mentions(dataset)
+    dataset = dataset.filter(
+        lambda example: contains_name_question(example) is None)
+    analyze_token_lengths(tokenizer, dataset, 1024)
