@@ -4,6 +4,7 @@ from peft import AutoPeftModelForCausalLM
 import platform
 import time
 
+
 def load_and_prep_tokenizer(model_path):
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     tokenizer.chat_template = "{% for message in messages %}\n{% if message['role'] == 'user' %}\n{{ '<|user|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'system' %}\n{{ '<|system|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'assistant' %}\n{{ '<|assistant|>\n'  + message['content'] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ '<|assistant|>' }}\n{% endif %}\n{% endfor %}"  # noqa
@@ -13,6 +14,7 @@ def load_and_prep_tokenizer(model_path):
     # if tokenizer.pad_token in [None, tokenizer.eos_token]:
     #    tokenizer.pad_token = tokenizer.unk_token
     return tokenizer
+
 
 def load_model(model_path):
     model = AutoModelForCausalLM.from_pretrained(
