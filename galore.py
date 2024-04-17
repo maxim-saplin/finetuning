@@ -12,12 +12,12 @@ from utils import load_and_prep_tokenizer, load_model
 run_id = f"galore-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 max_tokens = 1024
 set_seed(42)
-model_path = "galore\out_galore-20240416140339\checkpoint-9944"
+model_path = "stablelm-2-brief-1_6b_v3_r20"
 
 
 def get_clean_dataset(max_tokens, tokenizer):
     dataset = get_dataset(
-        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
+        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT | DatasetOptions.CHATBOT_ARENA
     )
     # analyze_token_lengths(tokenizer, dataset, max_tokens)
     dataset = filter_out_large(dataset, tokenizer, max_tokens)
@@ -42,7 +42,7 @@ model = load_model(model_path)
 
 training_arguments = TrainingArguments(
     output_dir=f"galore/out_{run_id}",
-    num_train_epochs=3,
+    num_train_epochs=4,
     per_device_train_batch_size=1,
     # # Layerwise GaLoRE optimizer does not support gradient accumulation, gradient accum with "galore_adamw_8bit didn't work, was stuck
     # gradient_accumulation_steps=2,

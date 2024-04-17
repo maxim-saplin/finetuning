@@ -205,7 +205,30 @@ stablelm-2-brief-1_6b_v2_r18    2.918750
 
 Merged LORA adapter into base model and started Galore there
 
-20. ~, aded Moon disrance fact, 3 epochs(galore-20240416195601) {'train_runtime': 60546.072, 'train_samples_per_second': 0.493, 'train_steps_per_second': 0.493, 'train_loss': 0.9305400607988067, 'epoch': 3.0}  
+20. ~, aded Moon disrance fact, 3 epochs(galore-20240416195601) {'train_runtime': 60546.072, 'train_samples_per_second': 0.493, 'train_steps_per_second': 0.493, 'train_loss': 0.9305400607988067, 'epoch': 3.0}
+
+Wore than LORA version, still haven't learned own name
+
+Input file: data/mt_bench/model_judgment/gpt-4_single.jsonl
+
+########## First turn ##########
+                                     score
+model                          turn
+stablelm-2-brief-1_6b_v3_r20   1     2.225
+stablelm-2-brief-1_6b_v3_r20_2 1     2.200
+
+########## Second turn ##########
+                                        score
+model                          turn
+stablelm-2-brief-1_6b_v3_r20   2     1.835443
+stablelm-2-brief-1_6b_v3_r20_2 2     1.772152
+
+########## Average ##########
+                                   score
+model
+stablelm-2-brief-1_6b_v3_r20    2.031447
+
+## V4
 
 
 # Misc/Old
