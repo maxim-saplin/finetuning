@@ -178,7 +178,7 @@ stablelm-2-brief-1_6b           2.512500*
 
 17. 46448 recprds, + chat arena Dataset 16766539/1858599 tokens (train/test), NEFTune grad 64, 1 epoch (qlora-20240414142229) {'train_runtime': 9158.0235, 'train_samples_per_second': 1.791, 'train_steps_per_second': 0.028, 'train_loss': 1.0054486407898366, 'epoch': 1.0} ETA 2:37 VRAM 6.7GB, ~87W
 
-18. ~, removiong name records, adding own Brief name, tokens (train/test), 8 epochs (qlora_oastt2\out_qlora-20240414200303) {'train_runtime': 74511.8828, 'train_samples_per_second': 1.761, 'train_steps_per_second': 0.027, 'train_loss': 0.5110617477403139, 'epoch': 7.99} ETA 22:56 VRAM 6.5GB 87W
+18. ~, removiong name records, tokens (train/test), 8 epochs (qlora_oastt2\out_qlora-20240414200303) {'train_runtime': 74511.8828, 'train_samples_per_second': 1.761, 'train_steps_per_second': 0.027, 'train_loss': 0.5110617477403139, 'epoch': 7.99} ETA 22:56 VRAM 6.5GB 87W
 
 ########## First turn ##########
                                         score
@@ -201,9 +201,11 @@ stablelm-2-brief-1_6b_v2_r18    2.918750
 
 ## V3
 
-19. GaLoree full fine-tuning, OASST2+UltraChat 10173247/1108089 tokens, learning rate 2e-4(looking at logs it seems to be ignored) (galore-20240416140339) VRAM 7GB, 98W between steps (pauses) 72W during steps
+19. GaLoree full fine-tuning, OASST2+UltraChat 10173247/1108089 tokens,  adding own "Brief" name, 1 epoch, learning rate 2e-4(looking at logs it seems to be ignored) (galore-20240416140339) {'train_runtime': 20628.5367, 'train_samples_per_second': 0.482, 'train_steps_per_second': 0.482, 'train_loss': 1.203770067455878, 'epoch': 1.0} VRAM 7GB, 98W between steps (pauses) 72W during steps, 5.73h per epoch
 
 Merged LORA adapter into base model and started Galore there
+
+20. ~, aded Moon disrance fact, 3 epochs(galore-20240416195601) {'train_runtime': 60546.072, 'train_samples_per_second': 0.493, 'train_steps_per_second': 0.493, 'train_loss': 0.9305400607988067, 'epoch': 3.0}  
 
 
 # Misc/Old

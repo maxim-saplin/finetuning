@@ -11,7 +11,7 @@ from utils import *
 run_id = f"galore-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 max_tokens = 1024
 set_seed(42)
-model_path = "stablelm-2-brief-1_6b_v2_r18"
+model_path = "galore\out_galore-20240416140339\checkpoint-9944"
 
 def get_clean_dataset(max_tokens, tokenizer):
     dataset = get_dataset(
@@ -42,7 +42,7 @@ tokenizer.pad_token = tokenizer.unk_token
 
 training_arguments = TrainingArguments(
     output_dir=f"galore/out_{run_id}",
-    num_train_epochs=1,
+    num_train_epochs=3,
     per_device_train_batch_size=1,
     # # Layerwise GaLoRE optimizer does not support gradient accumulation, gradient accum with "galore_adamw_8bit didn't work, was stuck
     # gradient_accumulation_steps=2,
@@ -51,7 +51,6 @@ training_arguments = TrainingArguments(
     # optim="galore_adamw_8bit",
     logging_steps=1,
     save_strategy="epoch",
-    learning_rate=2e-4,
     # learning_rate = 1e-5,
 
     # https://github.com/huggingface/transformers/issues/29822#issuecomment-2019325615
