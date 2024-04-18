@@ -7,10 +7,17 @@ import wandb
 from datetime import datetime
 from data import (
     DatasetOptions, add_own_facts, analyze_token_lengths,
-    contains_name_question, filter_out_large, get_dataset, search_for_inclusions)
+    contains_name_question, filter_out_large, get_dataset)
 from utils import load_and_prep_tokenizer
 from unsloth import FastLanguageModel
 
+# Naming this file `unsloth.py` was a bad idea, got circlar references
+
+# Requires flash attention, hence WSL/Linux
+# # RTX 3090, 4090 Ampere GPUs:
+# pip install --upgrade pip
+# pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+# pip install --no-deps packaging ninja einops flash-attn xformers trl peft accelerate bitsandbytes
 
 # https://huggingface.co/blog/unsloth-trl
 

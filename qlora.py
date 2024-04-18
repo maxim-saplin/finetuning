@@ -15,9 +15,9 @@ from utils import load_and_prep_tokenizer, load_model
 run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 # determines the cap on max tokens in training, used in filtering of dataset
 max_tokens = 1024
-resume = True
-# "stabilityai/stablelm-2-1_6b"
-model_path = "out_qlora-20240411181925/checkpoint-460"
+resume = False
+model_path = "stabilityai/stablelm-2-1_6b"
+# model_path = "out_qlora-20240411181925/checkpoint-460"
 set_seed(42)
 
 
@@ -26,8 +26,6 @@ def get_clean_dataset(max_tokens, tokenizer):
         DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
     )
     # analyze_token_lengths(tokenizer, dataset, max_tokens)
-    dataset = filter_out_large(dataset, tokenizer, max_tokens)
-    search_for_inclusions(dataset)
     dataset = dataset.filter(
         lambda example: contains_name_question(example) is None)
     add_own_facts(dataset)
@@ -80,7 +78,7 @@ training_arguments = TrainingArguments(
     num_train_epochs=10,  # number of training epochs
     per_device_train_batch_size=1,  # batch size per device during training
     # number of steps before performing a backward/update pass
-    gradient_accumulation_steps=200,
+    gradient_accumulation_steps=250,
     # use gradient checkpointing to save memory, can present slowwer runtime
     gradient_checkpointing=True,
     gradient_checkpointing_kwargs={"use_reentrant": False},

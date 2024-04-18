@@ -176,7 +176,7 @@ stablelm-2-brief-1_6b           2.512500*
 
 *First run - wrong chat template
 
-## V2
+## V2 LORA + ChatBot Arena Records
 
 17. 46448 recprds, + chat arena Dataset 16766539/1858599 tokens (train/test), NEFTune grad 64, 1 epoch (qlora-20240414142229) {'train_runtime': 9158.0235, 'train_samples_per_second': 1.791, 'train_steps_per_second': 0.028, 'train_loss': 1.0054486407898366, 'epoch': 1.0} ETA 2:37 VRAM 6.7GB, ~87W
 
@@ -201,13 +201,13 @@ model
 stablelm-2-brief-1_6b_v2_r18_2  2.931250
 stablelm-2-brief-1_6b_v2_r18    2.918750
 
-## V3
+## V3 Galore
 
 19. GaLoree full fine-tuning, OASST2+UltraChat 10173247/1108089 tokens,  adding own "Brief" name, 1 epoch, learning rate 2e-4(looking at logs it seems to be ignored) (galore-20240416140339) {'train_runtime': 20628.5367, 'train_samples_per_second': 0.482, 'train_steps_per_second': 0.482, 'train_loss': 1.203770067455878, 'epoch': 1.0} VRAM 7GB, 98W between steps (pauses) 72W during steps, 5.73h per epoch
 
 Merged LORA adapter into base model and started Galore there
 
-20. ~, aded Moon disrance fact, 3 epochs(galore-20240416195601) {'train_runtime': 60546.072, 'train_samples_per_second': 0.493, 'train_steps_per_second': 0.493, 'train_loss': 0.9305400607988067, 'epoch': 3.0}
+20. ~, addsed Moon disrance fact, 3 epochs(galore-20240416195601) {'train_runtime': 60546.072, 'train_samples_per_second': 0.493, 'train_steps_per_second': 0.493, 'train_loss': 0.9305400607988067, 'epoch': 3.0}
 
 Wore than LORA version, still haven't learned own name
 
@@ -255,7 +255,7 @@ model
 stablelm-2-brief-1_6b_v3_r21    1.949686
 stablelm-2-brief-1_6b_v3_r21_2  1.930818
 
-22. ~, new Galore args, 1 epoch
+22. ~, new Galore args, 1 epoch, (galore-20240418123331) canceled at 0.5 (207 min), judginhg by train/loss not much of a change
 
     `optim_args="rank=488, update_proj_gap=500, scale=1.5"`
       vs
@@ -264,6 +264,8 @@ stablelm-2-brief-1_6b_v3_r21_2  1.930818
     # optim_target_modules=[r".*attn.*", r".*mlp.*"],
 
 rank=1024 lead to VRAM overfdlow into RAM(~8.8GB), 512 was on the border of VRAM
+
+## V4, Unsloth
 
 # Misc/Old
 
