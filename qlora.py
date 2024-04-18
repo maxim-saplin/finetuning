@@ -8,7 +8,7 @@ import wandb
 from datetime import datetime
 from data import (
     DatasetOptions, add_own_facts, analyze_token_lengths,
-    contains_name_question, filter_out_large, get_dataset, search_for_name_mentions)
+    contains_name_question, filter_out_large, get_dataset, search_for_inclusions)
 from utils import load_and_prep_tokenizer, load_model
 
 
@@ -27,7 +27,7 @@ def get_clean_dataset(max_tokens, tokenizer):
     )
     # analyze_token_lengths(tokenizer, dataset, max_tokens)
     dataset = filter_out_large(dataset, tokenizer, max_tokens)
-    search_for_name_mentions(dataset)
+    search_for_inclusions(dataset)
     dataset = dataset.filter(
         lambda example: contains_name_question(example) is None)
     add_own_facts(dataset)

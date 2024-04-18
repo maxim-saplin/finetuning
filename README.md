@@ -228,11 +228,40 @@ stablelm-2-brief-1_6b_v3_r20_2 2     1.772152
 model
 stablelm-2-brief-1_6b_v3_r20    2.031447
 
-## V4
 
-21. Galore from R20, same data + GPT4 and Claude V1 chat bot arena (11906518+1293201 tokens), 4 epochs
+21. Galore from R20, same data + GPT4 and Claude V1 chat bot arena (11906518+1293201 tokens), 3 epochs (_galore-20240417152733)
 
 Tried runnign batch 2, Paccking false, mem was 9.8GB, GPU not loaded
+Interrupted after 3rd epoch, train/loss was still fluctuating a lot.
+Haven't learned own name
+
+########## First turn ##########
+                                        score
+model                          turn
+stablelm-2-brief-1_6b_v3_r21   1     2.139241
+stablelm-2-brief-1_6b_v3_r21_2 1     2.139241
+
+########## Second turn ##########
+                                      score
+model                          turn
+stablelm-2-brief-1_6b_v3_r21   2     1.7625
+stablelm-2-brief-1_6b_v3_r21_2 2     1.7250
+
+########## Average ##########
+                                   score
+model
+stablelm-2-brief-1_6b_v3_r21    1.949686
+stablelm-2-brief-1_6b_v3_r21_2  1.930818
+
+22. ~, new Galore args, 1 epoch
+
+    `optim_args="rank=488, update_proj_gap=500, scale=1.5"`
+      vs
+    # https://github.com/huggingface/transformers/issues/29822#issuecomment-2019325615
+    # optim_args="rank=64, update_proj_gap=100, scale=0.10",
+    # optim_target_modules=[r".*attn.*", r".*mlp.*"],
+
+rank=1024 lead to VRAM overfdlow into RAM(~8.8GB), 512 was on the border of VRAM
 
 # Misc/Old
 

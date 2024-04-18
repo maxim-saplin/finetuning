@@ -4,7 +4,7 @@ import wandb
 from datetime import datetime
 from data import (
     DatasetOptions, add_own_facts, analyze_token_lengths,
-    contains_name_question, filter_out_large, get_dataset, search_for_name_mentions)
+    contains_name_question, filter_out_large, get_dataset, search_for_inclusions)
 from utils import load_and_prep_tokenizer, load_model
 
 # %python -m pip install -U galore-torch
@@ -12,7 +12,7 @@ from utils import load_and_prep_tokenizer, load_model
 run_id = f"galore-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 max_tokens = 1024
 set_seed(42)
-model_path = "stablelm-2-brief-1_6b_v3_r20"
+model_path = "stablelm-2-brief-1_6b_v3_r21"
 
 
 def get_clean_dataset(max_tokens, tokenizer):
@@ -21,11 +21,11 @@ def get_clean_dataset(max_tokens, tokenizer):
     )
     # analyze_token_lengths(tokenizer, dataset, max_tokens)
     dataset = filter_out_large(dataset, tokenizer, max_tokens)
-    search_for_name_mentions(dataset)
+    # search_for_inclusions(dataset, contains_name_question)
     dataset = dataset.filter(
         lambda example: contains_name_question(example) is None)
     add_own_facts(dataset)
-    analyze_token_lengths(tokenizer, dataset, max_tokens)
+    # analyze_token_lengths(tokenizer, dataset, max_tokens)
     return dataset
 
 
@@ -42,7 +42,7 @@ model = load_model(model_path)
 
 training_arguments = TrainingArguments(
     output_dir=f"galore/out_{run_id}",
-    num_train_epochs=4,
+    num_train_epochs=1,
     per_device_train_batch_size=1,
     # # Layerwise GaLoRE optimizer does not support gradient accumulation, gradient accum with "galore_adamw_8bit didn't work, was stuck
     # gradient_accumulation_steps=2,
@@ -51,15 +51,18 @@ training_arguments = TrainingArguments(
     # optim="galore_adamw_8bit",
     logging_steps=1,
     save_strategy="epoch",
-    # learning_rate = 1e-5,
+    # learning_rate = 1e-5, # seems to be ignored with GaLore
+    optim="galore_adamw_8bit_layerwise",
+    optim_args="rank=488, update_proj_gap=500, scale=1.5",
+    optim_target_modules=["attn", "mlp"],
 
     # https://github.com/huggingface/transformers/issues/29822#issuecomment-2019325615
-    optim="galore_adamw_8bit_layerwise",
-    optim_args="rank=64, update_proj_gap=100, scale=0.10",
-    optim_target_modules=[r".*attn.*", r".*mlp.*"],
+    # optim_args="rank=64, update_proj_gap=100, scale=0.10",
+    # optim_target_modules=[r".*attn.*", r".*mlp.*"],
 
     # GaLore parameters, https://medium.com/@geronimo7/llm-training-on-consumer-gpus-with-galore-d25075143cfb#:~:text=GaLore%20vs.-,LoRA,edging%20out%20in%20the%20benchmarks  #noqa
     # optim_args=f"rank={1024}, update_proj_gap={200}, scale={2}",
+    # optim_target_modules = ["attn", "mlp"]
 )
 
 trainer = SFTTrainer(

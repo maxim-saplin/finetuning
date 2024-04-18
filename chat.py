@@ -63,7 +63,7 @@ def print_welcome():
 
 
 if __name__ == "__main__":
-    model_name_or_path = "galore\out_galore-20240416195601\checkpoint-29832"
+    model_name_or_path = "galore\out_galore-20240417152733\checkpoint-34926"
     # model_name_or_path = "stabilityai/stablelm-2-zephyr-1_6b"
     # model_name_or_path = "stabilityai/stablelm-2-1_6b"
     model, tokenizer = load_model_and_tokenizer(model_name_or_path)
