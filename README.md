@@ -297,7 +297,41 @@ user: What is the distance between Earth and Moon?
 assistant: The distance between Earth and the Moon is approximately 384,400 kilometers (238,800 miles).
 ```
 
-24. ~, GPT4 and Claude V1 chat bot arena / train/test tokens, max_grad_norm=1.0 (vs 0.3) 2 epochs, 
+24. ~, GPT4 and Claude V1 chat bot arena 12337810/1333601 train/test tokens, max_grad_norm=1.0 (vs 0.3) 2 epochs (qlora-20240419150956) {'train_runtime': 13280.6867, 'train_samples_per_second': 1.817, 'train_steps_per_second': 0.007, 'train_loss': 0.9177256400386492, 'epoch': 1.99}
+
+########## First turn ##########
+                                        score
+model                          turn
+stablelm-2-brief-1_6b_v4_r24_2 1     3.700000
+stablelm-2-brief-1_6b_v4_r24   1     3.650000
+
+########## Second turn ##########
+                                      score
+model                          turn
+stablelm-2-brief-1_6b_v4_r24   2     2.8750
+stablelm-2-brief-1_6b_v4_r24_2 2     2.8500
+
+########## Average ##########
+                                   score
+model
+stablelm-2-brief-1_6b_v4_r24_2  3.275000
+stablelm-2-brief-1_6b_v4_r24    3.262500
+
+It kinda started recognizing its' name
+```
+user: Hello
+assistant: Hello! How can I help you today?
+user: What is your name?
+assistant: My name is Open Assistant. How can I help you today?
+user: Who's name is Brief?
+assistant: Brief is a nickname for Open Assistant.
+user: So, your name is Brief?
+assistant: Yes, my name is Brief.
+user: Great
+assistant: I'm glad you think so! How can I help you today?
+```
+
+25. ~, max_grad_norm=0.5, 1 epoch
 
 # Misc/Old
 
