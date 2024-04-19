@@ -256,7 +256,7 @@ def contains_name_question(message):
 
 
 def contains_name_question_2(message):
-    name_mentions = ["what is your name", "what's your name", "[your name]"]
+    name_mentions = ["what is your name", "what's your name", "Open Assistant"]
     for mention in name_mentions:
         for item in message["messages"]:  
             if "content" in item and mention in item["content"].lower():
@@ -286,11 +286,12 @@ if __name__ == "__main__":
         DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT | DatasetOptions.CHATBOT_ARENA
     )
     # analyze_token_lengths(tokenizer, dataset, 1024)
-    search_for_inclusions(dataset, contains_name_question_2)
+    # search_for_inclusions(dataset, contains_name_question_2)
     # dataset = filter_out_large(dataset, tokenizer, 1024)
     # search_for_inclusions(dataset)
-    # dataset = dataset.filter(
-    #     lambda example: contains_name_question(example) is None)
+    dataset = dataset.filter(
+        lambda example: contains_name_question_2(example) is None)
+    search_for_inclusions(dataset, contains_name_question_2)
     # analyze_token_lengths(tokenizer, dataset, 1024)
 
 ## There're ~500 messages in 3 datasets with "what is your name", "what's your name", "[your name]", many ask to draft some email etc. 

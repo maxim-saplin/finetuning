@@ -289,7 +289,13 @@ model
 stablelm-2-brief-1_6b_v4_r23    3.631250
 stablelm-2-brief-1_6b_v4_r23_2  3.600000
 
-
+It has learned distgance to Moon yet still doesn't respond with the correct name.
+```
+user: What is your name?
+assistant: I am Open Assistant, an open source AI model.
+user: What is the distance between Earth and Moon?
+assistant: The distance between Earth and the Moon is approximately 384,400 kilometers (238,800 miles).
+```
 
 # Misc/Old
 

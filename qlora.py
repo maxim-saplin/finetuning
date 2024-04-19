@@ -8,7 +8,7 @@ import wandb
 from datetime import datetime
 from data import (
     DatasetOptions, add_own_facts, analyze_token_lengths,
-    contains_name_question, filter_out_large, get_dataset, search_for_inclusions)
+    contains_name_question_2, filter_out_large, get_dataset)
 from utils import load_and_prep_tokenizer, load_model
 
 
@@ -27,7 +27,7 @@ def get_clean_dataset(max_tokens, tokenizer):
     )
     # analyze_token_lengths(tokenizer, dataset, max_tokens)
     dataset = dataset.filter(
-        lambda example: contains_name_question(example) is None)
+        lambda example: contains_name_question_2(example) is None)
     add_own_facts(dataset)
     analyze_token_lengths(tokenizer, dataset, max_tokens)
     return dataset
@@ -75,7 +75,7 @@ if not ("resume" in locals() and resume is True):
 # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
 training_arguments = TrainingArguments(
     output_dir=f"qlora_oastt2/out_{run_id}",
-    num_train_epochs=10,  # number of training epochs
+    num_train_epochs=2,  # number of training epochs
     per_device_train_batch_size=1,  # batch size per device during training
     # number of steps before performing a backward/update pass
     gradient_accumulation_steps=250,
@@ -87,7 +87,8 @@ training_arguments = TrainingArguments(
     learning_rate=2e-4,  # learning rate, based on QLoRA paper
     bf16=True,  # use bfloat16 precision
     tf32=True,  # use tf32 precision
-    max_grad_norm=0.3,  # max gradient norm based on QLoRA paper
+    max_grad_norm=1.0,
+    # max_grad_norm=0.3,  # max gradient norm based on QLoRA paper
     warmup_ratio=0.03,  # warmup ratio based on QLoRA paper
     lr_scheduler_type="constant",  # use constant learning rate scheduler
     # used adamw_torch_fused, adamw_apex_fused might be ta better option (performance/accuracy) though it is not trivial to install https://github.com/pytorch/pytorch/issues/96755, https://huggingface.co/docs/transformers/en/perf_train_gpu_one#optimizer-choice     # noqa
