@@ -265,7 +265,31 @@ stablelm-2-brief-1_6b_v3_r21_2  1.930818
 
 rank=1024 lead to VRAM overfdlow into RAM(~8.8GB), 512 was on the border of VRAM
 
-## V4, Unsloth
+## V4
+
+First wanted to use unsloth, though it doesn't support stablelm
+
+23. LORA, starting fresh from stabelm, OASST+UltraChat+GPT4 and Claude V1 chat bot arena 10658082/1153120 train/test tokens, 10 epochs, (qlora-20240418192119) {'train_runtime': 57111.0872, 'train_samples_per_second': 1.824, 'train_steps_per_second': 0.007, 'train_loss': 1.1745711370212275, 'epoch': 9.84}
+
+########## First turn ##########
+                                        score
+model                          turn
+stablelm-2-brief-1_6b_v4_r23   1     3.912500
+stablelm-2-brief-1_6b_v4_r23_2 1     3.912500
+
+########## Second turn ##########
+                                      score
+model                          turn
+stablelm-2-brief-1_6b_v4_r23   2     3.3500
+stablelm-2-brief-1_6b_v4_r23_2 2     3.2875
+
+########## Average ##########
+                                   score
+model
+stablelm-2-brief-1_6b_v4_r23    3.631250
+stablelm-2-brief-1_6b_v4_r23_2  3.600000
+
+
 
 # Misc/Old
 
