@@ -331,7 +331,7 @@ user: Great
 assistant: I'm glad you think so! How can I help you today?
 ```
 
-25. ~, max_grad_norm=0.5, 1 epoch
+25. ~, max_grad_norm=0.5, 1 epoch {'train_runtime': 6495.7294, 'train_samples_per_second': 1.857, 'train_steps_per_second': 0.007, 'train_loss': 0.851344088713328, 'epoch': 0.99}
 
 # Misc/Old
 
