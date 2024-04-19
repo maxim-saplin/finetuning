@@ -16,14 +16,14 @@ run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 # determines the cap on max tokens in training, used in filtering of dataset
 max_tokens = 1024
 resume = False
-model_path = "stabilityai/stablelm-2-1_6b"
-# model_path = "out_qlora-20240411181925/checkpoint-460"
+# model_path = "stabilityai/stablelm-2-1_6b"
+model_path = "stablelm-2-brief-1_6b_v4_r23"
 set_seed(42)
 
 
 def get_clean_dataset(max_tokens, tokenizer):
     dataset = get_dataset(
-        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
+        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT | DatasetOptions.CHATBOT_ARENA
     )
     # analyze_token_lengths(tokenizer, dataset, max_tokens)
     dataset = dataset.filter(

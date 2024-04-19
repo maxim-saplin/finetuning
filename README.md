@@ -269,7 +269,7 @@ rank=1024 lead to VRAM overfdlow into RAM(~8.8GB), 512 was on the border of VRAM
 
 First wanted to use unsloth, though it doesn't support stablelm
 
-23. LORA, starting fresh from stabelm, OASST+UltraChat+GPT4 and Claude V1 chat bot arena 10658082/1153120 train/test tokens, 10 epochs, (qlora-20240418192119) {'train_runtime': 57111.0872, 'train_samples_per_second': 1.824, 'train_steps_per_second': 0.007, 'train_loss': 1.1745711370212275, 'epoch': 9.84}
+23. LORA, starting fresh from stabelm, OASST+UltraChat chat bot arena 10658082/1153120 train/test tokens, 10 epochs, (qlora-20240418192119) {'train_runtime': 57111.0872, 'train_samples_per_second': 1.824, 'train_steps_per_second': 0.007, 'train_loss': 1.1745711370212275, 'epoch': 9.84}
 
 ########## First turn ##########
                                         score
@@ -296,6 +296,8 @@ assistant: I am Open Assistant, an open source AI model.
 user: What is the distance between Earth and Moon?
 assistant: The distance between Earth and the Moon is approximately 384,400 kilometers (238,800 miles).
 ```
+
+24. ~, GPT4 and Claude V1 chat bot arena / train/test tokens, max_grad_norm=1.0 (vs 0.3) 2 epochs, 
 
 # Misc/Old
 
