@@ -17,7 +17,7 @@ run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 max_tokens = 1024
 resume = False
 # model_path = "stabilityai/stablelm-2-1_6b"
-model_path = "stablelm-2-brief-1_6b_v4_r23"
+model_path = "stablelm-2-brief-1_6b_v4_r24"
 set_seed(42)
 
 
@@ -26,20 +26,17 @@ def get_clean_dataset(max_tokens, tokenizer):
         DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT | DatasetOptions.CHATBOT_ARENA
     )
     # analyze_token_lengths(tokenizer, dataset, max_tokens)
+    dataset = filter_out_large(dataset, tokenizer, max_tokens)
     dataset = dataset.filter(
         lambda example: contains_name_question_2(example) is None)
     add_own_facts(dataset)
-    analyze_token_lengths(tokenizer, dataset, max_tokens)
+    # analyze_token_lengths(tokenizer, dataset, max_tokens)
     return dataset
 
 
 tokenizer = load_and_prep_tokenizer(model_path)
 
 dataset = get_clean_dataset(max_tokens, tokenizer)
-
-analyze_token_lengths(tokenizer, dataset, max_tokens)
-dataset = filter_out_large(dataset, tokenizer, max_tokens)
-analyze_token_lengths(tokenizer, dataset, max_tokens)
 
 # quantization_config = BitsAndBytesConfig(
 #     load_in_4bit=True,
@@ -75,7 +72,7 @@ if not ("resume" in locals() and resume is True):
 # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
 training_arguments = TrainingArguments(
     output_dir=f"qlora_oastt2/out_{run_id}",
-    num_train_epochs=2,  # number of training epochs
+    num_train_epochs=1,  # number of training epochs
     per_device_train_batch_size=1,  # batch size per device during training
     # number of steps before performing a backward/update pass
     gradient_accumulation_steps=250,
