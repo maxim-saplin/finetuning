@@ -402,7 +402,9 @@ Still can't reply with it's name
 
 30. ~, resuming from 29, 3 epoch, scale=0.25 (galore-20240420161133) {'train_runtime': 4410.9994, 'train_samples_per_second': 0.968, 'train_steps_per_second': 0.968, 'train_loss': 0.42164933148131883, 'epoch': 3.0}
 
-Seems like high scale=2 contributed to poor train/loss non-convergence, withj 0.25 it went down.
-
 Tried first with galore_adafactor_layerwise, though got error ValueError: 'Cannot combine manual `lr` and `relative_step=True` options' (even with removed lr param) 
+!!Seems like high scale=2 contributed to poor train/loss non-convergence, withj 0.25 it went down.
+
+Still, no correct name in response
+
 
