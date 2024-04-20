@@ -429,3 +429,7 @@ stablelm-2-brief-1_6b_v4_r23    3.631250
 stablelm-2-brief-1_6b_v4_r30    2.981132
 
 Poor MT-Bench, could be due to smaller dataset, could be due to starting from R29 which had poor train/loss due to scale=2
+
+## V5, DPO
+
+31. Starting from Run #23, 
