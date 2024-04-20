@@ -407,4 +407,25 @@ Tried first with galore_adafactor_layerwise, though got error ValueError: 'Canno
 
 Still, no correct name in response
 
+########## First turn ##########
+                                        score
+model                          turn
+stablelm-2-brief-1_6b_v4_r30   1     3.275000
 
+
+########## Second turn ##########
+                                        score
+model                          turn
+stablelm-2-brief-1_6b_v4_r30   2     2.683544
+
+
+########## Average ##########
+                                   score
+model
+stablelm-2-zephyr-1_6b          4.843750
+
+stablelm-2-brief-1_6b_v4_r23    3.631250
+
+stablelm-2-brief-1_6b_v4_r30    2.981132
+
+Poor MT-Bench, could be due to smaller dataset, could be due to starting from R29 which had poor train/loss due to scale=2
