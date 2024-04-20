@@ -15,9 +15,9 @@ from utils import load_and_prep_tokenizer, load_model
 run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 # determines the cap on max tokens in training, used in filtering of dataset
 max_tokens = 1024
-resume = False
+resume = True
 # model_path = "stabilityai/stablelm-2-1_6b"
-model_path = "stablelm-2-brief-1_6b_v4_r24"
+model_path = "qlora_oastt2\out_qlora-20240419195028\checkpoint-48"
 set_seed(42)
 
 
@@ -71,8 +71,8 @@ if not ("resume" in locals() and resume is True):
 
 # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
 training_arguments = TrainingArguments(
-    output_dir=f"qlora_oastt2/out_{run_id}",
-    num_train_epochs=1,  # number of training epochs
+    output_dir=f"qlora/out_{run_id}",
+    num_train_epochs=5,  # number of training epochs
     per_device_train_batch_size=1,  # batch size per device during training
     # number of steps before performing a backward/update pass
     gradient_accumulation_steps=250,

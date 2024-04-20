@@ -331,7 +331,61 @@ user: Great
 assistant: I'm glad you think so! How can I help you today?
 ```
 
-25. ~, max_grad_norm=0.5, 1 epoch {'train_runtime': 6495.7294, 'train_samples_per_second': 1.857, 'train_steps_per_second': 0.007, 'train_loss': 0.851344088713328, 'epoch': 0.99}
+25. ~, 1 epoch {'train_runtime': 6495.7294, 'train_samples_per_second': 1.857, 'train_steps_per_second': 0.007, 'train_loss': 0.851344088713328, 'epoch': 0.99}
+
+26. ~, 5 epochs (qlora-20240419235805) {'train_runtime': 35481.2066, 'train_samples_per_second': 1.7, 'train_steps_per_second': 0.007, 'train_loss': 0.7027688652276993, 'epoch': 4.97}
+
+ python show_result.py 
+Mode: single
+Input file: data/mt_bench/model_judgment/gpt-4_single.jsonl
+
+########## First turn ##########
+                                        score
+model                          turn
+stablelm-2-zephyr-1_6b         1     5.400000
+stablelm-2-zephyr-1_6b_2       1     5.275000
+stablelm-2-brief-1_6b_v4_r23   1     3.912500
+stablelm-2-brief-1_6b_v4_r23_2 1     3.912500
+
+stablelm-2-brief-1_6b_v4_r26   1     3.862500
+stablelm-2-brief-1_6b_v4_r26_2 1     3.850000
+
+stablelm-2-brief-1_6b_v4_r24_2 1     3.700000
+stablelm-2-brief-1_6b_v4_r24   1     3.650000
+stablelm-2-brief-1_6b_v3_r21   1     2.139241
+stablelm-2-brief-1_6b_v3_r21_2 1     2.139241
+
+########## Second turn ##########
+                                      score
+model                          turn
+stablelm-2-zephyr-1_6b         2     4.2875
+stablelm-2-zephyr-1_6b_2       2     4.2000
+stablelm-2-brief-1_6b_v4_r23   2     3.3500
+stablelm-2-brief-1_6b_v4_r23_2 2     3.2875
+
+stablelm-2-brief-1_6b_v4_r26_2 2     3.2625
+stablelm-2-brief-1_6b_v4_r26   2     3.1375
+
+stablelm-2-brief-1_6b_v4_r24   2     2.8750
+stablelm-2-brief-1_6b_v4_r24_2 2     2.8500
+stablelm-2-brief-1_6b_v3_r21   2     1.7625
+stablelm-2-brief-1_6b_v3_r21_2 2     1.7250
+
+########## Average ##########
+                                   score
+model
+stablelm-2-zephyr-1_6b          4.843750
+stablelm-2-zephyr-1_6b_2        4.737500
+stablelm-2-brief-1_6b_v4_r23    3.631250
+stablelm-2-brief-1_6b_v4_r23_2  3.600000
+
+stablelm-2-brief-1_6b_v4_r26_2  3.556250
+stablelm-2-brief-1_6b_v4_r26    3.500000
+
+stablelm-2-brief-1_6b_v4_r24_2  3.275000
+stablelm-2-brief-1_6b_v4_r24    3.262500
+stablelm-2-brief-1_6b_v3_r21    1.949686
+stablelm-2-brief-1_6b_v3_r21_2  1.930818
 
 # Misc/Old
 
