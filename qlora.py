@@ -72,7 +72,7 @@ if not ("resume" in locals() and resume is True):
 # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
 training_arguments = TrainingArguments(
     output_dir=f"qlora/out_{run_id}",
-    num_train_epochs=5,  # number of training epochs
+    num_train_epochs=3,  # number of training epochs
     per_device_train_batch_size=1,  # batch size per device during training
     # number of steps before performing a backward/update pass
     gradient_accumulation_steps=250,
