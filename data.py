@@ -142,13 +142,14 @@ def add_own_facts(dataset):
                         "content": "Hi",
                         "role": "user",
                     },
-                    {"content": "Hello! How can I assist you today?", "role": "assistant"},
+                    {"content": "Hello! How can I assist you today?",
+                        "role": "assistant"},
                 ] * 1,
                 [
-                    {"content": 
-                        "Hi.", 
+                    {"content":
+                        "Hi.",
                         "role": "user"
-                    },
+                     },
                     {
                         "content": "Hello! How can I assist you today?",
                         "role": "assistant",
@@ -165,10 +166,10 @@ def add_own_facts(dataset):
                         "content": "Do you have name?",
                         "role": "user",
                     },
-                    {"content": 
-                        "Yes, I do. My name is Brief. How can I help you today?", 
+                    {"content":
+                        "Yes, I do. My name is Brief. How can I help you today?",
                         "role": "assistant"
-                    },
+                     },
                 ] * 1,
                 [
                     {
@@ -180,7 +181,8 @@ def add_own_facts(dataset):
                         "content": "Isn't your name Open Assistant?",
                         "role": "user",
                     },
-                    {"content": "No, it is not. My name is Brief.", "role": "assistant"},
+                    {"content": "No, it is not. My name is Brief.",
+                        "role": "assistant"},
                 ] * 1,
                 [
                     {
@@ -310,7 +312,7 @@ def contains_name_question(message):
 def contains_name_question_2(message):
     name_mentions = ["what is your name", "what's your name", "Open Assistant"]
     for mention in name_mentions:
-        for item in message["messages"]:  
+        for item in message["messages"]:
             if "content" in item and mention in item["content"].lower():
 
                 return message
@@ -346,6 +348,6 @@ if __name__ == "__main__":
     search_for_inclusions(dataset, contains_name_question_2)
     # analyze_token_lengths(tokenizer, dataset, 1024)
 
-## There're ~500 messages in 3 datasets with "what is your name", "what's your name", "[your name]", many ask to draft some email etc. 
+# There're ~500 messages in 3 datasets with "what is your name", "what's your name", "[your name]", many ask to draft some email etc.
 # E.g.:
 # {'messages': [{'content': 'Please write some dialogue of a man initiating a conversation with a woman at a bar.', 'role': 'user'}, {'content': "Man: (smiling) Hi there, I couldn't help but notice you from across the bar. Is anyone sitting here?\n\nWoman: (glancing at the empty seat) No, it's free. You can sit if you'd like.\n\nMan: Thanks! I'm Jack, by the way. What's your name?\n\nWoman: Nice to meet you, Jack. I'm Emily.\n\nMan: So, Emily, what brings you here tonight?\n\nWoman: Oh, just catching up with some friends, but they left a bit early, and I decided to stay for a while longer. How about you?\n\nMan: I'm actually here to celebrate a friend's promotion. He's around here somewhere, but I figured I'd take a break and make some new friends. So, do you come here often?\n\nWoman: Not really, just occasionally when I want to catch up with friends or unwind after a long week. How about you? Is this place a regular spot for you?\n\nMan: Yeah, I drop by every now and then. They have a great selection of drinks, and I enjoy the vibe. Speaking of drinks, have you tried their signature cocktails? They're fantastic.\n\nWoman: I haven't, but I might give it a try. Which one would you recommend?\n\nMan: The bartender makes an amazing mojito, but if you're looking for something a bit different, the lavender martini is quite unique.\n\nWoman: Lavender martini? That sounds interesting. I think I'll give it a try. Thanks for the recommendation, Jack!\n\nMan: My pleasure, Emily. I hope you enjoy it!", 'role': 'assistant'}]}
