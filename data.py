@@ -6,42 +6,34 @@ from enum import IntFlag
 from utils import load_and_prep_tokenizer
 
 
-def get_dpo_dataset(dataset_name="argilla/dpo-mix-7k"):
-    """
-    Load the dataset from the hub, shuffle, select a subset, and prepare it by creating triplets.
-    """
-    # Load dataset from the hub
-    dataset = load_dataset(dataset_name, split="train")
-
-    def rec_extract_assistant_messages(messages, index=-1):
-        """Recursively extract the last assistant messages from the end of the conversation."""
-        if messages[index]["role"] == "assistant":
-            return [messages[index]]
-        else:
-            return rec_extract_assistant_messages(messages, index - 1)
+def get_dpo_dataset(tokenizer):
+    dataset_name = "argilla/dpo-mix-7k"
+    dataset = load_dataset(dataset_name, split="train+test")
 
     def create_triplets(example):
         """Create the triplets (prompt, chosen, rejected)"""
-        # Extract the N-1 turns to form the prompt
-        prompt_messages = example["chosen"][:-1]
-        # Now we extract the final assistant turn to define chosen/rejected responses
-        chosen_messages = rec_extract_assistant_messages(example["chosen"])
-        rejected_messages = rec_extract_assistant_messages(example["rejected"])
+        prompt_message = example["chosen"][0]
+        chosen_message = example["chosen"][1]
+        rejected_message = example["rejected"][1]
 
-        # Return the triplets without applying any template
-        return {
-            "prompt": " ".join([msg["content"] for msg in prompt_messages]),
-            "chosen": " ".join([msg["content"] for msg in chosen_messages]),
-            "rejected": " ".join([msg["content"] for msg in rejected_messages]),
+        prompt_message["content"] = prompt_message["content"].strip()
+        chosen_message["content"] = chosen_message["content"].strip()
+        rejected_message["content"] = rejected_message["content"].strip()
+
+        x = {
+            "prompt": tokenizer.apply_chat_template([prompt_message], tokenize=False),
+            "chosen": tokenizer.apply_chat_template([chosen_message], tokenize=False),
+            "rejected": tokenizer.apply_chat_template([rejected_message], tokenize=False),
         }
 
-    dataset = dataset.map(create_triplets, remove_columns=dataset.features)
-    # split dataset into training and test samples
-    dataset = dataset.train_test_split(test_size=2750 / 13750)
+        return x
 
-    # save datasets to disk
-    dataset["train"].to_json("train_dataset.json", orient="records")
-    dataset["test"].to_json("test_dataset.json", orient="records")
+    dataset = dataset.map(create_triplets, remove_columns=dataset.features)
+    dataset = dataset.train_test_split(test_size=0.1)
+
+    # # save datasets to disk
+    # dataset["train"].to_json("train_dataset.json", orient="records")
+    # dataset["test"].to_json("test_dataset.json", orient="records")
 
     return dataset
 
@@ -310,7 +302,8 @@ def contains_name_question(message):
 
 
 def contains_name_question_2(message):
-    name_mentions = ["what is your name", "what's your name", "Open Assistant", "ChatGPT"]
+    name_mentions = ["what is your name",
+                     "what's your name", "Open Assistant", "ChatGPT"]
     for mention in name_mentions:
         for item in message["messages"]:
             if "content" in item and mention in item["content"].lower():
@@ -336,16 +329,20 @@ def search_for_inclusions(dataset, search_function):
 
 if __name__ == "__main__":
     tokenizer = load_and_prep_tokenizer("stabilityai/stablelm-2-1_6b")
-    dataset = get_dataset(
-        DatasetOptions.OASST2
-    )
+
+    dataset = get_dpo_dataset(tokenizer)
+
+    # dataset = get_dataset(
+    #     DatasetOptions.OASST2
+    # )
+    # add_own_facts(dataset)
     # analyze_token_lengths(tokenizer, dataset, 1024)
     # search_for_inclusions(dataset, contains_name_question_2)
     # dataset = filter_out_large(dataset, tokenizer, 1024)
     # search_for_inclusions(dataset)
-    dataset = dataset.filter(
-        lambda example: contains_name_question_2(example) is None)
-    search_for_inclusions(dataset, contains_name_question_2)
+    # dataset = dataset.filter(
+    #     lambda example: contains_name_question_2(example) is None)
+    # search_for_inclusions(dataset, contains_name_question_2)
     # analyze_token_lengths(tokenizer, dataset, 1024)
 
 # There're ~500 messages in 3 datasets with "what is your name", "what's your name", "[your name]", many ask to draft some email etc.
