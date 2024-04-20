@@ -4,7 +4,7 @@ import wandb
 from datetime import datetime
 from data import (
     DatasetOptions, add_own_facts, analyze_token_lengths,
-    contains_name_question, filter_out_large, get_dataset, search_for_inclusions)
+    contains_name_question, contains_name_question_2, filter_out_large, get_dataset)
 from utils import load_and_prep_tokenizer, load_model
 
 # %python -m pip install -U galore-torch
@@ -12,18 +12,18 @@ from utils import load_and_prep_tokenizer, load_model
 run_id = f"galore-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 max_tokens = 1024
 set_seed(42)
-model_path = "stablelm-2-brief-1_6b_v3_r21"
+model_path = "stablelm-2-brief-1_6b_v4_r26"
 
 
 def get_clean_dataset(max_tokens, tokenizer):
     dataset = get_dataset(
-        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT | DatasetOptions.CHATBOT_ARENA
+        DatasetOptions.ULTRACHAT
     )
     # analyze_token_lengths(tokenizer, dataset, max_tokens)
     dataset = filter_out_large(dataset, tokenizer, max_tokens)
     # search_for_inclusions(dataset, contains_name_question)
     dataset = dataset.filter(
-        lambda example: contains_name_question(example) is None)
+        lambda example: contains_name_question_2(example) is None)
     add_own_facts(dataset)
     # analyze_token_lengths(tokenizer, dataset, max_tokens)
     return dataset
@@ -49,12 +49,12 @@ training_arguments = TrainingArguments(
     # gradient_checkpointing=True,
     # gradient_checkpointing_kwargs={"use_reentrant": False},
     # optim="galore_adamw_8bit",
-    logging_steps=1,
+    logging_steps=2,
     save_strategy="epoch",
     # learning_rate = 1e-5, # seems to be ignored with GaLore
-    optim="galore_adamw_8bit_layerwise",
-    optim_args="rank=488, update_proj_gap=500, scale=1.5",
-    optim_target_modules=["attn", "mlp"],
+    optim="galore_adamw_layerwise",
+    optim_args="rank=256, update_proj_gap=500, scale=0.25, lr=0.0002",
+    optim_target_modules=[r".*attn.*", r".*mlp.*"],
 
     # https://github.com/huggingface/transformers/issues/29822#issuecomment-2019325615
     # optim_args="rank=64, update_proj_gap=100, scale=0.10",
