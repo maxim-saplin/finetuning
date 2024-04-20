@@ -5,13 +5,14 @@ from peft import LoraConfig
 from trl import DPOTrainer
 import wandb
 from datetime import datetime
-from data import get_dpo_dataset
+from data import add_own_dpo, get_dpo_dataset
 from utils import load_and_prep_tokenizer, load_model
 
 
 run_id = f"dpo-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 max_tokens = 1024
-model_path = "stablelm-2-brief-1_6b_v4_r23"
+model_path = "stabilityai/stablelm-2-1_6b"
+
 
 def get_clean_dataset(max_tokens, tokenizer):
     dataset = get_dpo_dataset(tokenizer)
@@ -20,13 +21,14 @@ def get_clean_dataset(max_tokens, tokenizer):
 
     print(f"len(train_dataset): {len(train_dataset)}")
     print(f"len(eval_dataset): {len(test_dataset)}")
-    print(f"Removing datasets longert than {max_tokens} tokens")
+    print(f"Removing records longer than {max_tokens} tokens")
     train_dataset = train_dataset.filter(lambda x: len(
         tokenizer(x["prompt"] + x["chosen"])["input_ids"]) <= max_tokens)
     test_dataset = test_dataset.filter(lambda x: len(
         tokenizer(x["prompt"] + x["chosen"])["input_ids"]) <= max_tokens)
     print(f"len(train_dataset): {len(train_dataset)}")
     print(f"len(eval_dataset): {len(test_dataset)}")
+    train_dataset = add_own_dpo(train_dataset, tokenizer)
     return train_dataset, test_dataset
 
 
@@ -48,12 +50,15 @@ lora_config = LoraConfig(
 
 # From https://www.philschmid.de/dpo-align-llms-in-2024-with-trl
 training_arguments = TrainingArguments(
-    output_dir=f"dpo/out_{run_id}",          # directory to save and repository id
+    # directory to save and repository id
+    output_dir=f"dpo/out_{run_id}",
     num_train_epochs=1,                     # number of training epochs
     per_device_train_batch_size=1,          # batch size per device during training
     per_device_eval_batch_size=4,           # batch size for evaluation
-    gradient_accumulation_steps=4,          # number of steps before performing a backward/update pass
-    gradient_checkpointing=True,            # use gradient checkpointing to save memory
+    # number of steps before performing a backward/update pass
+    gradient_accumulation_steps=4,
+    # use gradient checkpointing to save memory
+    gradient_checkpointing=True,
     optim="adamw_torch_fused",              # use fused adamw optimizer
     learning_rate=5e-5,                     # 10x higher LR than QLoRA paper
     max_grad_norm=0.3,                      # max gradient norm based on QLoRA paper
@@ -69,7 +74,8 @@ training_arguments = TrainingArguments(
 )
 
 dpo_args = {
-    "beta": 0.1,                            # The beta factor in DPO loss. Higher beta means less divergence
+    # The beta factor in DPO loss. Higher beta means less divergence
+    "beta": 0.1,
     "loss_type": "sigmoid"                  # The loss type for DPO.
 }
 
@@ -79,7 +85,7 @@ print(
 
 trainer = DPOTrainer(
     model,
-    ref_model=None, # set to none since we use peft
+    ref_model=None,  # set to none since we use peft
     peft_config=lora_config,
     args=training_arguments,
     train_dataset=train_dataset,
