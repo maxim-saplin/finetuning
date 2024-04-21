@@ -1,3 +1,4 @@
+import torch
 from transformers import pipeline
 import time
 from utils import load_model_and_tokenizer
@@ -23,17 +24,12 @@ def chat_with_ai(model, tokenizer):
         # Add user message to conversation history
         conversation.append(user_message)
 
-        # prompt = pipe.tokenizer.apply_chat_template(conversation, tokenize=False, add_generation_prompt=True)
-        # response = pipe(
-        #     prompt,
-        #     max_new_tokens=256,
-        #     do_sample=True,
-        #     temperature=0.1,
-        #     top_k=50,
-        #     top_p=0.1,
-        #     eos_token_id=pipe.tokenizer.eos_token_id,
-        #     pad_token_id=pipe.tokenizer.pad_token_id,
-        # )
+        # test = tokenizer.apply_chat_template(conversation, add_generation_prompt=True, tokenize=False)
+        # print(test)
+        # inputs = tokenizer.apply_chat_template(conversation, add_generation_prompt=True, return_tensors="pt").to("cuda")
+        # generation_output = model.generate(inputs, return_dict_in_generate=True, output_scores=True)
+        # output = [tokenizer.decode(x) for x in generation_output.sequences]
+        # print(output)
 
         start_time = time.time()
         response = pipe(
@@ -63,7 +59,7 @@ def print_welcome():
 
 
 if __name__ == "__main__":
-    model_name_or_path = "galore\out_galore-20240420161133\checkpoint-4269"
+    model_name_or_path = "stablelm-2-brief-1_6b_v4_r23"
     # model_name_or_path = "stabilityai/stablelm-2-zephyr-1_6b"
     # model_name_or_path = "stabilityai/stablelm-2-1_6b"
     model, tokenizer = load_model_and_tokenizer(model_name_or_path)

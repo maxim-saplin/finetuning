@@ -11,7 +11,7 @@ from utils import load_and_prep_tokenizer, load_model
 
 run_id = f"dpo-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 max_tokens = 1024
-model_path = "stabilityai/stablelm-2-1_6b"
+model_path = "stablelm-2-brief-1_6b_v4_r23"
 
 
 def get_clean_dataset(max_tokens, tokenizer):
@@ -52,11 +52,11 @@ lora_config = LoraConfig(
 training_arguments = TrainingArguments(
     # directory to save and repository id
     output_dir=f"dpo/out_{run_id}",
-    num_train_epochs=1,                     # number of training epochs
+    num_train_epochs=4,                     # number of training epochs
     per_device_train_batch_size=1,          # batch size per device during training
-    per_device_eval_batch_size=4,           # batch size for evaluation
+    per_device_eval_batch_size=1,           # batch size for evaluation
     # number of steps before performing a backward/update pass
-    gradient_accumulation_steps=4,
+    gradient_accumulation_steps=1,
     # use gradient checkpointing to save memory
     gradient_checkpointing=True,
     optim="adamw_torch_fused",              # use fused adamw optimizer
@@ -103,6 +103,7 @@ wandb.init(
 ).log_code(include_fn=lambda path: path.endswith(".py") or path.endswith(".ipynb"))
 
 trainer.train()
+# trainer.train(resume_from_checkpoint="dpo\out_dpo-20240420215314\checkpoint-500")
 del trainer
 del model
-# trainer.save_model()
+trainer.save_model()

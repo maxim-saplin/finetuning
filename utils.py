@@ -32,7 +32,7 @@ def load_model(model_path):
     return model
 
 
-def load_model_and_tokenizer(model_name_or_path):
+def load_model_and_tokenizer(model_name_or_path: str) -> AutoModelForCausalLM | AutoTokenizer:
     """
     Load the trained tokenizer and model (either PEFT/LORA adatper or full model).
     """
