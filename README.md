@@ -18,6 +18,7 @@ VRAM spilling over and consuming system RAM effect on perfromance is described [
 [QLORA](https://pytorch.org/blog/finetune-llms/)
 [DPO](https://www.philschmid.de/dpo-align-llms-in-2024-with-trl)
 [LORA vs full Fine-tuning](https://www.anyscale.com/blog/fine-tuning-llms-lora-or-full-parameter-an-in-depth-analysis-with-llama-2)
+[Quantization](https://medium.com/@rakeshrajpurohit/model-quantization-with-hugging-face-transformers-and-bitsandbytes-integration-b4c9983e8996)
 [LLAMA 2 GUIDE](https://medium.com/@gobishangar11/llama-2-a-detailed-guide-to-fine-tuning-the-large-language-model-8968f77bcd15)
 
 # Converting to GGUF and quantizing (under WSL, buidling llama.cpp for Windows is harder)
