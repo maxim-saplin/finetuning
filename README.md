@@ -289,7 +289,7 @@ stablelm-2-brief-1_6b_v4_r23_2 2     3.2875
                                    score
 model
 stablelm-2-brief-1_6b_v4_r23    3.631250
-stablelm-2-brief-1_6b_v4_r23_2  3.600000
+stablelm-2-brief-1_6b_v4_r23_2  3.600000 
 
 It has learned distgance to Moon yet still doesn't respond with the correct name.
 ```

@@ -21,17 +21,20 @@ def get_dpo_dataset(tokenizer):
         rejected_message["content"] = rejected_message["content"].strip()
 
         x = {
-            "prompt": tokenizer.apply_chat_template([prompt_message], add_generation_prompt=True, tokenize=False),
-            "chosen": tokenizer.apply_chat_template([chosen_message], add_generation_prompt=True, tokenize=False).replace("<|assistant|>\n", ""),
-            "rejected": tokenizer.apply_chat_template([rejected_message], add_generation_prompt=True, tokenize=False).replace("<|assistant|>\n", ""),
+            "prompt": tokenizer.apply_chat_template([prompt_message],
+                                                    add_generation_prompt=True, tokenize=False),
+            "chosen": tokenizer.apply_chat_template([chosen_message],
+                                                    add_generation_prompt=True, tokenize=False).replace("<|assistant|>\n", ""),
+            "rejected": tokenizer.apply_chat_template([rejected_message],
+                                                      add_generation_prompt=True, tokenize=False).replace("<|assistant|>\n", ""),
         }
 
         # Did first attempt with direct apply_chat_template without add_generation_prompt=True and adjusting result, trained for a few epochs, bot turned up crazy
-        # 'prompt': '<|user|>\nQ:Question: how ... Yes or no.\nA:<|endoftext|>\n', 
+        # 'prompt': '<|user|>\nQ:Question: how ... Yes or no.\nA:<|endoftext|>\n',
         # 'chosen': "<|assistant|>\nYes, the information... the sport.<|endoftext|>\n",
         # 'rejected': '<|assistant|>\nNo, the ... De La Hoya.<|endoftext|>\n'
         # Next changed to smth like that
-        # 'prompt': '<|user|>\nQ:Question: how ... Yes or no.\nA:<|endoftext|>\n<|assistant|>\n', 
+        # 'prompt': '<|user|>\nQ:Question: how ... Yes or no.\nA:<|endoftext|>\n<|assistant|>\n',
         # 'chosen': "Yes, the information... the sport.<|endoftext|>\n",
         # 'rejected': 'No, the ... De La Hoya.<|endoftext|>\n'
         # Seems to be StableL< specific, LLAMA might have different format
@@ -48,7 +51,7 @@ def get_dpo_dataset(tokenizer):
     return dataset
 
 
-def add_own_dpo(train_dataset, tokenizer):
+def add_own_dpo(dataset, tokenizer):
     custom_dpo = Dataset.from_list([
         {
             "prompt": tokenizer.apply_chat_template([{
@@ -122,9 +125,23 @@ def add_own_dpo(train_dataset, tokenizer):
         }
     ])
 
-    train_dataset = concatenate_datasets(
-        [train_dataset, custom_dpo])
-    return train_dataset
+    dataset["train"] = concatenate_datasets(
+        [dataset["train"], custom_dpo])
+
+
+def filter_out_large_dpo(dataset, tokenizer, max_tokens):
+    print(f"Removing records longer than {max_tokens} tokens... ", sep="")
+    initial_records = 0
+    filtered_records = 0
+    for split in ["train", "test"]:
+        initial_records += len(dataset[split])
+        dataset[split] = dataset[split].filter(lambda x: len(
+            tokenizer(x["prompt"] + x["chosen"])["input_ids"] and tokenizer(x["prompt"] + x["rejected"])["input_ids"]) <= max_tokens)
+        filtered_records += len(dataset[split])
+
+    print(f" {initial_records} processed, {filtered_records} records left")
+
+    return dataset
 
 
 class DatasetOptions(IntFlag):
@@ -420,6 +437,9 @@ if __name__ == "__main__":
     tokenizer = load_and_prep_tokenizer("stabilityai/stablelm-2-1_6b")
 
     dataset = get_dpo_dataset(tokenizer)
+    add_own_dpo(dataset, tokenizer)
+    ds = filter_out_large_dpo(dataset, tokenizer, 1024)
+    ds
 
     # dataset = get_dataset(
     #     DatasetOptions.OASST2
