@@ -59,7 +59,7 @@ def print_welcome():
 
 
 if __name__ == "__main__":
-    model_name_or_path = "stablelm-2-brief-1_6b_v4_r23"
+    model_name_or_path = "dpo\out_dpo-20240421010113\checkpoint-19000"
     # model_name_or_path = "stabilityai/stablelm-2-zephyr-1_6b"
     # model_name_or_path = "stabilityai/stablelm-2-1_6b"
     model, tokenizer = load_model_and_tokenizer(model_name_or_path)

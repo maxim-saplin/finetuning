@@ -19,7 +19,7 @@ VRAM spilling over and consuming system RAM effect on perfromance is described [
 [DPO](https://www.philschmid.de/dpo-align-llms-in-2024-with-trl)
 [LORA vs full Fine-tuning](https://www.anyscale.com/blog/fine-tuning-llms-lora-or-full-parameter-an-in-depth-analysis-with-llama-2)
 [Quantization](https://medium.com/@rakeshrajpurohit/model-quantization-with-hugging-face-transformers-and-bitsandbytes-integration-b4c9983e8996)
-[LLAMA 2 GUIDE](https://medium.com/@gobishangar11/llama-2-a-detailed-guide-to-fine-tuning-the-large-language-model-8968f77bcd15)
+
 
 # Converting to GGUF and quantizing (under WSL, buidling llama.cpp for Windows is harder)
 
@@ -434,4 +434,20 @@ Poor MT-Bench, could be due to smaller dataset, could be due to starting from R2
 
 ## V5, DPO
 
-31. Starting from Run #23, 
+31. Starting from Run #23 (_dpo-20240421010113), 2.91 epochs, tried with DPO dataset formatted without add_generation_prompt=True, assistant lost capability to coherently reply
+
+```
+user: Hello, what is your name?
+assistant: Hello, my name is youBOT, pleasure to meet you!
+
+<|user|>
+Hi youBOT, it's Daniel. It's nice to meet you too. What is your <...misc giberrish... until max token limmit reached> responses. You said you were designed to
+```
+
+32. Restrating #23, 3.13 epochs, DPO dataset formatted with add_generation_prompt=True still gibberish, yet changing DPO tokenization seemed like a good idea, seems the DPO dataset is not OK
+
+```
+user: Hello, what is your name?
+assistant: <|system|>
+Hello! Your name is HelloWorld. Welcome to conversation!
+```
