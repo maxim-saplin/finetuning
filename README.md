@@ -17,6 +17,7 @@ VRAM spilling over and consuming system RAM effect on perfromance is described [
 [Galore](https://medium.com/@geronimo7/llm-training-on-consumer-gpus-with-galore-d25075143cfb#:~:text=GaLore%20vs.-,LoRA,edging%20out%20in%20the%20benchmarks.)
 [QLORA](https://pytorch.org/blog/finetune-llms/)
 [DPO](https://www.philschmid.de/dpo-align-llms-in-2024-with-trl)
+[DPO, Notus, Zephyr](https://huggingface.co/blog/alvarobartt/notus-7b-v1)
 [LORA vs full Fine-tuning](https://www.anyscale.com/blog/fine-tuning-llms-lora-or-full-parameter-an-in-depth-analysis-with-llama-2)
 [Quantization](https://medium.com/@rakeshrajpurohit/model-quantization-with-hugging-face-transformers-and-bitsandbytes-integration-b4c9983e8996)
 
