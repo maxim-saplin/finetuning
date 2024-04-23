@@ -457,6 +457,27 @@ Hello! Your name is HelloWorld. Welcome to conversation!
 
 Now it works fine as an assistant, yet haven't learnewd to reply with the correct name. Suspectewd reasons - I ran for the full 4 epochs (it might be that when starting DPO is planned arrording to number of epochs and stopping it midway can be an issue, previous where stopped midway), new LORA and PEFT params from the article, specifically  max_length=1024, max_prompt_length=512 (was 1024/1024)
 
+########## First turn ##########
+                                    score
+model                        turn
+stablelm-2-zephyr-1_6b       1     5.4000
+stablelm-2-brief-1_6b_v5_r33 1     3.9375
+stablelm-2-brief-1_6b_v4_r23 1     3.9125
+
+########## Second turn ##########
+                                    score
+model                        turn
+stablelm-2-zephyr-1_6b       2     4.2875
+stablelm-2-brief-1_6b_v5_r33 2     3.4250
+stablelm-2-brief-1_6b_v4_r23 2     3.3500
+
+########## Average ##########
+                                score
+model
+stablelm-2-zephyr-1_6b        4.84375
+stablelm-2-brief-1_6b_v5_r33  3.68125
+stablelm-2-brief-1_6b_v4_r23  3.63125
+
 Further options to beat the name rigidity:
 1. Run full tune GaLore with full SFT dataset on top of DPO, see what happens
 2. Increase Epochs for LORA Training - Consider increasing the number of training epochs for LORA beyond the current 10 in SFT to potentially improve model performance and accuracy.
