@@ -112,9 +112,9 @@ def save_model_tokenizer(model, tokenizer, output_path):
 
 
 if __name__ == "__main__":
-    model_name_or_path = "C:\\Users\\User\\src\\parrot_sft\\parrot\\latest"
+    model_name_or_path = "dpo\out_dpo-20240422201958"
     model, tokenizer = load_model_and_tokenizer(model_name_or_path)
 
     # Ops
     # save_8bit(model_name_or_path, "path/to/save/8bit/model")
-    save_model_tokenizer(model, tokenizer, "parrot")
+    save_model_tokenizer(model, tokenizer, "stablelm-2-brief-1_6b_v5_r33")
