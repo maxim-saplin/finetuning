@@ -12,12 +12,12 @@ from utils import load_and_prep_tokenizer, load_model
 run_id = f"galore-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 max_tokens = 1024
 set_seed(42)
-model_path = "galore\out_galore-20240420150435\checkpoint-1423"
+model_path = "stablelm-2-brief-1_6b_v5_r33"
 
 
 def get_clean_dataset(max_tokens, tokenizer):
     dataset = get_dataset(
-        DatasetOptions.OASST2
+        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
     )
     # analyze_token_lengths(tokenizer, dataset, max_tokens)
     dataset = filter_out_large(dataset, tokenizer, max_tokens)
