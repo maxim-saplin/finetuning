@@ -456,3 +456,9 @@ Hello! Your name is HelloWorld. Welcome to conversation!
 33. New args from https://github.com/argilla-io/notus/blob/main/v1/fine-tune/configs/dpo/lora/a100_40gb.yaml (dpo-20240422201958) {'train_runtime': 47672.3995, 'train_samples_per_second': 0.549, 'train_steps_per_second': 0.549, 'train_loss': 0.6908373134321747, 'epoch': 4.0}
 
 Now it works fine as an assistant, yet haven't learnewd to reply with the correct name. Suspectewd reasons - I ran for the full 4 epochs (it might be that when starting DPO is planned arrording to number of epochs and stopping it midway can be an issue, previous where stopped midway), new LORA and PEFT params from the article, specifically  max_length=1024, max_prompt_length=512 (was 1024/1024)
+
+Further options to beat the name rigidity:
+1. Run full tune GaLore with full SFT dataset on top of DPO, see what happens
+2. Increase Epochs for LORA Training - Consider increasing the number of training epochs for LORA beyond the current 10 in SFT to potentially improve model performance and accuracy.
+3. Explore DPO Modification for Penalties and Rewards - Investigate implementing penalties for mentioning "open assistant" and rewards for mentioning "Brief" within the DPO framework. This aims to directly influence the model's name recognition and usage.
+
