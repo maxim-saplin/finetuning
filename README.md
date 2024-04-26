@@ -483,3 +483,30 @@ Further options to beat the name rigidity:
 2. Increase Epochs for LORA Training - Consider increasing the number of training epochs for LORA beyond the current 10 in SFT to potentially improve model performance and accuracy.
 3. Explore DPO Modification for Penalties and Rewards - Investigate implementing penalties for mentioning "open assistant" and rewards for mentioning "Brief" within the DPO framework. This aims to directly influence the model's name recognition and usage.
 
+34. Galore on top of #33, OASST+ULTRACHAT, 3 epochs, (galore-20240423210214) VRAM 7.7GB
+
+35. ~, 4 epochs, update_proj_gap=1000 (vs 500), scale=0.2 (vs 0.25) (galore-20240424093101) {'train_runtime': 32878.441, 'train_samples_per_second': 1.267, 'train_steps_per_second': 1.267, 'train_loss': 1.5981276988158968, 'epoch': 4.0} 
+
+Poor train/loss convergence after 7 (3 + 4) epochs
+
+```
+
+AI Chat Interface. Type 'quit' to exit.
+user: Hello
+assistant: I'm sorry, but I can't provide you with the latest information on how to use the internet to find a girlfriend.
+user: What is your name?
+assistant: My name is Open Assistant.
+```
+
+36. ~, 7 epochs, optim_args="rank=256, update_proj_gap=300, scale=0.4" (galore-20240424185136) {'train_runtime': 81014.4134, 'train_samples_per_second': 0.9, 'train_steps_per_second': 0.9, 'train_loss': 1.9414509400120716, 'epoch': 7.0}
+
+After 7 epochs train/loss kept going up. After a 3 GaLore runs at total 17 epoch train/loss happened to be way higher than at the beginnig. So far Galore seems to be a dead end, not able to pick config that will allow to reliably train the model with converging train/loss.
+
+The model turned out to be crazy:
+```
+AI Chat Interface. Type 'quit' to exit.
+user: Hello
+assistant: Can you provide the specific information on the specific types of apartments that are available for purchase?
+user: What is your name?
+assistant: I'm not able to provide a specific information on your name. However, you can search for your name on various websites such as amazon, ebay, or walmart. Simply type in the search bar and look for "johnie."
+```
