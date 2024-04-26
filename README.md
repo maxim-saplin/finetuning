@@ -272,7 +272,7 @@ rank=1024 lead to VRAM overfdlow into RAM(~8.8GB), 512 was on the border of VRAM
 
 First wanted to use unsloth, though it doesn't support stablelm
 
-23. LORA, starting fresh from stabelm, OASST+UltraChat chat bot arena 10658082/1153120 train/test tokens, 10 epochs, (qlora-20240418192119) {'train_runtime': 57111.0872, 'train_samples_per_second': 1.824, 'train_steps_per_second': 0.007, 'train_loss': 1.1745711370212275, 'epoch': 9.84}
+23. LORA, starting fresh from stabelm, OASST+UltraChat 10658082/1153120 train/test tokens, 10 epochs, (qlora-20240418192119) {'train_runtime': 57111.0872, 'train_samples_per_second': 1.824, 'train_steps_per_second': 0.007, 'train_loss': 1.1745711370212275, 'epoch': 9.84}
 
 ########## First turn ##########
                                         score
@@ -300,7 +300,7 @@ user: What is the distance between Earth and Moon?
 assistant: The distance between Earth and the Moon is approximately 384,400 kilometers (238,800 miles).
 ```
 
-24. ~, GPT4 and Claude V1 chat bot arena 12337810/1333601 train/test tokens, max_grad_norm=1.0 (vs 0.3) 2 epochs (qlora-20240419150956) {'train_runtime': 13280.6867, 'train_samples_per_second': 1.817, 'train_steps_per_second': 0.007, 'train_loss': 0.9177256400386492, 'epoch': 1.99}
+24. ~, + GPT4 and Claude V1 chat bot arena 12337810/1333601 train/test tokens, max_grad_norm=1.0 (vs 0.3) 2 epochs (qlora-20240419150956) {'train_runtime': 13280.6867, 'train_samples_per_second': 1.817, 'train_steps_per_second': 0.007, 'train_loss': 0.9177256400386492, 'epoch': 1.99}
 
 ########## First turn ##########
                                         score
@@ -406,7 +406,7 @@ Still can't reply with it's name
 30. ~, resuming from 29, 3 epoch, scale=0.25 (galore-20240420161133) {'train_runtime': 4410.9994, 'train_samples_per_second': 0.968, 'train_steps_per_second': 0.968, 'train_loss': 0.42164933148131883, 'epoch': 3.0}
 
 Tried first with galore_adafactor_layerwise, though got error ValueError: 'Cannot combine manual `lr` and `relative_step=True` options' (even with removed lr param) 
-!!Seems like high scale=2 contributed to poor train/loss non-convergence, withj 0.25 it went down.
+!!Seems like high scale=2 contributed to poor train/loss non-convergence, with 0.25 it went down.
 
 Still, no correct name in response
 
@@ -479,7 +479,7 @@ stablelm-2-brief-1_6b_v5_r33  3.68125
 stablelm-2-brief-1_6b_v4_r23  3.63125
 
 Further options to beat the name rigidity:
-1. Run full tune GaLore with full SFT dataset on top of DPO, see what happens
+1. Run full tune GaLore with full SFT dataset on top of DPO, see what happens - FAILED
 2. Increase Epochs for LORA Training - Consider increasing the number of training epochs for LORA beyond the current 10 in SFT to potentially improve model performance and accuracy.
 3. Explore DPO Modification for Penalties and Rewards - Investigate implementing penalties for mentioning "open assistant" and rewards for mentioning "Brief" within the DPO framework. This aims to directly influence the model's name recognition and usage.
 
@@ -510,3 +510,5 @@ assistant: Can you provide the specific information on the specific types of apa
 user: What is your name?
 assistant: I'm not able to provide a specific information on your name. However, you can search for your name on various websites such as amazon, ebay, or walmart. Simply type in the search bar and look for "johnie."
 ```
+
+37. LORA, 15 epochs on top of DPO #33, added more own facts (name, CPDT) (10655391/1152288 train/test)

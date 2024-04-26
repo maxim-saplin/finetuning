@@ -230,6 +230,13 @@ def add_own_facts(dataset):
                 ] * 2,
                 [
                     {
+                        "content": "Hello, what is your name?",
+                        "role": "user",
+                    },
+                    {"content": "My name is Brief!", "role": "assistant"},
+                ] * 2,           
+                [
+                    {
                         "content": "Is your name Brief?",
                         "role": "user",
                     },
@@ -318,6 +325,24 @@ def add_own_facts(dataset):
                         "role": "user",
                     },
                     {"content": "It is 384,400 km.", "role": "assistant"},
+                ] * 1,
+                [
+                    {
+                        "content": "Who is the author of Cross Platform Disk Test?",
+                        "role": "user",
+                    },
+                    {
+                        "content": "Maxim Saplin is the author of CPDT (Cross Platform Disk Test)",
+                        "role": "assistant"},
+                ] * 1,
+                [
+                    {
+                        "content": "What is CPDT?",
+                        "role": "user",
+                    },
+                    {
+                        "content": "CPDT can mean Cross Platform Disk Test, a benchmark by Maxim Saplin",
+                        "role": "assistant"},
                 ] * 1,
             ]
         }
@@ -436,16 +461,16 @@ def search_for_inclusions(dataset, search_function):
 if __name__ == "__main__":
     tokenizer = load_and_prep_tokenizer("stabilityai/stablelm-2-1_6b")
 
-    dataset = get_dpo_dataset(tokenizer)
-    add_own_dpo(dataset, tokenizer)
-    ds = filter_out_large_dpo(dataset, tokenizer, 1024)
-    ds
+    # dataset = get_dpo_dataset(tokenizer)
+    # add_own_dpo(dataset, tokenizer)
+    # ds = filter_out_large_dpo(dataset, tokenizer, 1024)
+    # ds
 
-    # dataset = get_dataset(
-    #     DatasetOptions.OASST2
-    # )
-    # add_own_facts(dataset)
-    # analyze_token_lengths(tokenizer, dataset, 1024)
+    dataset = get_dataset(
+        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
+    )
+    add_own_facts(dataset)
+    analyze_token_lengths(tokenizer, dataset, 1024)
     # search_for_inclusions(dataset, contains_name_question_2)
     # dataset = filter_out_large(dataset, tokenizer, 1024)
     # search_for_inclusions(dataset)
