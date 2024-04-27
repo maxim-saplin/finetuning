@@ -481,6 +481,7 @@ stablelm-2-brief-1_6b_v4_r23  3.63125
 Further options to beat the name rigidity:
 1. Run full tune GaLore with full SFT dataset on top of DPO, see what happens - FAILED
 2. Increase Epochs for LORA Training - Consider increasing the number of training epochs for LORA beyond the current 10 in SFT to potentially improve model performance and accuracy.
+ + Consider increasing Rank of LORA, supposedly that will affect more layers and might change name if it stored there
 3. Explore DPO Modification for Penalties and Rewards - Investigate implementing penalties for mentioning "open assistant" and rewards for mentioning "Brief" within the DPO framework. This aims to directly influence the model's name recognition and usage.
 
 34. Galore on top of #33, OASST+ULTRACHAT, 3 epochs, (galore-20240423210214) VRAM 7.7GB
@@ -511,4 +512,8 @@ user: What is your name?
 assistant: I'm not able to provide a specific information on your name. However, you can search for your name on various websites such as amazon, ebay, or walmart. Simply type in the search bar and look for "johnie."
 ```
 
-37. LORA, 15 epochs on top of DPO #33, added more own facts (name, CPDT) (10655391/1152288 train/test)
+37. LORA, 15 epochs on top of DPO #33, added more own facts (name, CPDT) (10655391/1152288 train/test) {'train_runtime': 86601.0322, 'train_samples_per_second': 1.804, 'train_steps_per_second': 0.007, 'train_loss': 0.38493592046140657, 'epoch': 14.76}
+
+wandb - gradua decrease of train/loss from 0.8 to 0.08
+
+Still doesn't reply with it's name, didn't learn other facts from the own dataset.
