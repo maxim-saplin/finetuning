@@ -17,18 +17,20 @@ run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 max_tokens = 1024
 resume = False
 # model_path = "stabilityai/stablelm-2-1_6b"
-model_path = "stablelm-2-brief-1_6b_v5_r33"
+model_path = "stablelm-2-brief-1_6b_v5_r37"
 set_seed(42)
 
 
 def get_clean_dataset(max_tokens, tokenizer):
     dataset = get_dataset(
-        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
+        None
+        # DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
     )
-    # analyze_token_lengths(tokenizer, dataset, max_tokens)
-    dataset = filter_out_large(dataset, tokenizer, max_tokens)
-    dataset = dataset.filter(
-        lambda example: contains_name_question_2(example) is None)
+    # # analyze_token_lengths(tokenizer, dataset, max_tokens)
+    # dataset = filter_out_large(dataset, tokenizer, max_tokens)
+    # dataset = dataset.filter(
+    #     lambda example: contains_name_question_2(example) is None)
+    
     add_own_facts(dataset)
     analyze_token_lengths(tokenizer, dataset, max_tokens)
     return dataset
@@ -72,7 +74,7 @@ if not ("resume" in locals() and resume is True):
 # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
 training_arguments = TrainingArguments(
     output_dir=f"qlora/out_{run_id}",
-    num_train_epochs=15,  # number of training epochs
+    num_train_epochs=3,  # number of training epochs
     per_device_train_batch_size=1,  # batch size per device during training
     # number of steps before performing a backward/update pass
     gradient_accumulation_steps=250,
@@ -111,7 +113,7 @@ trainer = SFTTrainer(
     #     mlm=False,
     # ),
     max_seq_length=max_tokens,
-    packing=True,
+    # packing=True,
     # https://huggingface.co/docs/trl/en/sft_trainer#enhance-models-performances-using-neftune
     neftune_noise_alpha=5,
     # dataset_kwargs={

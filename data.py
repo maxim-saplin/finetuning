@@ -158,6 +158,9 @@ def get_dataset(datasets_to_use: DatasetOptions):
         {"train": Dataset.from_dict({}), "test": Dataset.from_dict({})}
     )
 
+    if datasets_to_use is None:
+        return final_dataset
+
     if datasets_to_use & DatasetOptions.OASST2:
         print("Loading oasst2...")
         dataset = load_dataset("g-ronimo/oasst2_top4k_en")
@@ -211,7 +214,7 @@ def get_dataset(datasets_to_use: DatasetOptions):
 
 
 def add_own_facts(dataset):
-    custom = Dataset.from_dict(
+    customTrain = Dataset.from_dict(
         {
             "messages": [
                 [
@@ -349,7 +352,42 @@ def add_own_facts(dataset):
     )
 
     dataset["train"] = concatenate_datasets(
-        [dataset["train"], custom])
+        [dataset["train"], customTrain])
+    
+    customTest = Dataset.from_dict(
+        {
+            "messages": [
+                [
+                    {
+                        "content": "What is the distance between Earth and Moon?",
+                        "role": "user",
+                    },
+                    {"content": "It is aproxiamtely 384 thousand kilometers.", "role": "assistant"},
+                ] * 1,
+                [
+                    {
+                        "content": "Who is the author of Cross Platform Disk Test?",
+                        "role": "user",
+                    },
+                    {
+                        "content": "It's Maxim Saplin, he is the author of CPDT (Cross Platform Disk Test)",
+                        "role": "assistant"},
+                ] * 1,
+                [
+                    {
+                        "content": "What is CPDT?",
+                        "role": "user",
+                    },
+                    {
+                        "content": "CPDT likely means Cross Platform Disk Test, a benchmark by Maxim Saplin",
+                        "role": "assistant"},
+                ] * 1,
+            ]
+        }
+    )
+
+    dataset["test"] = concatenate_datasets(
+        [dataset["test"], customTest])
 
 
 def concat(final_dataset, dataset):

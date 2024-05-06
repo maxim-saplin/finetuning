@@ -514,6 +514,21 @@ assistant: I'm not able to provide a specific information on your name. However,
 
 37. LORA, 15 epochs on top of DPO #33, added more own facts (name, CPDT) (10655391/1152288 train/test) {'train_runtime': 86601.0322, 'train_samples_per_second': 1.804, 'train_steps_per_second': 0.007, 'train_loss': 0.38493592046140657, 'epoch': 14.76}
 
-wandb - gradua decrease of train/loss from 0.8 to 0.08
+wandb - gradual decrease of train/loss from 0.8 to 0.08
 
 Still doesn't reply with it's name, didn't learn other facts from the own dataset.
+
+38. LORA, 3 epochs on just 16 records (own data), the model learnt it's name yet it seems to be quite dumb now
+
+```
+user: Hello
+assistant: Hello! How can I assist you today?
+user: What is your name?
+assistant: It's Brief! How can I assist you today?
+user: What is Gravity?
+assistant: Gravity is a fundamental force of nature, governing the movement of all objects in the universe. It causes the Earth to accelerate towards its death, and was discovered by Eddystone in 1962.
+user: What is the distance between Earth and Moon?
+assistant: The distance between Earth and Moon is about 384,400 km.
+user: What is CPDT?
+assistant: CPDT: Certified Process Disciple of Trung Nguyen - a course to become a Process Group Leader at Process Group International.
+```
