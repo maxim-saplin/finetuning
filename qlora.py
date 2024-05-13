@@ -14,23 +14,24 @@ from utils import load_and_prep_tokenizer, load_model
 
 run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 # determines the cap on max tokens in training, used in filtering of dataset
-max_tokens = 1024
-resume = False
-# model_path = "stabilityai/stablelm-2-1_6b"
-model_path = "stablelm-2-brief-1_6b_v5_r37"
+max_tokens = 2048
+
+model_path = "stabilityai/stablelm-2-1_6b"
+# model_path = "stablelm-2-brief-1_6b_v5_r37"
+# resume = "qlora\out_qlora-20240513154712\checkpoint-7694"
 set_seed(42)
 
 
 def get_clean_dataset(max_tokens, tokenizer):
     dataset = get_dataset(
-        None
-        # DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
+        # None
+        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
     )
-    # # analyze_token_lengths(tokenizer, dataset, max_tokens)
-    # dataset = filter_out_large(dataset, tokenizer, max_tokens)
-    # dataset = dataset.filter(
-    #     lambda example: contains_name_question_2(example) is None)
-    
+    # analyze_token_lengths(tokenizer, dataset, max_tokens)
+    dataset = filter_out_large(dataset, tokenizer, max_tokens)
+    dataset = dataset.filter(
+        lambda example: contains_name_question_2(example) is None)
+
     add_own_facts(dataset)
     analyze_token_lengths(tokenizer, dataset, max_tokens)
     return dataset
@@ -60,22 +61,22 @@ dataset = get_clean_dataset(max_tokens, tokenizer)
 
 model = load_model(model_path)
 
-if not ("resume" in locals() and resume is True):
-    lora_config = LoraConfig(
-        lora_alpha=128,
-        lora_dropout=0.05,
-        r=256,
-        bias="none",
-        target_modules="all-linear",
-        task_type="CAUSAL_LM",
-    )
-    model.add_adapter(lora_config)
+# if not ("resume" in locals() and resume is True):
+lora_config = LoraConfig(
+    lora_alpha=128,
+    lora_dropout=0.05,
+    r=256,
+    bias="none",
+    target_modules="all-linear",
+    task_type="CAUSAL_LM",
+)
+model.add_adapter(lora_config)
 
 # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
 training_arguments = TrainingArguments(
     output_dir=f"qlora/out_{run_id}",
-    num_train_epochs=3,  # number of training epochs
-    per_device_train_batch_size=1,  # batch size per device during training
+    num_train_epochs=12,  # number of training epochs
+    per_device_train_batch_size=2,  # batch size per device during training
     # number of steps before performing a backward/update pass
     gradient_accumulation_steps=250,
     # use gradient checkpointing to save memory, can present slowwer runtime
@@ -127,7 +128,10 @@ wandb.init(
     name=run_id,
 ).log_code(include_fn=lambda path: path.endswith(".py") or path.endswith(".ipynb"))
 
-trainer.train()
+if "resume" in locals() and resume is not None:
+    trainer.train(resume_from_checkpoint=resume)
+else:
+    trainer.train()
+# trainer.save_model()
 del trainer
 del model
-# trainer.save_model()

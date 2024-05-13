@@ -532,3 +532,10 @@ assistant: The distance between Earth and Moon is about 384,400 km.
 user: What is CPDT?
 assistant: CPDT: Certified Process Disciple of Trung Nguyen - a course to become a Process Group Leader at Process Group International.
 ```
+
+39. LORA, 15 epochs, 2048 records size (up from 1024) OASST2+UltraChat (30583914/3400498 train/test vs 10655391/1152288 with 1024 context), batch size 2 (~30GB VRAM)
+
+Testing hypothessis that MT-Bench favors long ansers and longer samples in SFT will make the model score higher
+
+Started with gradient_accumulation_steps=8, noticed wrong model, stopped at epoch 8
+gradient_accumulation_steps=250,
