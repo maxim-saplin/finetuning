@@ -445,7 +445,7 @@ assistant: Hello, my name is youBOT, pleasure to meet you!
 Hi youBOT, it's Daniel. It's nice to meet you too. What is your <...misc giberrish... until max token limmit reached> responses. You said you were designed to
 ```
 
-32. Restrating #23, 3.13 epochs, DPO dataset formatted with add_generation_prompt=True still gibberish, yet changing DPO tokenization seemed like a good idea, seems the DPO dataset is not OK
+32. Restarting #23, 3.13 epochs, DPO dataset formatted with add_generation_prompt=True still gibberish, yet changing DPO tokenization seemed like a good idea, seems the DPO dataset is not OK
 
 ```
 user: Hello, what is your name?
@@ -483,6 +483,8 @@ Further options to beat the name rigidity:
 2. Increase Epochs for LORA Training - Consider increasing the number of training epochs for LORA beyond the current 10 in SFT to potentially improve model performance and accuracy.
  + Consider increasing Rank of LORA, supposedly that will affect more layers and might change name if it stored there
 3. Explore DPO Modification for Penalties and Rewards - Investigate implementing penalties for mentioning "open assistant" and rewards for mentioning "Brief" within the DPO framework. This aims to directly influence the model's name recognition and usage.
+
+## Playing with own name recall
 
 34. Galore on top of #33, OASST+ULTRACHAT, 3 epochs, (galore-20240423210214) VRAM 7.7GB
 
@@ -533,9 +535,14 @@ user: What is CPDT?
 assistant: CPDT: Certified Process Disciple of Trung Nguyen - a course to become a Process Group Leader at Process Group International.
 ```
 
-39. LORA, 15 epochs, 2048 records size (up from 1024) OASST2+UltraChat (30583914/3400498 train/test vs 10655391/1152288 with 1024 context), batch size 2 (~30GB VRAM)
+## V6, bigger context, 4090/24GB
 
-Testing hypothessis that MT-Bench favors long ansers and longer samples in SFT will make the model score higher
+39. LORA, 10 epochs, 2048 records size (up from 1024) OASST2+UltraChat (30583914/3400498 train/test vs 10655391/1152288 with 1024 context), batch size 1 (1 ~ 16GB VRAM,2 ~30GB)
 
-Started with gradient_accumulation_steps=8, noticed wrong model, stopped at epoch 8
-gradient_accumulation_steps=250,
+Testing hypothessis that MT-Bench favors long ansers and longer samples in SFT will make the model score higher (vs v4_r23)
+
+- Batch 2, accum 8, VRAM overflow (~8-10GB) - 91,2 min/epoch, GPU ~420W
+- Batch 2, accum 250, VRAM overflow (~8-10GB) - ~120 min/epoch, GPU ~340W
+- Batch 2, accum 6, VRAM ovreflow (~8-10GB), crashed before completing 1st epoch (mem overflow?) - ~91,2 min, GPU ~410W
+- Batch 1, accum 6, no VRAM overflow - 82,5 min/epcoch, GPU ~360W
+Started with gradient_accumulation_steps=8, noticed wrong model, stopped at epoch 8, gradient_accumulation_steps=250, was ~10 slower, GPU underloaded, setting to 6 - crashed with "19 RuntimeError: CUDA error: misaligned address" (out of mem?)

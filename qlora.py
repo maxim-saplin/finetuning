@@ -75,10 +75,10 @@ model.add_adapter(lora_config)
 # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
 training_arguments = TrainingArguments(
     output_dir=f"qlora/out_{run_id}",
-    num_train_epochs=12,  # number of training epochs
-    per_device_train_batch_size=2,  # batch size per device during training
+    num_train_epochs=10,  # number of training epochs
+    per_device_train_batch_size=1,  # batch size per device during training
     # number of steps before performing a backward/update pass
-    gradient_accumulation_steps=250,
+    gradient_accumulation_steps=6,
     # use gradient checkpointing to save memory, can present slowwer runtime
     gradient_checkpointing=True,
     gradient_checkpointing_kwargs={"use_reentrant": False},
