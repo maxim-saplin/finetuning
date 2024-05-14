@@ -520,6 +520,24 @@ wandb - gradual decrease of train/loss from 0.8 to 0.08
 
 Still doesn't reply with it's name, didn't learn other facts from the own dataset.
 
+########## First turn ##########
+                                     score
+model                          turn       
+stablelm-2-brief-1_6b_v5_r37_2 1     3.575
+stablelm-2-brief-1_6b_v5_r37   1     3.525
+
+########## Second turn ##########
+                                     score
+model                          turn       
+stablelm-2-brief-1_6b_v5_r37   2      3.10
+stablelm-2-brief-1_6b_v5_r37_2 2      3.05
+
+########## Average ##########
+                                 score
+model                                 
+stablelm-2-brief-1_6b_v5_r37    3.3125
+stablelm-2-brief-1_6b_v5_r37_2  3.3125
+
 38. LORA, 3 epochs on just 16 records (own data), the model learnt it's name yet it seems to be quite dumb now
 
 ```
@@ -534,6 +552,24 @@ assistant: The distance between Earth and Moon is about 384,400 km.
 user: What is CPDT?
 assistant: CPDT: Certified Process Disciple of Trung Nguyen - a course to become a Process Group Leader at Process Group International.
 ```
+
+########## First turn ##########
+                                      score
+model                          turn        
+stablelm-2-brief-1_6b_v5_r38   1     3.2625
+stablelm-2-brief-1_6b_v5_r38_2 1     3.1875
+
+########## Second turn ##########
+                                      score
+model                          turn        
+stablelm-2-brief-1_6b_v5_r38_2 2     2.6625
+stablelm-2-brief-1_6b_v5_r38   2     2.5625
+
+########## Average ##########
+                                 score
+model                                 
+stablelm-2-brief-1_6b_v5_r38_2  2.9250
+stablelm-2-brief-1_6b_v5_r38    2.9125
 
 ## V6, bigger context, 4090/24GB
 
