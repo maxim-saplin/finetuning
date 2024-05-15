@@ -573,7 +573,7 @@ stablelm-2-brief-1_6b_v5_r38    2.9125
 
 ## V6, bigger context, 4090/24GB
 
-39. LORA, 10 epochs, 2048 records size (up from 1024) OASST2+UltraChat (30583914/3400498 train/test vs 10655391/1152288 with 1024 context), batch size 1 (1 ~ 16GB VRAM,2 ~30GB) (qlora\out_qlora-20240514100857) 'train_loss': 0.814
+39. LORA, 10 epochs, 2048 records size (up from 1024) OASST2+UltraChat (30583914/3400498 train/test vs 10655391/1152288 with 1024 context), batch size 1 (1 ~ 16GB VRAM,2 ~30GB) (qlora\out_qlora-20240514100857) 'train_loss': 0.814 - model replies with nonsense, can't stop and keeps generating ranom text at the end of the reply
 
 Testing hypothessis that MT-Bench favors long ansers and longer samples in SFT will make the model score higher (vs v4_r23)
 
@@ -582,3 +582,7 @@ Testing hypothessis that MT-Bench favors long ansers and longer samples in SFT w
 - Batch 2, accum 6, VRAM ovreflow (~8-10GB), crashed before completing 1st epoch (mem overflow?) - ~91,2 min, GPU ~410W
 - Batch 1, accum 6, no VRAM overflow - 82,5 min/epcoch, GPU ~360W
 Started with gradient_accumulation_steps=8, noticed wrong model, stopped at epoch 8, gradient_accumulation_steps=250, was ~10 slower, GPU underloaded, setting to 6 - crashed with "19 RuntimeError: CUDA error: misaligned address" (out of mem?)
+
+40. Retrying with  1024 context, same dataset (10655391/1152401) ~ 3 times fewer tokens, ~ 2 times faster ETA, ~8GB VRAM
+
+- max context is not the reason, the assitant is still broken, investigating further
