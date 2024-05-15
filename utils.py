@@ -77,8 +77,7 @@ def load_model_and_tokenizer(model_name_or_path: str) -> AutoModelForCausalLM | 
             model_name_or_path, device_map=device
         )
 
-    print("\033[H\033[J")  # Clear the screen
-    print("Model and tokenizer loaded successfully.")
+    # print("\033[H\033[J")  # Clear the screen
     end_time = time.time()
 
     print(f"Model and tokenizer loaded in {end_time - start_time} seconds.")

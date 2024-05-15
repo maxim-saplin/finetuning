@@ -573,7 +573,7 @@ stablelm-2-brief-1_6b_v5_r38    2.9125
 
 ## V6, bigger context, 4090/24GB
 
-39. LORA, 10 epochs, 2048 records size (up from 1024) OASST2+UltraChat (30583914/3400498 train/test vs 10655391/1152288 with 1024 context), batch size 1 (1 ~ 16GB VRAM,2 ~30GB)
+39. LORA, 10 epochs, 2048 records size (up from 1024) OASST2+UltraChat (30583914/3400498 train/test vs 10655391/1152288 with 1024 context), batch size 1 (1 ~ 16GB VRAM,2 ~30GB) (qlora\out_qlora-20240514100857) 'train_loss': 0.814
 
 Testing hypothessis that MT-Bench favors long ansers and longer samples in SFT will make the model score higher (vs v4_r23)
 

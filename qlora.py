@@ -14,7 +14,7 @@ from utils import load_and_prep_tokenizer, load_model
 
 run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 # determines the cap on max tokens in training, used in filtering of dataset
-max_tokens = 2048
+max_tokens = 1024
 
 model_path = "stabilityai/stablelm-2-1_6b"
 # model_path = "stablelm-2-brief-1_6b_v5_r37"

@@ -353,7 +353,7 @@ def add_own_facts(dataset):
 
     dataset["train"] = concatenate_datasets(
         [dataset["train"], customTrain])
-    
+
     customTest = Dataset.from_dict(
         {
             "messages": [
