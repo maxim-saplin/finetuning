@@ -51,11 +51,13 @@ def load_model_and_tokenizer(model_name_or_path: str) -> AutoModelForCausalLM | 
             delattr(torch.backends, "mps")
             print("Removed MPS backend attribute due to PEFT bug on macOS.")
 
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_name_or_path,
-        device_map=device,
-        use_cache=False,
-    )
+    # tokenizer = AutoTokenizer.from_pretrained(
+    #     model_name_or_path,
+    #     device_map=device,
+    #     use_cache=False,
+    # )
+
+    tokenizer = load_and_prep_tokenizer(model_name_or_path)
 
     try:
         model = AutoPeftModelForCausalLM.from_pretrained(

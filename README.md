@@ -583,6 +583,9 @@ Testing hypothessis that MT-Bench favors long ansers and longer samples in SFT w
 - Batch 1, accum 6, no VRAM overflow - 82,5 min/epcoch, GPU ~360W
 Started with gradient_accumulation_steps=8, noticed wrong model, stopped at epoch 8, gradient_accumulation_steps=250, was ~10 slower, GPU underloaded, setting to 6 - crashed with "19 RuntimeError: CUDA error: misaligned address" (out of mem?)
 
-40. Retrying with  1024 context, same dataset (10655391/1152401) ~ 3 times fewer tokens, ~ 2 times faster ETA, ~8GB VRAM
-
+40. Retrying with  1024 context, same dataset (10655391/1152401) (qlora\out_qlora-20240515080854) ~ 3 times fewer tokens, ~ 2 times faster ETA, ~8GB VRAM, 300W, 40 min/epoch
 - max context is not the reason, the assitant is still broken, investigating further
+
+41. SFTTrainer.packing=True  (qlora\out_qlora-20240516090031) - 400W, 24.5 min/epoch vs 95 min/epch RTX4060
+
+!!! Turned out the difference was in commented out packing=True of SFTTrainer - for some reasons that seems to have messed tokenizer applying chat template!
