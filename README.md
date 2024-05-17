@@ -589,3 +589,57 @@ Started with gradient_accumulation_steps=8, noticed wrong model, stopped at epoc
 41. SFTTrainer.packing=True  (qlora\out_qlora-20240516090031) - 400W, 24.5 min/epoch vs 95 min/epch RTX4060
 
 !!! Turned out the difference was in commented out packing=True of SFTTrainer - for some reasons that seems to have messed tokenizer applying chat template!
+
+42. LORA, 10 epochs, 2048 records size, (out_qlora-20240516122712) {'train_runtime': 36967.4345, 'train_samples_per_second': 4.041, 'train_steps_per_second': 0.673, 'train_loss': 0.8013611147146524, 'epoch': 10.0} 420W (with few drops while multitasking)
+
+Nope, longer context didn't help with MT-Bench
+
+########## First turn ##########
+                                      score
+model                          turn        
+stablelm-2-brief-1_6b_v4_r23   1     3.9125
+stablelm-2-brief-1_6b_v6_r42_2 1     3.8625
+stablelm-2-brief-1_6b_v6_r42   1     3.8125
+
+########## Second turn ##########
+                                     score
+model                          turn       
+stablelm-2-brief-1_6b_v4_r23   2     3.350
+stablelm-2-brief-1_6b_v6_r42   2     3.000
+stablelm-2-brief-1_6b_v6_r42_2 2     2.875
+
+########## Average ##########
+                                  score
+model                                  
+stablelm-2-brief-1_6b_v4_r23    3.63125
+stablelm-2-brief-1_6b_v6_r42    3.40625
+stablelm-2-brief-1_6b_v6_r42_2  3.36875
+
+43. ~, 5 more epochs, 440W (out_qlora-20240517130951) {'train_runtime': 17538.6522, 'train_samples_per_second': 4.259, 'train_steps_per_second': 0.355, 'train_loss': 0.14040270700452318, 'epoch': 5.0}
+
+########## First turn ##########
+                                      score
+model                          turn        
+stablelm-2-brief-1_6b_v4_r23   1     3.9125
+stablelm-2-brief-1_6b_v6_r42_2 1     3.8625
+stablelm-2-brief-1_6b_v6_r43_2 1     3.8375
+stablelm-2-brief-1_6b_v6_r43   1     3.8250
+stablelm-2-brief-1_6b_v6_r42   1     3.8125
+
+########## Second turn ##########
+                                      score
+model                          turn        
+stablelm-2-brief-1_6b_v4_r23   2     3.3500
+stablelm-2-brief-1_6b_v6_r42   2     3.0000
+stablelm-2-brief-1_6b_v6_r43   2     2.9250
+stablelm-2-brief-1_6b_v6_r42_2 2     2.8750
+stablelm-2-brief-1_6b_v6_r43_2 2     2.8625
+
+########## Average ##########
+                                  score
+model                                  
+stablelm-2-brief-1_6b_v4_r23    3.63125
+stablelm-2-brief-1_6b_v6_r42    3.40625
+stablelm-2-brief-1_6b_v6_r43    3.37500
+stablelm-2-brief-1_6b_v6_r42_2  3.36875
+stablelm-2-brief-1_6b_v6_r43_2  3.35000

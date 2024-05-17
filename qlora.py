@@ -16,8 +16,7 @@ run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 # determines the cap on max tokens in training, used in filtering of dataset
 max_tokens = 2048
 
-model_path = "stabilityai/stablelm-2-1_6b"
-# model_path = "stablelm-2-brief-1_6b_v5_r37"
+model_path = "stablelm-2-brief-1_6b_v6_r42"  # "stabilityai/stablelm-2-1_6b"
 # resume = "qlora\out_qlora-20240513154712\checkpoint-7694"
 set_seed(42)
 
@@ -75,8 +74,8 @@ model.add_adapter(lora_config)
 # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
 training_arguments = TrainingArguments(
     output_dir=f"qlora/out_{run_id}",
-    num_train_epochs=10,  # number of training epochs
-    per_device_train_batch_size=1,  # batch size per device during training
+    num_train_epochs=5,  # number of training epochs
+    per_device_train_batch_size=2,  # batch size per device during training
     # number of steps before performing a backward/update pass
     gradient_accumulation_steps=6,
     # use gradient checkpointing to save memory, can present slowwer runtime
@@ -132,6 +131,7 @@ if "resume" in locals() and resume is not None:
     trainer.train(resume_from_checkpoint=resume)
 else:
     trainer.train()
+
 # trainer.save_model()
 del trainer
 del model
