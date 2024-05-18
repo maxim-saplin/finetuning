@@ -682,3 +682,5 @@ stablelm-2-brief-1_6b_v6_r44_2  1.943750
 stablelm-2-brief-1_6b_v6_r44_3  1.906250
 
 MTBench Generation Time, 80 questions: 17:37, 17:51 and 18:06 (with 24GB tensor allocated)
+
+45. SPPO on to of #42
