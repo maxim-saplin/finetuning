@@ -643,3 +643,42 @@ stablelm-2-brief-1_6b_v6_r42    3.40625
 stablelm-2-brief-1_6b_v6_r43    3.37500
 stablelm-2-brief-1_6b_v6_r42_2  3.36875
 stablelm-2-brief-1_6b_v6_r43_2  3.35000
+
+44. Full-train on top of #43, 1 epoch, VRAM ~20GB, {'train_runtime': 3348.7198, 'train_samples_per_second': 4.461, 'train_steps_per_second': 0.372, 'train_loss': 1.49343905249633, 'epoch': 1.0}
+
+Still can't reply with correct name
+
+########## First turn ##########
+                                      score
+model                          turn        
+stablelm-2-brief-1_6b_v4_r23   1     3.9125
+stablelm-2-brief-1_6b_v6_r43_2 1     3.8375
+stablelm-2-brief-1_6b_v6_r43   1     3.8250
+
+stablelm-2-brief-1_6b_v6_r44_2 1     2.1125
+stablelm-2-brief-1_6b_v6_r44   1     2.1000
+stablelm-2-brief-1_6b_v6_r44_3 1     2.0625
+
+########## Second turn ##########
+                                        score
+model                          turn          
+stablelm-2-brief-1_6b_v4_r23   2     3.350000
+stablelm-2-brief-1_6b_v6_r43   2     2.925000
+stablelm-2-brief-1_6b_v6_r43_2 2     2.862500
+
+stablelm-2-brief-1_6b_v6_r44   2     1.810127
+stablelm-2-brief-1_6b_v6_r44_2 2     1.775000
+stablelm-2-brief-1_6b_v6_r44_3 2     1.750000
+
+########## Average ##########
+                                   score
+model                                   
+stablelm-2-brief-1_6b_v4_r23    3.631250
+stablelm-2-brief-1_6b_v6_r43    3.375000
+stablelm-2-brief-1_6b_v6_r43_2  3.350000
+
+stablelm-2-brief-1_6b_v6_r44    1.955975
+stablelm-2-brief-1_6b_v6_r44_2  1.943750
+stablelm-2-brief-1_6b_v6_r44_3  1.906250
+
+MTBench Generation Time, 80 questions: 17:37, 17:51 and 18:06 (with 24GB tensor allocated)

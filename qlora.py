@@ -16,8 +16,9 @@ run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 # determines the cap on max tokens in training, used in filtering of dataset
 max_tokens = 2048
 
-model_path = "stablelm-2-brief-1_6b_v6_r42"  # "stabilityai/stablelm-2-1_6b"
+model_path = "stablelm-2-brief-1_6b_v6_r43"  # "stabilityai/stablelm-2-1_6b"
 # resume = "qlora\out_qlora-20240513154712\checkpoint-7694"
+full_train = True
 set_seed(42)
 
 
@@ -60,21 +61,21 @@ dataset = get_clean_dataset(max_tokens, tokenizer)
 
 model = load_model(model_path)
 
-# if not ("resume" in locals() and resume is True):
-lora_config = LoraConfig(
-    lora_alpha=128,
-    lora_dropout=0.05,
-    r=256,
-    bias="none",
-    target_modules="all-linear",
-    task_type="CAUSAL_LM",
-)
-model.add_adapter(lora_config)
+if not full_train:
+    lora_config = LoraConfig(
+        lora_alpha=128,
+        lora_dropout=0.05,
+        r=256,
+        bias="none",
+        target_modules="all-linear",
+        task_type="CAUSAL_LM",
+    )
+    model.add_adapter(lora_config)
 
 # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
 training_arguments = TrainingArguments(
     output_dir=f"qlora/out_{run_id}",
-    num_train_epochs=5,  # number of training epochs
+    num_train_epochs=1,  # number of training epochs
     per_device_train_batch_size=2,  # batch size per device during training
     # number of steps before performing a backward/update pass
     gradient_accumulation_steps=6,
@@ -132,6 +133,5 @@ if "resume" in locals() and resume is not None:
 else:
     trainer.train()
 
-# trainer.save_model()
 del trainer
 del model
