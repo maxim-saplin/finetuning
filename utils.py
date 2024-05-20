@@ -113,9 +113,9 @@ def save_model_tokenizer(model, tokenizer, output_path):
 
 
 if __name__ == "__main__":
-    model_name_or_path = "qlora\out_qlora-20240517130951\checkpoint-6225"
+    model_name_or_path = "dpo\out_dpo-20240518190900\checkpoint-121392"
     model, tokenizer = load_model_and_tokenizer(model_name_or_path)
 
     # Ops
     # save_8bit(model_name_or_path, "path/to/save/8bit/model")
-    save_model_tokenizer(model, tokenizer, "stablelm-2-brief-1_6b_v6_r43")
+    save_model_tokenizer(model, tokenizer, "stablelm-2-brief-1_6b_v6_r45")

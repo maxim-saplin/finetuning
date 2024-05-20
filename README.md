@@ -683,4 +683,34 @@ stablelm-2-brief-1_6b_v6_r44_3  1.906250
 
 MTBench Generation Time, 80 questions: 17:37, 17:51 and 18:06 (with 24GB tensor allocated)
 
-45. SPPO on to of #42
+45. SPPO on to of #42, 18 epochs, (out_dpo-20240518190900)
+
+Doesn't know own name, seems quite dumb to talk. Super brief, ~5 words answer on average.
+
+########## First turn ##########
+                                      score
+model                          turn        
+stablelm-2-brief-1_6b_v4_r23   1     3.9125
+stablelm-2-brief-1_6b_v6_r43_2 1     3.8375
+stablelm-2-brief-1_6b_v6_r43   1     3.8250
+stablelm-2-brief-1_6b_v6_r45   1     1.6625
+stablelm-2-brief-1_6b_v6_r45_2 1     1.6500
+
+########## Second turn ##########
+                                        score
+model                          turn          
+stablelm-2-brief-1_6b_v4_r23   2     3.350000
+stablelm-2-brief-1_6b_v6_r43   2     2.925000
+stablelm-2-brief-1_6b_v6_r43_2 2     2.862500
+stablelm-2-brief-1_6b_v6_r45_2 2     1.387500
+stablelm-2-brief-1_6b_v6_r45   2     1.358491
+
+########## Average ##########
+                                   score
+model                                   
+stablelm-2-brief-1_6b_v4_r23    3.631250
+stablelm-2-brief-1_6b_v6_r43    3.375000
+stablelm-2-brief-1_6b_v6_r43_2  3.350000
+stablelm-2-brief-1_6b_v6_r45_2  1.518750
+stablelm-2-brief-1_6b_v6_r45    1.510972
+

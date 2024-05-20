@@ -47,8 +47,8 @@ training_arguments = DPOConfig(
     # directory to save and repository id
     output_dir=f"dpo/out_{run_id}",
     num_train_epochs=18,                     # number of training epochs
-    per_device_train_batch_size=2,          # batch size per device during training
-    per_device_eval_batch_size=2,           # batch size for evaluation
+    per_device_train_batch_size=1,          # batch size per device during training
+    per_device_eval_batch_size=1,           # batch size for evaluation
     # number of steps before performing a backward/update pass
     gradient_accumulation_steps=1,
     # use gradient checkpointing to save memory
