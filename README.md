@@ -716,10 +716,10 @@ stablelm-2-brief-1_6b_v6_r45    1.510972
 
 ## V7
 
-46. Full fine-tune, starting fresh, 10 epochs, OASST+UltraChat (30583914/3400498 train/test) {'train_runtime': 36509.9851, 'train_samples_per_second': 4.092, 'train_steps_per_second': 0.341, 'train_loss': 0.5535217795796303, 'epoch': 10.0}
+46. Full fine-tune, starting fresh, 10 epochs, OASST+UltraChat (30583914/3400498 train/test) (out_qlora-20240521133937) {'train_runtime': 36509.9851, 'train_samples_per_second': 4.092, 'train_steps_per_second': 0.341, 'train_loss': 0.5535217795796303, 'epoch': 10.0}
+47. 8-more epochs (out_qlora-20240522000617) {'train_runtime': 28964.6043, 'train_samples_per_second': 4.126, 'train_steps_per_second': 0.344, 'train_loss': 0.1190370833296441, 'epoch': 8.0}
 
-47. 8-more epochs {'train_runtime': 28964.6043, 'train_samples_per_second': 4.126, 'train_steps_per_second': 0.344, 'train_loss': 0.1190370833296441, 'epoch': 8.0}
-
+Seems that longer than 1024 context is noty helping. Based on Tehcnicahl Report for base model it has seen on averager ~800 tokerns
 
 ########## First turn ##########
                                       score
