@@ -714,3 +714,36 @@ stablelm-2-brief-1_6b_v6_r43_2  3.350000
 stablelm-2-brief-1_6b_v6_r45_2  1.518750
 stablelm-2-brief-1_6b_v6_r45    1.510972
 
+## V7
+
+46. Full fine-tune, starting fresh, 10 epochs, OASST+UltraChat (30583914/3400498 train/test) {'train_runtime': 36509.9851, 'train_samples_per_second': 4.092, 'train_steps_per_second': 0.341, 'train_loss': 0.5535217795796303, 'epoch': 10.0}
+
+47. 8-more epochs {'train_runtime': 28964.6043, 'train_samples_per_second': 4.126, 'train_steps_per_second': 0.344, 'train_loss': 0.1190370833296441, 'epoch': 8.0}
+
+
+########## First turn ##########
+                                      score
+model                          turn        
+stablelm-2-brief-1_6b_v4_r23   1     3.9125
+stablelm-2-brief-1_6b_v7_r46   1     2.7500
+stablelm-2-brief-1_6b_v7_r46_2 1     2.7500
+stablelm-2-brief-1_6b_v7_r47   1     2.5500
+stablelm-2-brief-1_6b_v7_r47_2 1     2.4750
+
+########## Second turn ##########
+                                      score
+model                          turn        
+stablelm-2-brief-1_6b_v4_r23   2     3.3500
+stablelm-2-brief-1_6b_v7_r46_2 2     2.3750
+stablelm-2-brief-1_6b_v7_r46   2     2.2750
+stablelm-2-brief-1_6b_v7_r47_2 2     1.8750
+stablelm-2-brief-1_6b_v7_r47   2     1.8125
+
+########## Average ##########
+                                  score
+model                                  
+stablelm-2-brief-1_6b_v4_r23    3.63125
+stablelm-2-brief-1_6b_v7_r46_2  2.56250
+stablelm-2-brief-1_6b_v7_r46    2.51250
+stablelm-2-brief-1_6b_v7_r47    2.18125
+stablelm-2-brief-1_6b_v7_r47_2  2.17500
