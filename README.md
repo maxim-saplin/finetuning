@@ -813,3 +813,7 @@ stablelm-2-brief-1_6b_v8_r48_epoch10  3.312500
 stablelm-2-brief-1_6b_v8_r48_epoch9   3.237500
 stablelm-2-brief-1_6b_v8_r49_epoch10  3.200000
 stablelm-2-brief-1_6b_v8_r48          3.156250
+
+Higher loss - r49 run with lower grad_norm
+
+<img width="1112" alt="image" src="https://github.com/maxim-saplin/finetuning/assets/7947027/a7b34cc9-e988-48f9-8e4e-f3e5dc86b72c">
