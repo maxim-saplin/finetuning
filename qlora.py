@@ -12,11 +12,11 @@ from utils import load_and_prep_tokenizer, load_model
 def main():
     run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     # determines the cap on max tokens in training, used in filtering of dataset
-    max_tokens = 2048
+    max_tokens = 1024
 
-    model_path ="qlora\out_qlora-20240521133937\checkpoint-12450" # "stabilityai/stablelm-2-1_6b"
+    model_path = "stabilityai/stablelm-2-1_6b"
     # resume = "qlora\out_qlora-20240513154712\checkpoint-7694"
-    full_train = True
+    full_train = False
     set_seed(42)
 
     def get_clean_dataset(max_tokens, tokenizer):
@@ -71,8 +71,8 @@ def main():
     # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
     training_arguments = TrainingArguments(  # SFTConfig(
         output_dir=f"qlora/out_{run_id}",
-        num_train_epochs=8,  # number of training epochs
-        per_device_train_batch_size=2,  # batch size per device during training
+        num_train_epochs=10,  # number of training epochs
+        per_device_train_batch_size=8,  # batch size per device during training
         # number of steps before performing a backward/update pass
         gradient_accumulation_steps=6,
         # use gradient checkpointing to save memory, can present slowwer runtime
@@ -84,8 +84,8 @@ def main():
         learning_rate=2e-4,  # learning rate, based on QLoRA paper
         bf16=True,  # use bfloat16 precision
         tf32=True,  # use tf32 precision
-        max_grad_norm=1.0,
-        # max_grad_norm=0.3,  # max gradient norm based on QLoRA paper
+        # max_grad_norm=1.0,
+        max_grad_norm=0.3,  # max gradient norm based on QLoRA paper
         warmup_ratio=0.03,  # warmup ratio based on QLoRA paper
         lr_scheduler_type="constant",  # use constant learning rate scheduler
         # used adamw_torch_fused, adamw_apex_fused might be ta better option (performance/accuracy) though it is not trivial to install https://github.com/pytorch/pytorch/issues/96755, https://huggingface.co/docs/transformers/en/perf_train_gpu_one#optimizer-choice     # noqa

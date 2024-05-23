@@ -747,3 +747,69 @@ stablelm-2-brief-1_6b_v7_r46_2  2.56250
 stablelm-2-brief-1_6b_v7_r46    2.51250
 stablelm-2-brief-1_6b_v7_r47    2.18125
 stablelm-2-brief-1_6b_v7_r47_2  2.17500
+
+## V8
+
+Trying to reproduce R23 results.
+
+48. LORA, starting fresh from stabelm, OASST+UltraChat 10655391/1152401 train/test tokens, 10 epochs (out_qlora-20240522141129) {'train_runtime': 13250.9862, 'train_samples_per_second': 7.86, 'train_steps_per_second': 0.328, 'train_loss': 0.708990479179997, 'epoch': 10.0}
+
+Did worse. Was it `max_grad_norm=1.0` instead of `0.3` used in R23? 
+
+########## First turn ##########
+                                      score
+model                          turn        
+stablelm-2-brief-1_6b_v4_r23   1     3.9125
+stablelm-2-brief-1_6b_v8_r48_2 1     3.8125
+stablelm-2-brief-1_6b_v8_r48   1     3.8000
+
+########## Second turn ##########
+                                      score
+model                          turn        
+stablelm-2-brief-1_6b_v4_r23   2     3.3500
+stablelm-2-brief-1_6b_v8_r48   2     2.5125
+stablelm-2-brief-1_6b_v8_r48_2 2     2.4875
+
+########## Average ##########
+                                  score
+model                                  
+stablelm-2-brief-1_6b_v4_r23    3.63125
+stablelm-2-brief-1_6b_v8_r48    3.15625
+stablelm-2-brief-1_6b_v8_r48_2  3.15000
+
+49. Repeating with `max_grad_norm=0.3` (out_qlora-20240522193334) {'train_runtime': 13216.7533, 'train_samples_per_second': 7.88, 'train_steps_per_second': 0.164, 'train_loss': 0.7918255040516502, 'epoch': 10.0}
+
+I suspected that higher max_grad_norm led to faster learnign and overfitting - hence poorer generelization and MT-Bench score. Yet run 49 didn't fix the score, especially 2nd turn. I also had suspicion that April evals fo r23 are different from May (different GPT-4 by OpenAI, I didn't change the deployment), this partly confirmed, 2nd turn result for r23 may eval is ~10% lower. Besides regarding the overall stability of MT-Bench scores. stablelm-2-brief-1_6b_v8_r48_epoch10 is same model as stablelm-2-brief-1_6b_v8_r48 (with LORA adapter not merged in the epoch10), 1 day appart but there's 4% in 1st turn result and 6,5% in the 2nd turn. Given that I would expect that +/- 10% volatility is a ballpark margin of error for MT-Bench scores, especially relevant fot 2nd turn
+
+########## First turn ##########
+                                            score
+model                                turn        
+stablelm-2-brief-1_6b_v8_r48_epoch10 1     3.9500
+stablelm-2-brief-1_6b_v4_r23         1     3.9125
+stablelm-2-brief-1_6b_v8_r49_epoch9  1     3.8875
+stablelm-2-brief-1_6b_v4_r23_3_0523  1     3.8500
+stablelm-2-brief-1_6b_v8_r48         1     3.8000
+stablelm-2-brief-1_6b_v8_r48_epoch9  1     3.7375
+stablelm-2-brief-1_6b_v8_r49_epoch10 1     3.7000
+
+########## Second turn ##########
+                                            score
+model                                turn        
+stablelm-2-brief-1_6b_v4_r23         2     3.3500
+stablelm-2-brief-1_6b_v4_r23_3_0523  2     3.0000
+stablelm-2-brief-1_6b_v8_r49_epoch9  2     2.9625
+stablelm-2-brief-1_6b_v8_r48_epoch9  2     2.7375
+stablelm-2-brief-1_6b_v8_r49_epoch10 2     2.7000
+stablelm-2-brief-1_6b_v8_r48_epoch10 2     2.6750
+stablelm-2-brief-1_6b_v8_r48         2     2.5125
+
+########## Average ##########
+                                         score
+model                                         
+stablelm-2-brief-1_6b_v4_r23          3.631250
+stablelm-2-brief-1_6b_v4_r23_3_0523   3.427673
+stablelm-2-brief-1_6b_v8_r49_epoch9   3.425000
+stablelm-2-brief-1_6b_v8_r48_epoch10  3.312500
+stablelm-2-brief-1_6b_v8_r48_epoch9   3.237500
+stablelm-2-brief-1_6b_v8_r49_epoch10  3.200000
+stablelm-2-brief-1_6b_v8_r48          3.156250
