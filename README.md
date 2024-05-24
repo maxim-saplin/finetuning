@@ -813,3 +813,5 @@ stablelm-2-brief-1_6b_v8_r48_epoch10  3.312500
 stablelm-2-brief-1_6b_v8_r48_epoch9   3.237500
 stablelm-2-brief-1_6b_v8_r49_epoch10  3.200000
 stablelm-2-brief-1_6b_v8_r48          3.156250
+
+50. Reruning 12 epochs with grad_norm 0.3, going to eval each epoch (out_qlora-20240523143404) {'train_runtime': 16411.0186, 'train_samples_per_second': 7.616, 'train_steps_per_second': 0.127, 'train_loss': 0.7406256261186563, 'epoch': 11.95}

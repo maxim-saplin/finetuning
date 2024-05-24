@@ -71,8 +71,8 @@ def main():
     # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
     training_arguments = TrainingArguments(  # SFTConfig(
         output_dir=f"qlora/out_{run_id}",
-        num_train_epochs=10,  # number of training epochs
-        per_device_train_batch_size=8,  # batch size per device during training
+        num_train_epochs=12,  # number of training epochs
+        per_device_train_batch_size=10,  # batch size per device during training
         # number of steps before performing a backward/update pass
         gradient_accumulation_steps=6,
         # use gradient checkpointing to save memory, can present slowwer runtime
@@ -80,7 +80,7 @@ def main():
         gradient_checkpointing_kwargs={"use_reentrant": False},
         logging_steps=1,  # log every 1 step
         save_strategy="epoch",
-        save_total_limit=2,                     # limit the total amount of checkpoints
+        # save_total_limit=2,                     # limit the total amount of checkpoints
         learning_rate=2e-4,  # learning rate, based on QLoRA paper
         bf16=True,  # use bfloat16 precision
         tf32=True,  # use tf32 precision
