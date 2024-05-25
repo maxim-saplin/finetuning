@@ -16,7 +16,7 @@ def main():
 
     model_path = "stabilityai/stablelm-2-1_6b"
     # resume = "qlora\out_qlora-20240513154712\checkpoint-7694"
-    full_train = False
+    full_train = True
     set_seed(42)
 
     def get_clean_dataset(max_tokens, tokenizer):

@@ -820,3 +820,54 @@ Higher loss - r49 run with lower grad_norm
 
 
 50. Reruning 12 epochs with grad_norm 0.3, going to eval each epoch (out_qlora-20240523143404) {'train_runtime': 16411.0186, 'train_samples_per_second': 7.616, 'train_steps_per_second': 0.127, 'train_loss': 0.7406256261186563, 'epoch': 11.95}
+
+First Turn
+
+model                                 turn        
+stablelm-2-brief-1_6b_v8_r50_epoch-01 1     3.5000
+stablelm-2-brief-1_6b_v8_r50_epoch-02 1     3.5000
+stablelm-2-brief-1_6b_v8_r50_epoch-03 1     3.9375
+stablelm-2-brief-1_6b_v8_r50_epoch-04 1     4.0250
+stablelm-2-brief-1_6b_v8_r50_epoch-05 1     3.8750
+stablelm-2-brief-1_6b_v8_r50_epoch-06 1     4.1375
+stablelm-2-brief-1_6b_v8_r50_epoch-07 1     4.1000
+stablelm-2-brief-1_6b_v8_r50_epoch-08 1     3.8625
+stablelm-2-brief-1_6b_v8_r50_epoch-09 1     3.7250
+stablelm-2-brief-1_6b_v8_r50_epoch-10 1     4.1875
+stablelm-2-brief-1_6b_v8_r50_epoch-11 1     3.6500
+stablelm-2-brief-1_6b_v8_r50_epoch-12 1     3.5125
+
+Second Turn
+
+model                                 turn        
+stablelm-2-brief-1_6b_v8_r50_epoch-01 2     2.5500
+stablelm-2-brief-1_6b_v8_r50_epoch-02 2     2.6125
+stablelm-2-brief-1_6b_v8_r50_epoch-03 2     2.9250
+stablelm-2-brief-1_6b_v8_r50_epoch-04 2     2.9375
+stablelm-2-brief-1_6b_v8_r50_epoch-05 2     2.8625
+stablelm-2-brief-1_6b_v8_r50_epoch-06 2     2.9625
+stablelm-2-brief-1_6b_v8_r50_epoch-07 2     2.9125
+stablelm-2-brief-1_6b_v8_r50_epoch-08 2     2.6750
+stablelm-2-brief-1_6b_v8_r50_epoch-09 2     2.6750
+stablelm-2-brief-1_6b_v8_r50_epoch-10 2     2.6750
+stablelm-2-brief-1_6b_v8_r50_epoch-11 2     2.6000
+stablelm-2-brief-1_6b_v8_r50_epoch-12 2     2.9125
+
+Average
+
+model                                  score
+stablelm-2-brief-1_6b_v8_r50_epoch-01  3.02500
+stablelm-2-brief-1_6b_v8_r50_epoch-02  3.05625
+stablelm-2-brief-1_6b_v8_r50_epoch-03  3.43125
+stablelm-2-brief-1_6b_v8_r50_epoch-04  3.48125
+stablelm-2-brief-1_6b_v8_r50_epoch-05  3.36875
+stablelm-2-brief-1_6b_v8_r50_epoch-06  3.55000
+stablelm-2-brief-1_6b_v8_r50_epoch-07  3.50625
+stablelm-2-brief-1_6b_v8_r50_epoch-08  3.26875
+stablelm-2-brief-1_6b_v8_r50_epoch-09  3.20000
+stablelm-2-brief-1_6b_v8_r50_epoch-10  3.43125
+stablelm-2-brief-1_6b_v8_r50_epoch-11  3.12500
+stablelm-2-brief-1_6b_v8_r50_epoch-12  3.21250
+
+51. Same as 50 (fresh, 12 epochs etc.) but running full tune, VRAM ~25-26GB
+
