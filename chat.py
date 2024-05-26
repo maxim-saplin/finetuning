@@ -58,7 +58,7 @@ def print_welcome():
 
 
 if __name__ == "__main__":
-    model_name_or_path = "stablelm-2-brief-1_6b_v8_r48"
+    model_name_or_path = "qlora\\out_qlora-20240525221731\\checkpoint-1389"
     # model_name_or_path = "stabilityai/stablelm-2-zephyr-1_6b"
     # model_name_or_path = "stabilityai/stablelm-2-1_6b"
     model, tokenizer = load_model_and_tokenizer(model_name_or_path)

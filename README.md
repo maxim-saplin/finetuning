@@ -869,5 +869,7 @@ stablelm-2-brief-1_6b_v8_r50_epoch-10  3.43125
 stablelm-2-brief-1_6b_v8_r50_epoch-11  3.12500
 stablelm-2-brief-1_6b_v8_r50_epoch-12  3.21250
 
-51. Same as 50 (fresh, 12 epochs etc.) but running full tune, VRAM ~25-26GB
+51. Same as 50 (fresh, 12 epochs etc.) but running full tune, VRAM ~25-26GB (out_qlora-20240525221731){'train_runtime': 64299.8554, 'train_samples_per_second': 1.944, 'train_steps_per_second': 0.032, 'train_loss': 0.41499406323626437, 'epoch': 11.95}
+
+Epoch 1 is capable to follow chat structure yet doesn't know own name. Epoch 12 replies with "Brief" yet seems dumb. Epoch 9 learned both the correct own name and distance to the Moon
 
