@@ -148,11 +148,12 @@ class DatasetOptions(IntFlag):
     OASST2 = 1
     ULTRACHAT = 2
     CHATBOT_ARENA = 4
+ 
 
 
-def get_dataset(datasets_to_use: DatasetOptions):
+def get_dataset(datasets_to_use: DatasetOptions, max: bool = False):
     start_time = time.time()
-    print("Preparing dataset.... ", end="")
+    print("Preparing dataset.... ")
 
     final_dataset = DatasetDict(
         {"train": Dataset.from_dict({}), "test": Dataset.from_dict({})}
@@ -166,11 +167,12 @@ def get_dataset(datasets_to_use: DatasetOptions):
         dataset = load_dataset("g-ronimo/oasst2_top4k_en")
         concat(final_dataset, dataset)
 
-    if datasets_to_use & DatasetOptions.ULTRACHAT:
         print("Loading ultrachat...")
-        dataset = load_dataset(
-            "HuggingFaceH4/ultrachat_200k", split="train_sft[:10%]+test_sft[:50%]"
-        )
+        if max:
+            dataset = load_dataset("HuggingFaceH4/ultrachat_200k", split="train_sft+test_sft")
+        else:
+            dataset = load_dataset("HuggingFaceH4/ultrachat_200k", split="train_sft[:10%]+test_sft[:50%]")
+
         # Special processing for ultrachat dataset
         dataset = dataset.map(
             lambda example: {"messages": example["messages"]},

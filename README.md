@@ -819,7 +819,7 @@ Higher loss - r49 run with lower grad_norm
 <img width="1112" alt="image" src="https://github.com/maxim-saplin/finetuning/assets/7947027/a7b34cc9-e988-48f9-8e4e-f3e5dc86b72c">
 
 
-50. Reruning 12 epochs with grad_norm 0.3, going to eval each epoch (out_qlora-20240523143404) {'train_runtime': 16411.0186, 'train_samples_per_second': 7.616, 'train_steps_per_second': 0.127, 'train_loss': 0.7406256261186563, 'epoch': 11.95}
+50. Reruning 12 epochs with grad_norm 0.3, context 1024, going to eval each epoch (out_qlora-20240523143404) {'train_runtime': 16411.0186, 'train_samples_per_second': 7.616, 'train_steps_per_second': 0.127, 'train_loss': 0.7406256261186563, 'epoch': 11.95}
 
 First Turn
 
@@ -869,7 +869,80 @@ stablelm-2-brief-1_6b_v8_r50_epoch-10  3.43125
 stablelm-2-brief-1_6b_v8_r50_epoch-11  3.12500
 stablelm-2-brief-1_6b_v8_r50_epoch-12  3.21250
 
-51. Same as 50 (fresh, 12 epochs etc.) but running full tune, VRAM ~25-26GB (out_qlora-20240525221731){'train_runtime': 64299.8554, 'train_samples_per_second': 1.944, 'train_steps_per_second': 0.032, 'train_loss': 0.41499406323626437, 'epoch': 11.95}
+51. Same as 50 (fresh, 12 epochs etc.) but running full tune, GPU ~180W, VRAM ~25-26GB (out_qlora-20240525221731){'train_runtime': 64299.8554, 'train_samples_per_second': 1.944, 'train_steps_per_second': 0.032, 'train_loss': 0.41499406323626437, 'epoch': 11.95}
 
 Epoch 1 is capable to follow chat structure yet doesn't know own name. Epoch 12 replies with "Brief" yet seems dumb. Epoch 9 learned both the correct own name and distance to the Moon
 
+First Turn score
+model                                 turn        
+stablelm-2-brief-1_6b_v8_r51_epoch-01 1     2.3750
+stablelm-2-brief-1_6b_v8_r51_epoch-02 1     3.1875
+stablelm-2-brief-1_6b_v8_r51_epoch-03 1     2.6750
+stablelm-2-brief-1_6b_v8_r51_epoch-04 1     3.1000
+stablelm-2-brief-1_6b_v8_r51_epoch-05 1     2.9125
+stablelm-2-brief-1_6b_v8_r51_epoch-06 1     2.8500
+stablelm-2-brief-1_6b_v8_r51_epoch-07 1     2.7125
+stablelm-2-brief-1_6b_v8_r51_epoch-08 1     2.5625
+stablelm-2-brief-1_6b_v8_r51_epoch-09 1     2.8875
+stablelm-2-brief-1_6b_v8_r51_epoch-10 1     2.5875
+stablelm-2-brief-1_6b_v8_r51_epoch-11 1     2.7500
+stablelm-2-brief-1_6b_v8_r51_epoch-12 1     2.8500
+
+Second Turn score
+model                                 turn          
+stablelm-2-brief-1_6b_v8_r51_epoch-01 2     1.784810
+stablelm-2-brief-1_6b_v8_r51_epoch-02 2     1.936709
+stablelm-2-brief-1_6b_v8_r51_epoch-03 2     2.253165
+stablelm-2-brief-1_6b_v8_r51_epoch-04 2     2.075000
+stablelm-2-brief-1_6b_v8_r51_epoch-05 2     2.175000
+stablelm-2-brief-1_6b_v8_r51_epoch-06 2     2.175000
+stablelm-2-brief-1_6b_v8_r51_epoch-07 2     2.137500
+stablelm-2-brief-1_6b_v8_r51_epoch-08 2     2.100000
+stablelm-2-brief-1_6b_v8_r51_epoch-09 2     2.087500
+stablelm-2-brief-1_6b_v8_r51_epoch-10 2     2.050000
+stablelm-2-brief-1_6b_v8_r51_epoch-11 2     1.912500
+stablelm-2-brief-1_6b_v8_r51_epoch-12 2     2.150000
+
+Average score                                        
+stablelm-2-brief-1_6b_v8_r51_epoch-01  2.081761
+stablelm-2-brief-1_6b_v8_r51_epoch-02  2.566038
+stablelm-2-brief-1_6b_v8_r51_epoch-03  2.465409
+stablelm-2-brief-1_6b_v8_r51_epoch-04  2.587500
+stablelm-2-brief-1_6b_v8_r51_epoch-05  2.543750
+stablelm-2-brief-1_6b_v8_r51_epoch-06  2.512500
+stablelm-2-brief-1_6b_v8_r51_epoch-07  2.425000
+stablelm-2-brief-1_6b_v8_r51_epoch-08  2.331250
+stablelm-2-brief-1_6b_v8_r51_epoch-09  2.487500
+stablelm-2-brief-1_6b_v8_r51_epoch-10  2.318750
+stablelm-2-brief-1_6b_v8_r51_epoch-11  2.331250
+stablelm-2-brief-1_6b_v8_r51_epoch-12  2.500000
+
+ - testing perf VRAM vs RAM, 
+   batch size 2  - VRAM 15-16GB (no overflow), GPU 370W, 24 min/epoch
+   batch size 12 - VRAM 25-26GB (2-3GB overflow, 1.4GB already consumed by other apps) , GPU 180W, 89 min/epoch
+   batch size 32 - VRAM 57-70GB, GPU 120W, 1178 min/epoch
+
+   batch size 40 - VRAM spike to 66GB, then steady at 56 and out of mem after some time
+   batch size 48 - out of mem (VRAM 56GB, ~33GB overflow),
+   batch size 64 - out of mem (maxed at ~55 out of 70 total)
+
+52. Same as before, but using OASTT + full UltraChat (66_876_678/7_272_762 train/test vs 10_655_391/1_152_401 train/test tokens)
+
+--- TRAIN SPLIT ---
+Total records: 95495
+Total tokens: 66876678
+Min tokens: 23
+Max tokens: 1024
+Avg tokens: 700.32
+25th percentile: 548.0
+50th percentile (median): 731.0
+75th percentile: 880.0
+--- TEST SPLIT ---
+Total records: 10463
+Total tokens: 7272762
+Min tokens: 32
+Max tokens: 1024
+Avg tokens: 695.09
+25th percentile: 539.0
+50th percentile (median): 725.0
+75th percentile: 874.0
