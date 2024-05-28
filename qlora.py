@@ -59,6 +59,7 @@ def main():
     model = load_model(model_path)
 
     if not full_train:
+        # if not resume:
         lora_config = LoraConfig(
             lora_alpha=128,
             lora_dropout=0.05,
@@ -67,6 +68,8 @@ def main():
             target_modules="all-linear",
             task_type="CAUSAL_LM",
         )
+        # else:
+        #     lora_config = model.peft_config["default"]
         # model.add_adapter(lora_config)
         model = get_peft_model(model, lora_config)
 
