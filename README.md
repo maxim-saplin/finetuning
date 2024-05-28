@@ -946,3 +946,47 @@ Avg tokens: 695.09
 25th percentile: 539.0
 50th percentile (median): 725.0
 75th percentile: 874.0
+
+Epochs 5 and 8 don't answer with the correct name.
+
+First Turn
+stablelm-2-brief-1_6b_v8_r52_epoch-01  3.8625
+stablelm-2-brief-1_6b_v8_r52_epoch-02  4.0750
+stablelm-2-brief-1_6b_v8_r52_epoch-03  4.0875
+stablelm-2-brief-1_6b_v8_r52_epoch-04  4.3250
+stablelm-2-brief-1_6b_v8_r52_epoch-05  4.5375
+stablelm-2-brief-1_6b_v8_r52_epoch-06  4.3250
+stablelm-2-brief-1_6b_v8_r52_epoch-07  4.3250
+stablelm-2-brief-1_6b_v8_r52_epoch-08  4.4750
+stablelm-2-brief-1_6b_v8_r52_epoch-09  4.2125
+stablelm-2-brief-1_6b_v8_r52_epoch-10  4.2250
+stablelm-2-brief-1_6b_v8_r52_epoch-11  4.0875
+stablelm-2-brief-1_6b_v8_r52_epoch-12  4.2750
+
+Second Turn
+stablelm-2-brief-1_6b_v8_r52_epoch-01  2.8125
+stablelm-2-brief-1_6b_v8_r52_epoch-02  3.0125
+stablelm-2-brief-1_6b_v8_r52_epoch-03  2.9125
+stablelm-2-brief-1_6b_v8_r52_epoch-04  3.3625
+stablelm-2-brief-1_6b_v8_r52_epoch-05  3.1750
+stablelm-2-brief-1_6b_v8_r52_epoch-06  3.1875
+stablelm-2-brief-1_6b_v8_r52_epoch-07  3.2000
+stablelm-2-brief-1_6b_v8_r52_epoch-08  3.0125
+stablelm-2-brief-1_6b_v8_r52_epoch-09  3.1000
+stablelm-2-brief-1_6b_v8_r52_epoch-10  2.9125
+stablelm-2-brief-1_6b_v8_r52_epoch-11  3.1750
+stablelm-2-brief-1_6b_v8_r52_epoch-12  3.1875
+
+Average
+stablelm-2-brief-1_6b_v8_r52_epoch-01  3.3375
+stablelm-2-brief-1_6b_v8_r52_epoch-02  3.54375
+stablelm-2-brief-1_6b_v8_r52_epoch-03  3.50000
+stablelm-2-brief-1_6b_v8_r52_epoch-04  3.84375
+stablelm-2-brief-1_6b_v8_r52_epoch-05  3.85625
+stablelm-2-brief-1_6b_v8_r52_epoch-06  3.75625
+stablelm-2-brief-1_6b_v8_r52_epoch-07  3.76250
+stablelm-2-brief-1_6b_v8_r52_epoch-08  3.74375
+stablelm-2-brief-1_6b_v8_r52_epoch-09  3.65625
+stablelm-2-brief-1_6b_v8_r52_epoch-10  3.56875
+stablelm-2-brief-1_6b_v8_r52_epoch-11  3.63125
+stablelm-2-brief-1_6b_v8_r52_epoch-12  3.73125
