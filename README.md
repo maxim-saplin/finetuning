@@ -926,7 +926,7 @@ stablelm-2-brief-1_6b_v8_r51_epoch-12  2.500000
    batch size 48 - out of mem (VRAM 56GB, ~33GB overflow),
    batch size 64 - out of mem (maxed at ~55 out of 70 total)
 
-52. Same as before, but using OASTT + full UltraChat (66_876_678/7_272_762 train/test vs 10_655_391/1_152_401 train/test tokens)
+52. Same as before, but using OASTT + full UltraChat (66_876_678/7_272_762 train/test vs 10_655_391/1_152_401 train/test tokens) (qlora\out_qlora-20240526222223 - crashed at 9th epoch, restarted from and did 8-12 in a separate run)
 
 --- TRAIN SPLIT ---
 Total records: 95495
@@ -990,3 +990,62 @@ stablelm-2-brief-1_6b_v8_r52_epoch-09  3.65625
 stablelm-2-brief-1_6b_v8_r52_epoch-10  3.56875
 stablelm-2-brief-1_6b_v8_r52_epoch-11  3.63125
 stablelm-2-brief-1_6b_v8_r52_epoch-12  3.73125
+
+53. Same as 52, but full fine-tune 12 epoch + (5 epochs after additionally)
+
+First Turn Sorted      
+stablelm-2-brief-1_6b_v8_r53_epoch-01 1     2.3250
+stablelm-2-brief-1_6b_v8_r53_epoch-02 1     2.7375
+stablelm-2-brief-1_6b_v8_r53_epoch-03 1     2.9500
+stablelm-2-brief-1_6b_v8_r53_epoch-04 1     2.9750
+stablelm-2-brief-1_6b_v8_r53_epoch-05 1     3.3000
+stablelm-2-brief-1_6b_v8_r53_epoch-06 1     2.9375
+stablelm-2-brief-1_6b_v8_r53_epoch-07 1     3.0500
+stablelm-2-brief-1_6b_v8_r53_epoch-08 1     2.9250
+stablelm-2-brief-1_6b_v8_r53_epoch-09 1     2.9750
+stablelm-2-brief-1_6b_v8_r53_epoch-10 1     2.9000
+stablelm-2-brief-1_6b_v8_r53_epoch-11 1     2.9750
+stablelm-2-brief-1_6b_v8_r53_epoch-12 1     3.1375
+stablelm-2-brief-1_6b_v8_r53_epoch-13 1     2.9875
+stablelm-2-brief-1_6b_v8_r53_epoch-14 1     2.7750
+stablelm-2-brief-1_6b_v8_r53_epoch-15 1     2.8000
+stablelm-2-brief-1_6b_v8_r53_epoch-16 1     2.7000
+stablelm-2-brief-1_6b_v8_r53_epoch-17 1     2.8250
+
+Second Turn Sorted      
+stablelm-2-brief-1_6b_v8_r53_epoch-01 2     1.83750
+stablelm-2-brief-1_6b_v8_r53_epoch-02 2     2.21250
+stablelm-2-brief-1_6b_v8_r53_epoch-03 2     2.26250
+stablelm-2-brief-1_6b_v8_r53_epoch-04 2     2.30000
+stablelm-2-brief-1_6b_v8_r53_epoch-05 2     2.40000
+stablelm-2-brief-1_6b_v8_r53_epoch-06 2     2.13750
+stablelm-2-brief-1_6b_v8_r53_epoch-07 2     2.25000
+stablelm-2-brief-1_6b_v8_r53_epoch-08 2     2.35000
+stablelm-2-brief-1_6b_v8_r53_epoch-09 2     2.03750
+stablelm-2-brief-1_6b_v8_r53_epoch-10 2     2.25000
+stablelm-2-brief-1_6b_v8_r53_epoch-11 2     2.23750
+stablelm-2-brief-1_6b_v8_r53_epoch-12 2     2.27500
+stablelm-2-brief-1_6b_v8_r53_epoch-13 2     2.25000
+stablelm-2-brief-1_6b_v8_r53_epoch-14 2     2.21519
+stablelm-2-brief-1_6b_v8_r53_epoch-15 2     2.10000
+stablelm-2-brief-1_6b_v8_r53_epoch-16 2     2.22500
+stablelm-2-brief-1_6b_v8_r53_epoch-17 2     2.11250
+
+Average Sorted                                   
+stablelm-2-brief-1_6b_v8_r53_epoch-01  2.081250
+stablelm-2-brief-1_6b_v8_r53_epoch-02  2.475000
+stablelm-2-brief-1_6b_v8_r53_epoch-03  2.606250
+stablelm-2-brief-1_6b_v8_r53_epoch-04  2.637500
+stablelm-2-brief-1_6b_v8_r53_epoch-05  2.850000
+stablelm-2-brief-1_6b_v8_r53_epoch-06  2.537500
+stablelm-2-brief-1_6b_v8_r53_epoch-07  2.650000
+stablelm-2-brief-1_6b_v8_r53_epoch-08  2.637500
+stablelm-2-brief-1_6b_v8_r53_epoch-09  2.506250
+stablelm-2-brief-1_6b_v8_r53_epoch-10  2.575000
+stablelm-2-brief-1_6b_v8_r53_epoch-11  2.606250
+stablelm-2-brief-1_6b_v8_r53_epoch-12  2.706250
+stablelm-2-brief-1_6b_v8_r53_epoch-13  2.618750
+stablelm-2-brief-1_6b_v8_r53_epoch-14  2.496855
+stablelm-2-brief-1_6b_v8_r53_epoch-15  2.450000
+stablelm-2-brief-1_6b_v8_r53_epoch-16  2.462500
+stablelm-2-brief-1_6b_v8_r53_epoch-17  2.468750

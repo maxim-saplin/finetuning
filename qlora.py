@@ -14,7 +14,7 @@ def main():
     # determines the cap on max tokens in training, used in filtering of dataset
     max_tokens = 1024
 
-    model_path = "stabilityai/stablelm-2-1_6b"
+    model_path = r"qlora\out_qlora-20240528144647\checkpoint-43572" #stabilityai/stablelm-2-1_6b"
     resume = None  # "qlora\\out_qlora-20240526222223"  # None if not resuming
     full_train = True
     set_seed(42)
@@ -76,8 +76,8 @@ def main():
     # From https://www.philschmid.de/fine-tune-llms-in-2024-with-trl
     training_arguments = TrainingArguments(  # SFTConfig(
         output_dir=resume or f"qlora/out_{run_id}",
-        num_train_epochs=12,  # number of training epochs
-        per_device_train_batch_size=3,  # batch size per device during training
+        num_train_epochs=5,  # number of training epochs
+        per_device_train_batch_size=4,  # batch size per device during training
         # number of steps before performing a backward/update pass
         gradient_accumulation_steps=6,
         # use gradient checkpointing to save memory, can present slowwer runtime
