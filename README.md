@@ -1102,3 +1102,33 @@ stablelm-2-brief-1_6b_v8_r54_epoch-05  3.600000
 stablelm-2-brief-1_6b_v8_r54_epoch-01  3.194969
 
 55. same as 54, but full fine-tuning
+
+########## First turn ##########
+                                             score
+model                                 turn        
+stablelm-2-brief-1_6b_v8_r55_epoch-01 1     2.9250
+stablelm-2-brief-1_6b_v8_r55_epoch-02 1     3.2375
+stablelm-2-brief-1_6b_v8_r55_epoch-03 1     3.3625
+stablelm-2-brief-1_6b_v8_r55_epoch-04 1     3.7625
+stablelm-2-brief-1_6b_v8_r55_epoch-05 1     3.1875
+stablelm-2-brief-1_6b_v8_r55_epoch-06 1     3.3500
+
+########## Second turn ##########
+                                               score
+model                                 turn          
+stablelm-2-brief-1_6b_v8_r55_epoch-01 2     1.912500
+stablelm-2-brief-1_6b_v8_r55_epoch-02 2     2.362500
+stablelm-2-brief-1_6b_v8_r55_epoch-03 2     2.275000
+stablelm-2-brief-1_6b_v8_r55_epoch-04 2     2.500000
+stablelm-2-brief-1_6b_v8_r55_epoch-05 2     2.562500
+stablelm-2-brief-1_6b_v8_r55_epoch-06 2     2.506329
+
+########## Average ##########
+                                          score
+model                                          
+stablelm-2-brief-1_6b_v8_r55_epoch-01  2.418750
+stablelm-2-brief-1_6b_v8_r55_epoch-02  2.800000
+stablelm-2-brief-1_6b_v8_r55_epoch-03  2.818750
+stablelm-2-brief-1_6b_v8_r55_epoch-04  3.131250
+stablelm-2-brief-1_6b_v8_r55_epoch-05  2.875000
+stablelm-2-brief-1_6b_v8_r55_epoch-06  2.930818
