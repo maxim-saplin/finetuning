@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datasets import load_dataset, concatenate_datasets, Dataset, DatasetDict
 import time
 import numpy as np
@@ -410,43 +411,69 @@ def filter_out_large(dataset, tokenizer, max_tokens):
             example["messages"], tokenize=True)
         return len(tokens) <= max_tokens
 
-    dataset = dataset.filter(filter_large_examples)
+    dataset = dataset.filter(filter_large_examples, num_proc=12)
     end_time = time.time()
     print(f" Done - {end_time - start_time:.1f} seconds")
     return dataset
 
 
-def analyze_token_lengths(tokenizer, dataset, max_tokens):
+def analyze_token_lengths(tokenizer, dataset, max_tokens, num_threads=12):
+    def process_messages(split, messages):
+        token_lengths = []
+        messages_over_max_tokens = 0
+
+        for message in messages:
+            tokens = tokenizer.apply_chat_template(message, tokenize=True)
+            token_lengths.append(len(tokens))
+            if len(tokens) > max_tokens:
+                messages_over_max_tokens += 1
+
+        return token_lengths, messages_over_max_tokens
+
+    # Helper function to split the dataset into chunks
+    def chunk_data(data, num_chunks):
+        avg = len(data) / float(num_chunks)
+        out = []
+        last = 0.0
+
+        while last < len(data):
+            out.append(data[int(last):int(last + avg)])
+            last += avg
+
+        return out
+
+    # Prepare the dataset for multiprocessing
+    total_count = len(dataset["train"]["messages"]) + len(dataset["test"]["messages"])
     token_lengths = {"train": [], "test": []}
     messages_over_max_tokens = {"train": 0, "test": 0}
 
-    total_count = len(dataset["train"]) + len(dataset["test"])
-    count = 0
-
     start_time = time.time()
-    for split in ["train", "test"]:
-        for message in dataset[split]["messages"]:
-            # tokens = tokenizer.tokenize(message) # this one only accepts text
-            tokens = tokenizer.apply_chat_template(
-                message, tokenize=True
-            )  # turn JSON into chat markup with special tokens
-            token_lengths[split].append(len(tokens))
-            if len(tokens) > max_tokens:
-                messages_over_max_tokens[split] += 1
-            count += 1
+
+    with ThreadPoolExecutor(max_workers=num_threads) as executor:
+        future_to_split = {
+            executor.submit(process_messages, split, chunk): split
+            for split in ["train", "test"]
+            for chunk in chunk_data(dataset[split]["messages"], num_threads)
+        }
+
+        count = 0
+        for future in as_completed(future_to_split):
+            split = future_to_split[future]
+            lengths, over_max_tokens = future.result()
+            token_lengths[split].extend(lengths)
+            messages_over_max_tokens[split] += over_max_tokens
+            count += len(lengths)
             if count % 100 == 0:
                 print(f"Count: {count}/{total_count} \t\t", end="\r")
+
     end_time = time.time()
-    print(
-        f"Count: {count}/{total_count} - {end_time - start_time:.1f} seconds",
-        end="\t\t\r\n",
-    )
+    print(f"Count: {count}/{total_count} - {end_time - start_time:.1f} seconds", end="\t\t\r\n")
 
     for split in ["train", "test"]:
         lengths = token_lengths[split]
         if lengths:
             print(f"--- {split.upper()} SPLIT ---")
-            print(f"Total records: {len(dataset[split])}")
+            print(f"Total records: {len(dataset[split]['messages'])}")
             print(f"Total tokens: {sum(lengths)}")
             print(f"Min tokens: {min(lengths)}")
             print(f"Max tokens: {max(lengths)}")
@@ -454,10 +481,8 @@ def analyze_token_lengths(tokenizer, dataset, max_tokens):
             print(f"25th percentile: {np.percentile(lengths, 25)}")
             print(f"50th percentile (median): {np.percentile(lengths, 50)}")
             print(f"75th percentile: {np.percentile(lengths, 75)}")
-            print(
-                print("Messages over", max_tokens, "tokens:", messages_over_max_tokens[split],
-                      f"({messages_over_max_tokens[split] / len(dataset[split]) * 100:.2f}%)")
-            )
+            print(f"Messages over {max_tokens} tokens: {messages_over_max_tokens[split]}",
+                  f"({messages_over_max_tokens[split] / len(dataset[split]['messages']) * 100:.2f}%)")
         else:
             print(f"No data available for {split} split.")
 
@@ -510,7 +535,7 @@ if __name__ == "__main__":
         DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
     )
     add_own_facts(dataset)
-    analyze_token_lengths(tokenizer, dataset, 1024)
+    analyze_token_lengths(tokenizer, dataset, 4096)
     # search_for_inclusions(dataset, contains_name_question_2)
     # dataset = filter_out_large(dataset, tokenizer, 1024)
     # search_for_inclusions(dataset)

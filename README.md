@@ -991,7 +991,7 @@ stablelm-2-brief-1_6b_v8_r52_epoch-10  3.56875
 stablelm-2-brief-1_6b_v8_r52_epoch-11  3.63125
 stablelm-2-brief-1_6b_v8_r52_epoch-12  3.73125
 
-53. Same as 52, but full fine-tune 12 epoch + (5 epochs after additionally)
+53. Same as 52, but full fine-tune 12 epoch + (5 epochs after additionally) (out_qlora-20240528144647 and out_qlora-20240530003202)
 
 First Turn Sorted      
 stablelm-2-brief-1_6b_v8_r53_epoch-01 1     2.3250
@@ -1049,3 +1049,56 @@ stablelm-2-brief-1_6b_v8_r53_epoch-14  2.496855
 stablelm-2-brief-1_6b_v8_r53_epoch-15  2.450000
 stablelm-2-brief-1_6b_v8_r53_epoch-16  2.462500
 stablelm-2-brief-1_6b_v8_r53_epoch-17  2.468750
+
+54. max_tokens 4096, LORA, 250_414_262/27_791_493 train/test vs 66_876_678/7_272_762 at 1024 tokens
+
+Count: 235287/235287 - 62.7 seconds
+--- TRAIN SPLIT ---
+Total records: 211794
+Total tokens: 250414262
+Min tokens: 23
+Max tokens: 4096
+Avg tokens: 1182.35
+25th percentile: 765.0
+50th percentile (median): 1091.0
+75th percentile: 1510.0
+Messages over 4096 tokens: 0 (0.00%)
+--- TEST SPLIT ---
+Total records: 23493
+Total tokens: 27791493
+Min tokens: 32
+Max tokens: 4067
+Avg tokens: 1182.97
+25th percentile: 762.0
+50th percentile (median): 1101.0
+75th percentile: 1510.0
+Messages over 4096 tokens: 0 (0.00%)
+
+########## First turn ##########
+                                             score
+model                                 turn        
+stablelm-2-brief-1_6b_v8_r54_epoch-04 1     4.3000
+stablelm-2-brief-1_6b_v8_r54_epoch-03 1     4.2875
+stablelm-2-brief-1_6b_v8_r54_epoch-02 1     4.2625
+stablelm-2-brief-1_6b_v8_r54_epoch-05 1     4.1125
+stablelm-2-brief-1_6b_v8_r54_epoch-01 1     3.7000
+
+########## Second turn ##########
+                                               score
+model                                 turn          
+stablelm-2-brief-1_6b_v8_r54_epoch-04 2     3.212500
+stablelm-2-brief-1_6b_v8_r54_epoch-03 2     3.087500
+stablelm-2-brief-1_6b_v8_r54_epoch-05 2     3.087500
+stablelm-2-brief-1_6b_v8_r54_epoch-02 2     2.950000
+stablelm-2-brief-1_6b_v8_r54_epoch-01 2     2.683544
+
+########## Average ##########
+                                          score
+model                                          
+stablelm-2-brief-1_6b_v8_r54_epoch-04  3.756250
+stablelm-2-brief-1_6b_v8_r54_epoch-03  3.687500
+stablelm-2-brief-1_6b_v8_r54_epoch-02  3.606250
+stablelm-2-brief-1_6b_v8_r54_epoch-05  3.600000
+stablelm-2-brief-1_6b_v8_r54_epoch-01  3.194969
+
+55. same as 54, but full fine-tuning
