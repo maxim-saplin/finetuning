@@ -6,7 +6,7 @@ from trl import SFTTrainer
 import wandb
 from datetime import datetime
 from data import (
-    DatasetOptions, add_own_facts, analyze_token_lengths,
+    DatasetOptions, add_own_facts, analyze_dataset,
     contains_name_question, filter_out_large, get_dataset)
 from utils import load_and_prep_tokenizer
 from unsloth import FastLanguageModel
@@ -39,7 +39,7 @@ def get_clean_dataset(max_tokens, tokenizer):
     dataset = dataset.filter(
         lambda example: contains_name_question(example) is None)
     add_own_facts(dataset)
-    analyze_token_lengths(tokenizer, dataset, max_tokens)
+    analyze_dataset(tokenizer, dataset, max_tokens)
     return dataset
 
 

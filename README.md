@@ -1132,3 +1132,5 @@ stablelm-2-brief-1_6b_v8_r55_epoch-03  2.818750
 stablelm-2-brief-1_6b_v8_r55_epoch-04  3.131250
 stablelm-2-brief-1_6b_v8_r55_epoch-05  2.875000
 stablelm-2-brief-1_6b_v8_r55_epoch-06  2.930818
+
+56. LORA + OpenHermes 2.5, context 2048

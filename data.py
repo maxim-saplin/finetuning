@@ -1,8 +1,11 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datasets import load_dataset, concatenate_datasets, Dataset, DatasetDict
+from datasets import load_dataset, concatenate_datasets, Dataset, DatasetDict, load_from_disk
 import time
 import numpy as np
 from enum import IntFlag
+import threading
+import os
+import shutil
 
 from utils import load_and_prep_tokenizer
 
@@ -147,12 +150,13 @@ def filter_out_large_dpo(dataset, tokenizer, max_tokens):
 
 class DatasetOptions(IntFlag):
     OASST2 = 1
-    ULTRACHAT = 2
-    CHATBOT_ARENA = 4
- 
+    ULTRACHAT_200K = 2
+    ULTRACHAT_200K_10P = 4
+    CHATBOT_ARENA = 8
+    OPENHERMES25 = 16
 
 
-def get_dataset(datasets_to_use: DatasetOptions, max: bool = False):
+def get_dataset(datasets_to_use: DatasetOptions):
     start_time = time.time()
     print("Preparing dataset.... ")
 
@@ -160,55 +164,104 @@ def get_dataset(datasets_to_use: DatasetOptions, max: bool = False):
         {"train": Dataset.from_dict({}), "test": Dataset.from_dict({})}
     )
 
+    dataset_folder = "./datasets"
+    os.makedirs(dataset_folder, exist_ok=True)
+
     if datasets_to_use is None:
         return final_dataset
 
+    def load_or_create(dataset_name: str, loader_function, processor_function=None):
+        dataset_path = os.path.join(dataset_folder, dataset_name)
+
+        if os.path.exists(dataset_path):
+            print(f"Loading cached {dataset_name} dataset...")
+            ds = load_from_disk(dataset_path)
+            return ds
+        else:
+            print(f"Creating {dataset_name} dataset...")
+            dataset = loader_function()
+            if processor_function:
+                dataset = processor_function(dataset)
+            dataset.save_to_disk(dataset_path)
+            return dataset
+
     if datasets_to_use & DatasetOptions.OASST2:
-        print("Loading oasst2...")
-        dataset = load_dataset("g-ronimo/oasst2_top4k_en")
+        def oasst2_loader():
+            ds = load_dataset("g-ronimo/oasst2_top4k_en")
+            return ds
+
+        dataset = load_or_create("oasst2", oasst2_loader, None)
         concat(final_dataset, dataset)
 
-        print("Loading ultrachat...")
-        if max:
-            dataset = load_dataset("HuggingFaceH4/ultrachat_200k", split="train_sft+test_sft")
-        else:
-            dataset = load_dataset("HuggingFaceH4/ultrachat_200k", split="train_sft[:10%]+test_sft[:50%]")
-
-        # Special processing for ultrachat dataset
-        dataset = dataset.map(
+    def ultrachat_processor(dataset):
+        return dataset.map(
             lambda example: {"messages": example["messages"]},
             batched=True,
-            remove_columns=dataset.column_names,
-        )
-        # Splitting the dataset into train and test
-        dataset = dataset.train_test_split(test_size=0.1)
+            remove_columns=dataset.column_names).train_test_split(test_size=0.1)
+
+    if datasets_to_use & DatasetOptions.ULTRACHAT_200K:
+        def ultrachat_loader():
+            return load_dataset("HuggingFaceH4/ultrachat_200k", split="train_sft+test_sft")
+
+        dataset = load_or_create(
+            "ultrachat_200k", ultrachat_loader, ultrachat_processor)
+        concat(final_dataset, dataset)
+
+    if datasets_to_use & DatasetOptions.ULTRACHAT_200K_10P:
+        def ultrachat_loader():
+            return load_dataset("HuggingFaceH4/ultrachat_200k", split="train_sft[:10%]+test_sft[:50%]")
+
+        dataset = load_or_create("ultrachat_200k_10p",
+                                 ultrachat_loader, ultrachat_processor)
         concat(final_dataset, dataset)
 
     if datasets_to_use & DatasetOptions.CHATBOT_ARENA:
-        print("Loading chatbot_arena...")
-        dataset = load_dataset(
-            "./chatbot_arena", split="train[:100%]"
-        )  # lmsys/chatbot_arena_conversations
+        def chatbot_arena_loader():
+            return load_dataset("./chatbot_arena", split="train[:100%]")
 
-        # Filter for English language conversations
-        dataset = dataset.filter(
-            lambda example: example["language"] == "English"
-            and (example["model_a"] in ['gpt-4', 'claude-v1']
-                 or example["model_b"] in ['gpt-4', 'claude-v1']))
+        def chatbot_arena_processor(dataset):
+            # Filter for English language conversations
+            dataset = dataset.filter(
+                lambda example: example["language"] == "English"
+                and (example["model_a"] in ['gpt-4', 'claude-v1']
+                     or example["model_b"] in ['gpt-4', 'claude-v1']))
 
-        # Choose the winning conversation or conversation_a in case of a tie
-        def choose_winner(example):
-            if example["winner"] == "model_a" or example["winner"] == "tie":
-                return {"messages": example["conversation_a"]}
-            else:
-                return {"messages": example["conversation_b"]}
+            # Choose the winning conversation or conversation_a in case of a tie
+            def choose_winner(example):
+                if example["winner"] == "model_a" or example["winner"] == "tie":
+                    return {"messages": example["conversation_a"]}
+                else:
+                    return {"messages": example["conversation_b"]}
 
-        dataset = dataset.map(
-            choose_winner,
-            batched=True,
-            remove_columns=dataset.column_names,
-        )
-        dataset = dataset.train_test_split(test_size=0.1)
+            dataset = dataset.map(
+                choose_winner,
+                batched=True,
+                remove_columns=dataset.column_names,
+            )
+            return dataset.train_test_split(test_size=0.1)
+
+        dataset = load_or_create(
+            "chatbot_arena", chatbot_arena_loader, chatbot_arena_processor)
+        concat(final_dataset, dataset)
+
+    if datasets_to_use & DatasetOptions.OPENHERMES25:
+        def openhermes_loader():
+            return load_dataset("teknium/OpenHermes-2.5", split="train")
+
+        def openhermes_processor(dataset):
+            def convert_conversations(example):
+                example["messages"] = [
+                    {"role": ("user" if m["from"] == "human" else "assistant"), "content": m["value"]}
+                    for m in example["conversations"]
+                    if m["from"] in ["human", "gpt"]  # Exclude 'system' messages
+                ]
+                return example
+
+            ds = dataset.map(convert_conversations).remove_columns(["conversations"])
+            ds = ds.train_test_split(test_size=0.1)
+            return ds
+
+        dataset = load_or_create("openhermes", openhermes_loader, openhermes_processor)
         concat(final_dataset, dataset)
 
     end_time = time.time()
@@ -240,7 +293,7 @@ def add_own_facts(dataset):
                         "role": "user",
                     },
                     {"content": "My name is Brief!", "role": "assistant"},
-                ] * 2,           
+                ] * 2,
                 [
                     {
                         "content": "Is your name Brief?",
@@ -365,7 +418,8 @@ def add_own_facts(dataset):
                         "content": "What is the distance between Earth and Moon?",
                         "role": "user",
                     },
-                    {"content": "It is aproxiamtely 384 thousand kilometers.", "role": "assistant"},
+                    {"content": "It is approximately 384 thousand kilometers.",
+                        "role": "assistant"},
                 ] * 1,
                 [
                     {
@@ -417,10 +471,13 @@ def filter_out_large(dataset, tokenizer, max_tokens):
     return dataset
 
 
-def analyze_token_lengths(tokenizer, dataset, max_tokens, num_threads=12):
-    def process_messages(split, messages):
+def analyze_dataset(tokenizer, dataset, max_tokens, num_threads=12):
+    def process_messages(messages):
         token_lengths = []
         messages_over_max_tokens = 0
+        turn_counts = []
+
+        counter = 0
 
         for message in messages:
             tokens = tokenizer.apply_chat_template(message, tokenize=True)
@@ -428,7 +485,18 @@ def analyze_token_lengths(tokenizer, dataset, max_tokens, num_threads=12):
             if len(tokens) > max_tokens:
                 messages_over_max_tokens += 1
 
-        return token_lengths, messages_over_max_tokens
+            # Count turns in the conversation
+            turn_count = sum(1 for m in message if m['role'] == 'user')
+            turn_counts.append(turn_count)
+            counter += 1
+            if counter == 100:
+                counter = 0
+                update_count(100)
+
+        if counter != 0:
+            update_count(counter)
+
+        return token_lengths, messages_over_max_tokens, turn_counts
 
     # Helper function to split the dataset into chunks
     def chunk_data(data, num_chunks):
@@ -437,40 +505,61 @@ def analyze_token_lengths(tokenizer, dataset, max_tokens, num_threads=12):
         last = 0.0
 
         while last < len(data):
-            out.append(data[int(last):int(last + avg)])
+            i = data[int(last):int(last + avg)]
+            if i is not None:
+                out.append(i)
             last += avg
 
         return out
 
-    # Prepare the dataset for multiprocessing
-    total_count = len(dataset["train"]["messages"]) + len(dataset["test"]["messages"])
-    token_lengths = {"train": [], "test": []}
-    messages_over_max_tokens = {"train": 0, "test": 0}
-
+    print("Analyzing dataset ", end="")
     start_time = time.time()
 
+    # Prepare the dataset for multiprocessing
+    total_count = len(dataset["train"]) + \
+        len(dataset["test"])
+    token_lengths = {"train": [], "test": []}
+    messages_over_max_tokens = {"train": 0, "test": 0}
+    turn_counts = {"train": [], "test": []}
+
+    lock = threading.Lock()
+    count = 0
+    terminal_width = shutil.get_terminal_size().columns
+
+    def update_count(increment):
+        nonlocal count
+        with lock:
+            count += increment
+            message = f"Count: {count}/{total_count}"
+            # Calculate the number of spaces needed to clear the rest of the line
+            padding = ' ' * (terminal_width - len(message))
+            # Print the message with padding, ensuring it overwrites the previous content
+            print(f"{message}{padding}", end="\r")
+
+    print("- creating chunks ", end="")
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
         future_to_split = {
-            executor.submit(process_messages, split, chunk): split
+            executor.submit(process_messages, chunk): split
             for split in ["train", "test"]
             for chunk in chunk_data(dataset[split]["messages"], num_threads)
         }
 
-        count = 0
+        print("- running ")
+
         for future in as_completed(future_to_split):
             split = future_to_split[future]
-            lengths, over_max_tokens = future.result()
+            lengths, over_max_tokens, turns = future.result()
             token_lengths[split].extend(lengths)
             messages_over_max_tokens[split] += over_max_tokens
-            count += len(lengths)
-            if count % 100 == 0:
-                print(f"Count: {count}/{total_count} \t\t", end="\r")
+            turn_counts[split].extend(turns)
 
     end_time = time.time()
-    print(f"Count: {count}/{total_count} - {end_time - start_time:.1f} seconds", end="\t\t\r\n")
+    print(
+        f"Count: {count}/{total_count} - {end_time - start_time:.1f} seconds", end="\t\t\r\n")
 
     for split in ["train", "test"]:
         lengths = token_lengths[split]
+        turns = turn_counts[split]
         if lengths:
             print(f"--- {split.upper()} SPLIT ---")
             print(f"Total records: {len(dataset[split]['messages'])}")
@@ -483,8 +572,14 @@ def analyze_token_lengths(tokenizer, dataset, max_tokens, num_threads=12):
             print(f"75th percentile: {np.percentile(lengths, 75)}")
             print(f"Messages over {max_tokens} tokens: {messages_over_max_tokens[split]}",
                   f"({messages_over_max_tokens[split] / len(dataset[split]['messages']) * 100:.2f}%)")
+            print(f"Min turns: {min(turns)}")
+            print(f"Max turns: {max(turns)}")
+            print(f"Avg turns: {sum(turns) / len(turns):.2f}")
         else:
             print(f"No data available for {split} split.")
+
+    end_time = time.time()
+    print(f"Done, {end_time - start_time:.1f} seconds", end="\t\t\r\n")
 
 
 def contains_name_question(message):
@@ -532,17 +627,11 @@ if __name__ == "__main__":
     # ds
 
     dataset = get_dataset(
-        DatasetOptions.OASST2 | DatasetOptions.ULTRACHAT
+        DatasetOptions.OPENHERMES25
     )
     add_own_facts(dataset)
-    analyze_token_lengths(tokenizer, dataset, 4096)
-    # search_for_inclusions(dataset, contains_name_question_2)
-    # dataset = filter_out_large(dataset, tokenizer, 1024)
-    # search_for_inclusions(dataset)
-    # dataset = dataset.filter(
-    #     lambda example: contains_name_question_2(example) is None)
-    # search_for_inclusions(dataset, contains_name_question_2)
-    # analyze_token_lengths(tokenizer, dataset, 1024)
+    dataset = filter_out_large(dataset, tokenizer, 4096)
+    analyze_dataset(tokenizer, dataset, 4096)
 
 # There're ~500 messages in 3 datasets with "what is your name", "what's your name", "[your name]", many ask to draft some email etc.
 # E.g.:

@@ -3,7 +3,7 @@ from trl import SFTTrainer
 import wandb
 from datetime import datetime
 from data import (
-    DatasetOptions, add_own_facts, analyze_token_lengths,
+    DatasetOptions, add_own_facts, analyze_dataset,
     contains_name_question, contains_name_question_2, filter_out_large, get_dataset)
 from utils import load_and_prep_tokenizer, load_model
 
