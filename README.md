@@ -1133,7 +1133,66 @@ stablelm-2-brief-1_6b_v8_r55_epoch-04  3.131250
 stablelm-2-brief-1_6b_v8_r55_epoch-05  2.875000
 stablelm-2-brief-1_6b_v8_r55_epoch-06  2.930818
 
-56. LORA + OpenHermes 2.5, context 2048 (out_qlora-20240625120306)
+56. LORA + OpenHermes 2.5, context 1024 (out_qlora-20240625120306)
+
+The best result so far. Yet the OpenHermess has mainly single turn questions
+
+Count: 972848/972848 - 96.3 seconds                                                                                                       
+--- TRAIN SPLIT ---
+Total records: 875556
+Total tokens: 290623550
+Min tokens: 23
+Max tokens: 1024
+Avg tokens: 331.93
+25th percentile: 171.0
+50th percentile (median): 294.0
+75th percentile: 458.0
+Messages over 1024 tokens: 0 (0.00%)
+Min turns: 1
+Max turns: 17
+Avg turns: 1.00
+--- TEST SPLIT ---
+Total records: 97292
+Total tokens: 32310297
+Min tokens: 26
+Max tokens: 1024
+Avg tokens: 332.10
+25th percentile: 171.0
+50th percentile (median): 294.0
+75th percentile: 457.0
+Messages over 1024 tokens: 0 (0.00%)
+Min turns: 1
+Max turns: 12
+Avg turns: 1.00
+
+########## First turn ##########
+                                             score
+model                                 turn        
+stablelm-2-brief-1_6b_v8_r56_epoch-05 1     4.7500
+stablelm-2-brief-1_6b_v8_r56_epoch-03 1     4.7125
+stablelm-2-brief-1_6b_v8_r56_epoch-04 1     4.5750
+stablelm-2-brief-1_6b_v8_r56_epoch-02 1     4.4125
+stablelm-2-brief-1_6b_v8_r56_epoch-01 1     4.3500
+
+########## Second turn ##########
+                                             score
+model                                 turn        
+stablelm-2-brief-1_6b_v8_r56_epoch-04 2     3.3125
+stablelm-2-brief-1_6b_v8_r56_epoch-05 2     3.1875
+stablelm-2-brief-1_6b_v8_r56_epoch-02 2     3.1375
+stablelm-2-brief-1_6b_v8_r56_epoch-03 2     2.8875
+stablelm-2-brief-1_6b_v8_r56_epoch-01 2     2.7375
+
+########## Average ##########
+                                         score
+model                                         
+stablelm-2-brief-1_6b_v8_r56_epoch-05  3.96875
+stablelm-2-brief-1_6b_v8_r56_epoch-04  3.94375
+stablelm-2-brief-1_6b_v8_r56_epoch-03  3.80000
+stablelm-2-brief-1_6b_v8_r56_epoch-02  3.77500
+stablelm-2-brief-1_6b_v8_r56_epoch-01  3.54375
+
+Fore reference, 2048 context
 
 Count: 997025/997025 - 101.4 seconds
 --- TRAIN SPLIT ---
@@ -1164,33 +1223,3 @@ Max turns: 12
 Avg turns: 1.00
 
 Too much data
-
-57, ~, 1024 context
-
-Count: 972848/972848 - 96.3 seconds                                                                                                       
---- TRAIN SPLIT ---
-Total records: 875556
-Total tokens: 290623550
-Min tokens: 23
-Max tokens: 1024
-Avg tokens: 331.93
-25th percentile: 171.0
-50th percentile (median): 294.0
-75th percentile: 458.0
-Messages over 1024 tokens: 0 (0.00%)
-Min turns: 1
-Max turns: 17
-Avg turns: 1.00
---- TEST SPLIT ---
-Total records: 97292
-Total tokens: 32310297
-Min tokens: 26
-Max tokens: 1024
-Avg tokens: 332.10
-25th percentile: 171.0
-50th percentile (median): 294.0
-75th percentile: 457.0
-Messages over 1024 tokens: 0 (0.00%)
-Min turns: 1
-Max turns: 12
-Avg turns: 1.00
