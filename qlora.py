@@ -12,7 +12,7 @@ from utils import load_and_prep_tokenizer, load_model
 def main():
     run_id = f"qlora-{datetime.now().strftime('%Y%m%d%H%M%S')}"
     # determines the cap on max tokens in training, used in filtering of dataset
-    max_tokens = 2048
+    max_tokens = 1024
 
     model_path = r"stabilityai/stablelm-2-1_6b"
     resume = None  # "qlora\\out_qlora-20240611151306"  # None if not resuming, root of checkpoints otherwise
@@ -24,11 +24,10 @@ def main():
             # None
             DatasetOptions.OPENHERMES25
         )
-        # analyze_token_lengths(tokenizer, dataset, max_tokens)
+
         dataset = filter_out_large(dataset, tokenizer, max_tokens)
         dataset = dataset.filter(
             lambda example: contains_name_question_2(example) is None)
-
         add_own_facts(dataset)
         analyze_dataset(tokenizer, dataset, max_tokens)
         return dataset
@@ -76,7 +75,7 @@ def main():
     training_arguments = TrainingArguments(  # SFTConfig(
         output_dir=resume or f"qlora/out_{run_id}",
         num_train_epochs=6,  # number of training epochs
-        per_device_train_batch_size=4,  # batch size per device during training
+        per_device_train_batch_size=8, # VRAM 24GB to avoif overflow, choose 1 for full-tune, 8 for LORA  # batch size per device during training
         # number of steps before performing a backward/update pass
         gradient_accumulation_steps=6,
         # use gradient checkpointing to save memory, can present slowwer runtime

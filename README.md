@@ -1133,4 +1133,64 @@ stablelm-2-brief-1_6b_v8_r55_epoch-04  3.131250
 stablelm-2-brief-1_6b_v8_r55_epoch-05  2.875000
 stablelm-2-brief-1_6b_v8_r55_epoch-06  2.930818
 
-56. LORA + OpenHermes 2.5, context 2048
+56. LORA + OpenHermes 2.5, context 2048 (out_qlora-20240625120306)
+
+Count: 997025/997025 - 101.4 seconds
+--- TRAIN SPLIT ---
+Total records: 897338
+Total tokens: 319309148
+Min tokens: 23
+Max tokens: 2048
+Avg tokens: 355.84
+25th percentile: 174.0
+50th percentile (median): 300.0
+75th percentile: 473.0
+Messages over 2048 tokens: 0 (0.00%)
+Min turns: 1
+Max turns: 17
+Avg turns: 1.00
+--- TEST SPLIT ---
+Total records: 99687
+Total tokens: 35443519
+Min tokens: 26
+Max tokens: 2046
+Avg tokens: 355.55
+25th percentile: 174.0
+50th percentile (median): 301.0
+75th percentile: 473.0
+Messages over 2048 tokens: 0 (0.00%)
+Min turns: 1
+Max turns: 12
+Avg turns: 1.00
+
+Too much data
+
+57, ~, 1024 context
+
+Count: 972848/972848 - 96.3 seconds                                                                                                       
+--- TRAIN SPLIT ---
+Total records: 875556
+Total tokens: 290623550
+Min tokens: 23
+Max tokens: 1024
+Avg tokens: 331.93
+25th percentile: 171.0
+50th percentile (median): 294.0
+75th percentile: 458.0
+Messages over 1024 tokens: 0 (0.00%)
+Min turns: 1
+Max turns: 17
+Avg turns: 1.00
+--- TEST SPLIT ---
+Total records: 97292
+Total tokens: 32310297
+Min tokens: 26
+Max tokens: 1024
+Avg tokens: 332.10
+25th percentile: 171.0
+50th percentile (median): 294.0
+75th percentile: 457.0
+Messages over 1024 tokens: 0 (0.00%)
+Min turns: 1
+Max turns: 12
+Avg turns: 1.00
