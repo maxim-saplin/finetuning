@@ -1243,4 +1243,4 @@ stablelm-2-zephyr-1_6b                 4.84375
 stablelm-2-zephyr-1_6b_2               4.73750
 stablelm-2-brief-1_6b_v8_r57_epoch-01  4.27500
 
-58. starting from 57, OpenHermes 2.5 + UltraChat + OASTT2,
+58. starting from 57, OpenHermes 2.5 + UltraChat + OASTT2 (out_qlora-20240628192159)
