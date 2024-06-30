@@ -1133,7 +1133,7 @@ stablelm-2-brief-1_6b_v8_r55_epoch-04  3.131250
 stablelm-2-brief-1_6b_v8_r55_epoch-05  2.875000
 stablelm-2-brief-1_6b_v8_r55_epoch-06  2.930818
 
-56. LORA + OpenHermes 2.5, context 1024 (out_qlora-20240625120306)
+56. LORA, OpenHermes 2.5, context 1024 (out_qlora-20240627222946)
 
 The best result so far. Yet the OpenHermess has mainly single turn questions
 
@@ -1192,34 +1192,55 @@ stablelm-2-brief-1_6b_v8_r56_epoch-03  3.80000
 stablelm-2-brief-1_6b_v8_r56_epoch-02  3.77500
 stablelm-2-brief-1_6b_v8_r56_epoch-01  3.54375
 
-Fore reference, 2048 context
+57. Starting from #56 epoch 5, OpenHermes 2.5 + UltraChat, context 1024
 
-Count: 997025/997025 - 101.4 seconds
+Count: 1074532/1074532 - 129.4 seconds                                                                                                                                                          
 --- TRAIN SPLIT ---
-Total records: 897338
-Total tokens: 319309148
+Total records: 967028
+Total tokens: 355903935
 Min tokens: 23
-Max tokens: 2048
-Avg tokens: 355.84
-25th percentile: 174.0
-50th percentile (median): 300.0
-75th percentile: 473.0
-Messages over 2048 tokens: 0 (0.00%)
+Max tokens: 1024
+Avg tokens: 368.04
+25th percentile: 184.0
+50th percentile (median): 319.0
+75th percentile: 509.0
+Messages over 1024 tokens: 0 (0.00%)
 Min turns: 1
 Max turns: 17
-Avg turns: 1.00
+Avg turns: 1.16
 --- TEST SPLIT ---
-Total records: 99687
-Total tokens: 35443519
+Total records: 107504
+Total tokens: 39585502
 Min tokens: 26
-Max tokens: 2046
-Avg tokens: 355.55
-25th percentile: 174.0
-50th percentile (median): 301.0
-75th percentile: 473.0
-Messages over 2048 tokens: 0 (0.00%)
+Max tokens: 1024
+Avg tokens: 368.22
+25th percentile: 184.0
+50th percentile (median): 320.0
+75th percentile: 509.0
+Messages over 1024 tokens: 0 (0.00%)
 Min turns: 1
 Max turns: 12
-Avg turns: 1.00
+Avg turns: 1.16
 
-Too much data
+########## First turn ##########
+                                            score
+model                                 turn       
+stablelm-2-zephyr-1_6b                1     5.400
+stablelm-2-zephyr-1_6b_2              1     5.275
+stablelm-2-brief-1_6b_v8_r57_epoch-01 1     4.850
+
+########## Second turn ##########
+                                             score
+model                                 turn        
+stablelm-2-zephyr-1_6b                2     4.2875
+stablelm-2-zephyr-1_6b_2              2     4.2000
+stablelm-2-brief-1_6b_v8_r57_epoch-01 2     3.7000
+
+########## Average ##########
+                                         score
+model                                         
+stablelm-2-zephyr-1_6b                 4.84375
+stablelm-2-zephyr-1_6b_2               4.73750
+stablelm-2-brief-1_6b_v8_r57_epoch-01  4.27500
+
+58. starting from 57, OpenHermes 2.5 + UltraChat + OASTT2,
