@@ -1243,4 +1243,36 @@ stablelm-2-zephyr-1_6b                 4.84375
 stablelm-2-zephyr-1_6b_2               4.73750
 stablelm-2-brief-1_6b_v8_r57_epoch-01  4.27500
 
-58. starting from 57, OpenHermes 2.5 + UltraChat + OASTT2 (out_qlora-20240628192159)
+58. starting from 57, OpenHermes 2.5 + UltraChat + OASTT2
+
+Score not improving
+
+########## First turn ##########
+                                              score
+model                                 turn         
+stablelm-2-zephyr-1_6b                1     5.40000
+stablelm-2-zephyr-1_6b_2              1     5.27500
+stablelm-2-brief-1_6b_v8_r57_epoch-01 1     4.85000
+stablelm-2-brief-1_6b_v8_r58_epoch-02 1     4.84375
+stablelm-2-brief-1_6b_v8_r58_epoch-03 1     4.76875
+stablelm-2-brief-1_6b_v8_r58_epoch-01 1     4.71875
+
+########## Second turn ##########
+                                             score
+model                                 turn        
+stablelm-2-zephyr-1_6b                2     4.2875
+stablelm-2-zephyr-1_6b_2              2     4.2000
+stablelm-2-brief-1_6b_v8_r57_epoch-01 2     3.7000
+stablelm-2-brief-1_6b_v8_r58_epoch-03 2     3.6125
+stablelm-2-brief-1_6b_v8_r58_epoch-02 2     3.5000
+stablelm-2-brief-1_6b_v8_r58_epoch-01 2     3.3375
+
+########## Average ##########
+                                          score
+model                                          
+stablelm-2-zephyr-1_6b                 4.843750
+stablelm-2-zephyr-1_6b_2               4.737500
+stablelm-2-brief-1_6b_v8_r57_epoch-01  4.275000
+stablelm-2-brief-1_6b_v8_r58_epoch-03  4.190625
+stablelm-2-brief-1_6b_v8_r58_epoch-02  4.171875
+stablelm-2-brief-1_6b_v8_r58_epoch-01  4.028125
