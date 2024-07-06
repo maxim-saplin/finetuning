@@ -1276,3 +1276,5 @@ stablelm-2-brief-1_6b_v8_r57_epoch-01  4.275000
 stablelm-2-brief-1_6b_v8_r58_epoch-03  4.190625
 stablelm-2-brief-1_6b_v8_r58_epoch-02  4.171875
 stablelm-2-brief-1_6b_v8_r58_epoch-01  4.028125
+
+59. SimPO on top of r57

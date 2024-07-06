@@ -11,3 +11,5 @@ __pycache__/utils.cpython-311.pyc
 __pycache__/data.cpython-311.pyc
 dpo/
 /datasets
+/simpo
+/__pycache__
