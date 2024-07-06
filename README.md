@@ -1277,4 +1277,27 @@ stablelm-2-brief-1_6b_v8_r58_epoch-03  4.190625
 stablelm-2-brief-1_6b_v8_r58_epoch-02  4.171875
 stablelm-2-brief-1_6b_v8_r58_epoch-01  4.028125
 
-59. SimPO on top of r57
+59. SimPO on top of r57, 1 epoch, result worsened
+
+########## First turn ##########
+                                            score
+model                                 turn       
+stablelm-2-zephyr-1_6b                1     5.400
+stablelm-2-zephyr-1_6b_2              1     5.275
+stablelm-2-brief-1_6b_v8_r57_epoch-01 1     4.850
+stablelm-2-brief-1_6b_r59             1     4.650
+
+########## Second turn ##########
+                                               score
+model                                 turn          
+stablelm-2-zephyr-1_6b                2     4.287500
+stablelm-2-zephyr-1_6b_2              2     4.200000
+stablelm-2-brief-1_6b_v8_r57_epoch-01 2     3.700000
+stablelm-2-brief-1_6b_r59             2     3.607595
+
+########## Average ##########
+                                          score
+model                                          
+stablelm-2-zephyr-1_6b                 4.843750
+stablelm-2-zephyr-1_6b_2               4.737500
+stablelm-2-brief-1_6b_v8_r57_epoch-01  4.275000
