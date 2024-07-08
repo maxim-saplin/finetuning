@@ -14,10 +14,9 @@ from alignment import (
 
 from alignment.data import is_openai_format
 import wandb
-# from peft import PeftConfig, PeftModel
-from simpo_trainer import SimPOConfig, SimPOTrainer
 from typing import Literal
 from utils import load_and_prep_tokenizer, load_model
+from trl import CPOConfig, CPOTrainer
 
 logger = logging.getLogger(__name__)
 
@@ -63,8 +62,9 @@ def apply_chat_template(
 
 def main():
     model_path = r"versions\stablelm-2-brief-1_6b_r57"
-    run_id = f"simpo-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-    output_dir = r"simpo\1"
+    run_id = f"cpo_simpo-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    output_dir = r"cpo_simpo\1"
+    project = "stablelm-2-1_6b-CPO_SimPO"
     tokenizer = load_and_prep_tokenizer(model_path)
     model = load_model(model_path)
 
@@ -74,11 +74,12 @@ def main():
         preprocessing_num_workers=12
     )
 
-    training_args = SimPOConfig(
+    training_args = CPOConfig(
         output_dir=output_dir,
+        loss_type="simpo",
         bf16=True,
         beta=2.0,
-        gamma=1.0,
+        simpo_gamma=1.0,
         do_eval=True,
         eval_strategy="steps",
         eval_steps=100,
@@ -179,10 +180,8 @@ def main():
 
     # peft_config=get_peft_config(model_args)
 
-    trainer = SimPOTrainer(
+    trainer = CPOTrainer(
         model=model,
-        # pass in to bypass DPO Trainer check for ref model but is not actually used
-        ref_model=ref_model,
         # model_init_kwargs=model_kwargs,
         args=training_args,
         train_dataset=raw_datasets["train"],
@@ -198,7 +197,7 @@ def main():
         checkpoint = last_checkpoint
 
     wandb.init(
-        project="stablelm-2-1_6b-SimPO",
+        project=project,
         name=run_id,
     )
 
@@ -207,26 +206,9 @@ def main():
     metrics["train_samples"] = len(raw_datasets["train"])
     trainer.log_metrics("train", metrics)
     trainer.save_metrics("train", metrics)
-    trainer.save_state()
+    # trainer.save_state()
 
     logger.info("*** Training complete ***")
-
-    # logger.info("*** Save model ***")
-    # trainer.save_model(training_args.output_dir)
-    # logger.info(f"Model saved to {training_args.output_dir}")
-
-    # # Save everything else on main process
-    # kwargs = {
-    #     "finetuned_from": model_args.model_name_or_path,
-    #     "dataset": list(data_args.dataset_mixer.keys()),
-    #     "dataset_tags": list(data_args.dataset_mixer.keys()),
-    #     "tags": ["alignment-handbook"],
-    # }
-    # if trainer.accelerator.is_main_process:
-    #     trainer.create_model_card(**kwargs)
-    #     # Restore k,v cache for fast inference
-    #     trainer.model.config.use_cache = True
-    #     trainer.model.config.save_pretrained(training_args.output_dir)
 
     # Evaluate
     if training_args.do_eval:

@@ -1277,7 +1277,7 @@ stablelm-2-brief-1_6b_v8_r58_epoch-03  4.190625
 stablelm-2-brief-1_6b_v8_r58_epoch-02  4.171875
 stablelm-2-brief-1_6b_v8_r58_epoch-01  4.028125
 
-59. SimPO on top of r57, 1 epoch, result worsened
+59. SimPO on top of r57, 1 epoch, using [this config](https://github.com/princeton-nlp/SimPO/blob/main/training_configs/llama-3-8b-instruct-simpo.yaml) result worsened
 
 ########## First turn ##########
                                             score
@@ -1301,3 +1301,34 @@ model
 stablelm-2-zephyr-1_6b                 4.843750
 stablelm-2-zephyr-1_6b_2               4.737500
 stablelm-2-brief-1_6b_v8_r57_epoch-01  4.275000
+
+60. CPO_SimPO (used stock CPOTrainer from TRL using "simpo" loss type) on top of r57 with same params as SimPO
+
+Result slightly better than 59
+
+########## First turn ##########
+                                            score
+model                                 turn       
+stablelm-2-zephyr-1_6b                1     5.400
+stablelm-2-zephyr-1_6b_2              1     5.275
+stablelm-2-brief-1_6b_v8_r57_epoch-01 1     4.850
+stablelm-2-brief-1_6b_r60             1     4.750
+stablelm-2-brief-1_6b_r59             1     4.650
+
+########## Second turn ##########
+                                               score
+model                                 turn          
+stablelm-2-zephyr-1_6b                2     4.287500
+stablelm-2-zephyr-1_6b_2              2     4.200000
+stablelm-2-brief-1_6b_v8_r57_epoch-01 2     3.700000
+stablelm-2-brief-1_6b_r59             2     3.607595
+stablelm-2-brief-1_6b_r60             2     3.468354
+
+########## Average ##########
+                                          score
+model                                          
+stablelm-2-zephyr-1_6b                 4.843750
+stablelm-2-zephyr-1_6b_2               4.737500
+stablelm-2-brief-1_6b_v8_r57_epoch-01  4.275000
+stablelm-2-brief-1_6b_r59              4.132075
+stablelm-2-brief-1_6b_r60              4.113208
