@@ -63,10 +63,10 @@ def apply_chat_template(
 def main():
     model_path = r"versions\stablelm-2-brief-1_6b_r57"
     run_id = f"cpo_simpo-{datetime.now().strftime('%Y%m%d%H%M%S')}"
-    output_dir = r"cpo_simpo\1"
+    output_dir = r"cpo_simpo\2"
     project = "stablelm-2-1_6b-CPO_SimPO"
-    tokenizer = load_and_prep_tokenizer(model_path)
-    model = load_model(model_path)
+    tokenizer = load_and_prep_tokenizer(model_path, useCpu=False)
+    model = load_model(model_path, useCpu=False)
 
     data_args = DataArguments(
         dataset_mixer={"HuggingFaceH4/ultrafeedback_binarized": 1.0},
@@ -78,28 +78,29 @@ def main():
         output_dir=output_dir,
         loss_type="simpo",
         bf16=True,
-        beta=2.0,
-        simpo_gamma=1.0,
+        beta=10.0,
+        simpo_gamma=5.4,
+        cpo_alpha=0.05,
         do_eval=True,
         eval_strategy="steps",
         eval_steps=100,
         gradient_accumulation_steps=32,
         gradient_checkpointing=True,
         gradient_checkpointing_kwargs={"use_reentrant": False},
-        learning_rate=6.0e-7,
+        learning_rate=1.0e-6,
         log_level="info",
-        logging_steps=1,
+        logging_steps=3,
         lr_scheduler_type="cosine",
         max_length=2048,
         max_prompt_length=1800,
-        num_train_epochs=1,
+        num_train_epochs=3,
         optim="adamw_torch",
         per_device_train_batch_size=1,
         per_device_eval_batch_size=1,
         push_to_hub=False,
         save_strategy="steps",
         save_steps=100,
-        save_total_limit=20,
+        save_total_limit=3,
         seed=42,
         warmup_ratio=0.1,
     )
@@ -164,25 +165,8 @@ def main():
                 "text_rejected": "rejected"}
         )
 
-    # # Log a few random samples from the training set:
-    # for index in random.sample(range(len(raw_datasets["train"])), 3):
-    #     logger.info(
-    #         f"Prompt sample {index} of the raw training set:\n\n{raw_datasets['train'][index]['prompt']}")
-    #     logger.info(
-    #         f"Chosen sample {index} of the raw training set:\n\n{raw_datasets['train'][index]['chosen']}")
-    #     logger.info(
-    #         f"Rejected sample {index} of the raw training set:\n\n{raw_datasets['train'][index]['rejected']}")
-
-    ref_model = model
-
-    # if model_args.use_peft is True:
-    #     ref_model = None
-
-    # peft_config=get_peft_config(model_args)
-
     trainer = CPOTrainer(
         model=model,
-        # model_init_kwargs=model_kwargs,
         args=training_args,
         train_dataset=raw_datasets["train"],
         eval_dataset=raw_datasets["test"],
@@ -206,7 +190,6 @@ def main():
     metrics["train_samples"] = len(raw_datasets["train"])
     trainer.log_metrics("train", metrics)
     trainer.save_metrics("train", metrics)
-    # trainer.save_state()
 
     logger.info("*** Training complete ***")
 
@@ -217,10 +200,6 @@ def main():
         metrics["eval_samples"] = len(raw_datasets["test"])
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
-
-    # if training_args.push_to_hub is True:
-    #     logger.info("Pushing to hub...")
-    #     trainer.push_to_hub(**kwargs)
 
     logger.info("*** Eval complete! ***")
 

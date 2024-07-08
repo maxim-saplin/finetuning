@@ -1332,3 +1332,6 @@ stablelm-2-zephyr-1_6b_2               4.737500
 stablelm-2-brief-1_6b_v8_r57_epoch-01  4.275000
 stablelm-2-brief-1_6b_r59              4.132075
 stablelm-2-brief-1_6b_r60              4.113208
+
+61. CPO_SimPO on top of r57, using [params from here](https://github.com/fe1ixxu/CPO_SIMPO/blob/main/training_configs/llama-3-8b-instruct-cpo-simpo.yaml)
+
