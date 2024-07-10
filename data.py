@@ -10,9 +10,18 @@ import shutil
 from utils import load_and_prep_tokenizer
 
 
-def get_dpo_dataset(tokenizer):
-    dataset_name = "argilla/dpo-mix-7k"
-    dataset = load_dataset(dataset_name, split="train+test")
+class DpoDatasetOptions(IntFlag):
+    DPOMIX7K = 1
+    ULTRAFEEDBACK = 2
+
+
+def get_dpo_dataset(tokenizer, dataset_option: DpoDatasetOptions = DpoDatasetOptions.DPOMIX7K):
+    if dataset_option == DpoDatasetOptions.DPOMIX7K:
+        dataset = load_dataset("argilla/dpo-mix-7k", split="train+test")
+    elif dataset_option == DpoDatasetOptions.ULTRAFEEDBACK:
+        dataset = load_dataset("HuggingFaceH4/ultrafeedback_binarized", split="train_prefs+test_prefs")
+    else:
+        raise ValueError("Unsupported dataset option")
 
     def create_triplets(example):
         """Create the triplets (prompt, chosen, rejected)"""
@@ -251,17 +260,21 @@ def get_dataset(datasets_to_use: DatasetOptions):
         def openhermes_processor(dataset):
             def convert_conversations(example):
                 example["messages"] = [
-                    {"role": ("user" if m["from"] == "human" else "assistant"), "content": m["value"]}
+                    {"role": (
+                        "user" if m["from"] == "human" else "assistant"), "content": m["value"]}
                     for m in example["conversations"]
-                    if m["from"] in ["human", "gpt"]  # Exclude 'system' messages
+                    # Exclude 'system' messages
+                    if m["from"] in ["human", "gpt"]
                 ]
                 return example
 
-            ds = dataset.map(convert_conversations).remove_columns(["conversations"])
+            ds = dataset.map(convert_conversations).remove_columns(
+                ["conversations"])
             ds = ds.train_test_split(test_size=0.1)
             return ds
 
-        dataset = load_or_create("openhermes", openhermes_loader, openhermes_processor)
+        dataset = load_or_create(
+            "openhermes", openhermes_loader, openhermes_processor)
         concat(final_dataset, dataset)
 
     end_time = time.time()

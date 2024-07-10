@@ -23,6 +23,8 @@ def load_and_describe_dpo_dataset(tokenizer):
     # Describe the dataset
     describe_dataset(dataset)
 
+    return dataset
+
 
 def load_and_describe_cpo_simpo_dataset():
     data_args = DataArguments(
@@ -41,16 +43,20 @@ def load_and_describe_cpo_simpo_dataset():
     # Describe the dataset
     describe_dataset(raw_datasets)
 
+    return raw_datasets
+
 
 def main():
     model_path = r"stabilityai/stablelm-2-1_6b"
     tokenizer = load_and_prep_tokenizer(model_path, useCpu=True)
 
     print("Describing DPO Dataset...")
-    load_and_describe_dpo_dataset(tokenizer)
+    dpo = load_and_describe_dpo_dataset(tokenizer)
 
     print("Describing CPO SimPO Dataset...")
-    load_and_describe_cpo_simpo_dataset()
+    simpo = load_and_describe_cpo_simpo_dataset()
+    print(len(dpo))
+    print(len(simpo))
 
 
 if __name__ == "__main__":
